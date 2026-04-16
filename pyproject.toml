@@ -1,0 +1,101 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+required-version = ">=0.11"
+python-downloads = "manual"
+
+[project]
+name = "minecraft-bedrock-backup-manager"
+version = "v0.1.0-beta"
+description = "NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT. Gerenciador de backups de mundos Minecraft Bedrock Edition para Windows 10/11"
+readme = "README.md"
+requires-python = ">=3.14"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "DandanLeinad" }]
+keywords = ["minecraft", "backup", "bedrock", "windows", "open-source"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Games/Entertainment",
+]
+dependencies = [
+    "customtkinter>=5.2.2",
+    "pydantic>=2.12.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager"
+Repository = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager.git"
+Issues = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/issues"
+Discussions = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/discussions"
+Changelog = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+    "pyinstaller>=6.19.0",
+    "pyright>=1.1.408",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.10",
+    "taskipy>=1.14.1",
+]
+
+[project.scripts]
+backup-manager = "backup_manager_mvp.main:main"
+
+
+# Configurações para pytest
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
+addopts = "-v --strict-markers --cov=src --cov-report=html"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+]
+
+# Configurações para coverage
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+# Build configuration for Hatchling
+[tool.hatch.build.targets.wheel]
+packages = ["src/backup_manager_mvp"]
+
+# Build tasks with taskipy
+[tool.taskipy.tasks]
+test = "pytest -vv"
+test-cov = "pytest -vv --cov=src --cov-report=html"
+lint = "ruff check src/ tests/"
+format = "ruff format src/ tests/"
+type-check = "pyright src/"
+dev = "uv run python -m backup_manager_mvp.main"
+dev-debug = "uv run python -m backup_manager_mvp.main -vv"
+license-add = "uv run python scripts/add_license_header.py"
+license-validate = "uv run python scripts/validate_license_header.py"
+
+# Build tasks com PyInstaller (novo sistema otimizado)
+build = "python build.py"
+build-debug = "python build.py --debug"
+build-clean = "python build.py --clean"
+build-full = "python build.py --clean && python build.py"
+
+[tool.pyinstaller]
+compatibility_mode = true
