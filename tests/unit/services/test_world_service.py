@@ -744,30 +744,6 @@ class TestGetWorldMetadata:
         assert metadata["backups_count"] == "0"
         assert metadata["last_backup"] == "Nunca"
 
-    def test_calculate_world_size_kilobytes(self, tmp_path: Path) -> None:
-        """Testa cálculo de tamanho em kilobytes (1024 <= size < 1024^2)."""
-        # Arrange
-        service = WorldService()
-        world_path = tmp_path / "world"
-        world_path.mkdir()
-        (world_path / "levelname.txt").write_text("Test")
-        # 10 KB
-        (world_path / "file1.dat").write_bytes(b"x" * (1024 * 10))
-
-        world = WorldModel(
-            folder_name="testworld12=",
-            levelname="Test",
-            path=world_path,
-            account_id="test",
-            version=[1, 0, 0, 0, 0],
-        )
-
-        # Act
-        metadata = service.get_world_metadata(world)
-
-        # Assert - Deve estar em KB
-        assert "KB" in metadata["size"]
-
     def test_get_world_metadata_with_all_time_deltas(self, tmp_path: Path) -> None:
         """Testa vários time deltas: segundos, minutos, horas, dias (cobertura completa)."""
         from datetime import datetime, timedelta

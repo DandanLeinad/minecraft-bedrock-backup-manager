@@ -25,10 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
     "Topic :: Games/Entertainment",
 ]
-dependencies = [
-    "customtkinter>=5.2.2",
-    "pydantic>=2.12.5",
-]
+dependencies = ["customtkinter>=5.2.2", "pydantic>=2.12.5"]
 
 [project.urls]
 Homepage = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager"
@@ -39,12 +36,13 @@ Changelog = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/bl
 
 [dependency-groups]
 dev = [
+    "bump-my-version>=1.3.0",
     "pre-commit>=4.5.1",
     "pyinstaller>=6.19.0",
     "pyright>=1.1.408",
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
-    "ruff>=0.15.10",
+    "ruff>=0.15.11",
     "taskipy>=1.14.1",
 ]
 
@@ -86,10 +84,19 @@ test-cov = "pytest -vv --cov=src --cov-report=html"
 lint = "ruff check src/ tests/"
 format = "ruff format src/ tests/"
 type-check = "pyright src/"
+pre-commit-install = "pre-commit install"
+pre-commit-run = "pre-commit run --all-files"
 dev = "uv run python -m backup_manager_mvp.main"
 dev-debug = "uv run python -m backup_manager_mvp.main -vv"
 license-add = "uv run python scripts/add_license_header.py"
 license-validate = "uv run python scripts/validate_license_header.py"
+
+# Versionamento automático
+bump-major = "bump-my-version bump major"
+bump-minor = "bump-my-version bump minor"
+bump-patch = "bump-my-version bump patch"
+bump-beta = "bump-my-version bump pre_l"
+version-show = "bump-my-version show-bump"
 
 # Build tasks com PyInstaller (novo sistema otimizado)
 build = "python build.py"

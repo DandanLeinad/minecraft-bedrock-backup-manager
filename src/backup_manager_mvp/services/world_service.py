@@ -104,7 +104,7 @@ class WorldService:
             for item in base_path.iterdir():
                 if item.is_dir():
                     account_ids.append(item.name)
-        except OSError, PermissionError:
+        except (OSError, PermissionError):
             # Se não conseguir ler o diretório, retorna vazio
             return []
 
@@ -145,11 +145,11 @@ class WorldService:
                         version=[1, 0, 0, 0, 0],  # Versão padrão
                     )
                     worlds.append(world)
-                except FileNotFoundError, ValueError:
+                except (FileNotFoundError, ValueError):
                     # Ignorar mundos com problemas
                     continue
 
-        except OSError, PermissionError:
+        except (OSError, PermissionError):
             # Se não conseguir ler o diretório, retorna o que encontrou
             pass
 

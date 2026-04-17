@@ -60,7 +60,7 @@ class VersionInfo:
             self.major = int(parts[0]) if len(parts) > 0 else 0
             self.minor = int(parts[1]) if len(parts) > 1 else 0
             self.patch = int(parts[2]) if len(parts) > 2 else 0
-        except ValueError, IndexError:
+        except (ValueError, IndexError):
             logger.warning(f"Could not parse version: {version_str}")
             self.major = 0
             self.minor = 0
@@ -209,7 +209,7 @@ class UpdateChecker:
         try:
             with open(self.version_file, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except json.JSONDecodeError, IOError:
+        except (json.JSONDecodeError, IOError):
             return {
                 "current": "v0.0.0",
                 "release_date": "unknown",

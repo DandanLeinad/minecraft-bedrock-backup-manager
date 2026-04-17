@@ -7,6 +7,19 @@ Todas as mudanças notáveis deste projeto serão documentadas aqui.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Nova estrutura de Trunk-Based Development
+- Versionamento automático com `bump-my-version`
+- Feature flags para features em desenvolvimento
+
+### Changed
+
+- Migração de Git Flow para Trunk-Based Development
+- Melhorias no fluxo de CI/CD
+
 ## [0.1.0-beta] - 2026-04-14
 
 ### Added
@@ -54,4 +67,4 @@ Este projeto segue [Semantic Versioning](https://semver.org/):
 
 ---
 
-**Última atualização:** 2026-04-14
+**Última atualização:** 2026-04-17

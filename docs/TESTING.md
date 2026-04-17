@@ -32,10 +32,10 @@ def test_example():
         account_id="123",
         version=[1, 26, 0, 0, 0]
     )
-    
+
     # ACT: Executar
     result = world.levelname
-    
+
     # ASSERT: Validar
     assert result == "Meu Mundo"
 ```
