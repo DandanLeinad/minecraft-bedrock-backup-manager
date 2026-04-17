@@ -84,7 +84,11 @@ target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "PIE", "SIM", "RUF"]
-ignore = ["E501", "UP009", "B904"]  # UP009: removes unnecessary parentheses; B904: raise from err
+ignore = [
+    "E501",
+    "UP009",
+    "B904",
+] # UP009: removes unnecessary parentheses; B904: raise from err
 
 [tool.ruff.format]
 quote-style = "double"
