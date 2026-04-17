@@ -51,9 +51,7 @@ class TestGetWorldsBasePath:
         # Arrange
         mock_path = tmp_path / "AppData" / "Roaming" / "Minecraft Bedrock" / "Users"
 
-        with patch.object(
-            world_service, "get_worlds_base_path", return_value=mock_path
-        ):
+        with patch.object(world_service, "get_worlds_base_path", return_value=mock_path):
             # Act
             result = world_service.get_worlds_base_path()
 
@@ -89,9 +87,7 @@ class TestListAccountIds:
         account2.mkdir(parents=True)
 
         # Mock get_worlds_base_path para retornar nosso tmp_path
-        with patch.object(
-            world_service, "get_worlds_base_path", return_value=users_dir
-        ):
+        with patch.object(world_service, "get_worlds_base_path", return_value=users_dir):
             # Act
             result = world_service.list_account_ids()
 
@@ -108,9 +104,7 @@ class TestListAccountIds:
         users_dir = tmp_path / "Users"
         users_dir.mkdir(parents=True)
 
-        with patch.object(
-            world_service, "get_worlds_base_path", return_value=users_dir
-        ):
+        with patch.object(world_service, "get_worlds_base_path", return_value=users_dir):
             # Act
             result = world_service.list_account_ids()
 
@@ -122,9 +116,7 @@ class TestListAccountIds:
 class TestListWorlds:
     """Testes para o método list_worlds()."""
 
-    def test_list_worlds_returns_list(
-        self, tmp_path: Path, world_service: WorldService
-    ) -> None:
+    def test_list_worlds_returns_list(self, tmp_path: Path, world_service: WorldService) -> None:
         """Testa que list_worlds retorna uma list."""
         # Arrange
         with patch.object(world_service, "get_worlds_base_path", return_value=tmp_path):
@@ -156,9 +148,7 @@ class TestListWorlds:
         # Para este teste, apenas criamos o arquivo
         level_dat.write_bytes(b"\x00")
 
-        with patch.object(
-            world_service, "get_worlds_base_path", return_value=users_dir
-        ):
+        with patch.object(world_service, "get_worlds_base_path", return_value=users_dir):
             # Act
             result = world_service.list_worlds()
 
@@ -178,9 +168,7 @@ class TestListWorlds:
         account_dir = users_dir / "test_account"
         account_dir.mkdir(parents=True)
 
-        with patch.object(
-            world_service, "get_worlds_base_path", return_value=users_dir
-        ):
+        with patch.object(world_service, "get_worlds_base_path", return_value=users_dir):
             # Act
             result = world_service.list_worlds()
 
@@ -241,9 +229,7 @@ class TestGetWorldLevelname:
 class TestListAccountIdsErrors:
     """Testes para cobrir casos de erro em list_account_ids (linha 96)."""
 
-    def test_list_account_ids_handles_permission_error(
-        self, world_service: WorldService
-    ) -> None:
+    def test_list_account_ids_handles_permission_error(self, world_service: WorldService) -> None:
         """Teste: list_account_ids retorna [] se PermissionError."""
         with patch.object(world_service, "get_worlds_base_path") as mock_path:
             mock_base = MagicMock()
@@ -287,9 +273,7 @@ class TestListWorldsErrors:
 class TestGetWorldLevelnameErrors:
     """Testes para cobrir casos de erro em get_world_levelname (linhas 214-217)."""
 
-    def test_get_world_levelname_raises_on_unicode_decode_error(
-        self, tmp_path: Path
-    ) -> None:
+    def test_get_world_levelname_raises_on_unicode_decode_error(self, tmp_path: Path) -> None:
         """Teste: get_world_levelname lança ValueError se UnicodeDecodeError."""
         service = WorldService()
 
@@ -329,9 +313,7 @@ class TestGetWorldLevelnameErrors:
             # Assert
             assert result == []
 
-    def test_list_worlds_from_path_ignores_non_directories(
-        self, tmp_path: Path
-    ) -> None:
+    def test_list_worlds_from_path_ignores_non_directories(self, tmp_path: Path) -> None:
         """Teste: _list_worlds_from_path ignora arquivos (não diretórios)."""
         service = WorldService()
 
@@ -346,9 +328,7 @@ class TestGetWorldLevelnameErrors:
         # Assert
         assert result == []
 
-    def test_list_worlds_from_path_ignores_invalid_world_folders(
-        self, tmp_path: Path
-    ) -> None:
+    def test_list_worlds_from_path_ignores_invalid_world_folders(self, tmp_path: Path) -> None:
         """Teste: _list_worlds_from_path ignora pastas sem levelname.txt."""
         service = WorldService()
 
@@ -564,9 +544,7 @@ class TestGetWorldMetadata:
         (valid_world / "levelname.txt").write_text("Valid World")
 
         # Mock iterdir no module Path para lançar PermissionError
-        with patch(
-            "pathlib.Path.iterdir", side_effect=PermissionError("Access denied")
-        ):
+        with patch("pathlib.Path.iterdir", side_effect=PermissionError("Access denied")):
             # Act: Mesmo com erro, deve retornar lista vazia (ou o que foi encontrado antes)
             result = service._list_worlds_from_path(worlds_dir, "account_id")
 
@@ -713,9 +691,7 @@ class TestGetWorldMetadata:
         assert "Microsoft.MinecraftUWP_8wekyb3d8bbwe" in str(uwp_path)
         assert "minecraftWorlds" in str(uwp_path)
 
-    def test_get_world_metadata_exception_on_backup_service(
-        self, tmp_path: Path
-    ) -> None:
+    def test_get_world_metadata_exception_on_backup_service(self, tmp_path: Path) -> None:
         """Testa que exceção no backup_service é capturada corretamente."""
         # Arrange
         service = WorldService()
@@ -782,8 +758,11 @@ class TestGetWorldMetadata:
             )
 
             class TestBackupService:
-                def list_backups(self, w):
-                    return [backup]
+                def __init__(self, backup_model):
+                    self._backup = backup_model
 
-            metadata = service.get_world_metadata(world, TestBackupService())
+                def list_backups(self, w):
+                    return [self._backup]
+
+            metadata = service.get_world_metadata(world, TestBackupService(backup))
             assert metadata["last_backup"] == expected, f"Failed for delta {delta}"

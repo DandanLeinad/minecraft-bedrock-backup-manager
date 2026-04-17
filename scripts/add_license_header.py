@@ -108,10 +108,7 @@ def find_python_files(path: Path | str) -> list[Path]:
 def main():
     """Função principal."""
     # Determinar caminho: argumento ou raiz do projeto
-    if len(sys.argv) > 1:
-        target = sys.argv[1]
-    else:
-        target = "."
+    target = sys.argv[1] if len(sys.argv) > 1 else "."
 
     target_path = Path(target)
 

@@ -34,9 +34,9 @@ from backup_manager_mvp.utils.paths import LOG_FILE, ensure_directories
 # Fix para PyInstaller --nowindow: sys.stdout/stderr podem ser None
 # Isso evita AttributeError de bibliotecas que tentam acessar essas streams
 if sys.stdout is None:
-    sys.stdout = open(os.devnull, "w")
+    sys.stdout = open(os.devnull, "w")  # noqa: SIM115
 if sys.stderr is None:
-    sys.stderr = open(os.devnull, "w")
+    sys.stderr = open(os.devnull, "w")  # noqa: SIM115
 
 
 def _configure_logging() -> None:

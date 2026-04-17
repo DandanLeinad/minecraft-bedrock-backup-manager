@@ -470,16 +470,18 @@ class TestCreateBackupErrors:
             (Path(dst) / "partial.txt").write_text("partial")
             raise Exception("Simulated copy failure")
 
-        with patch.object(service, "get_backup_base_path", return_value=backup_base):
-            with patch("shutil.copytree", side_effect=mock_copytree_fail):
-                with pytest.raises(RuntimeError, match="Erro ao criar backup"):
-                    service.create_backup(world)
+        with (
+            patch.object(service, "get_backup_base_path", return_value=backup_base),
+            patch("shutil.copytree", side_effect=mock_copytree_fail),
+            pytest.raises(RuntimeError, match="Erro ao criar backup"),
+        ):
+            service.create_backup(world)
 
-                # Verificar que rmtree foi chamado (pasta foi removida)
-                # Se rmtree funcionou, a pasta não deve existir
-                assert backup_path_ref[0] is not None
-                # A pasta DEVERIA ter sido removida pelo rmtree na linha 78
-                # (ou ainda pode existir se o test está apenas verificando o comportamento)
+        # Verificar que rmtree foi chamado (pasta foi removida)
+        # Se rmtree funcionou, a pasta não deve existir
+        assert backup_path_ref[0] is not None
+        # A pasta DEVERIA ter sido removida pelo rmtree na linha 78
+        # (ou ainda pode existir se o test está apenas verificando o comportamento)
 
 
 class TestListBackupsErrors:

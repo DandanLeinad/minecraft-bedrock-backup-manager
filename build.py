@@ -184,7 +184,7 @@ def build_executable(debug: bool = False) -> bool:
     logger.info("\nExecutando PyInstaller...")
     try:
         subprocess.run(
-            ["pyinstaller"] + pyinstaller_args,
+            ["pyinstaller", *pyinstaller_args],
             check=True,
             capture_output=False,
         )
