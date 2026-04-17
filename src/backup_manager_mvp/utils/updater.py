@@ -19,7 +19,6 @@
 import json
 import logging
 from pathlib import Path
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -60,13 +59,13 @@ class VersionInfo:
             self.major = int(parts[0]) if len(parts) > 0 else 0
             self.minor = int(parts[1]) if len(parts) > 1 else 0
             self.patch = int(parts[2]) if len(parts) > 2 else 0
-        except (ValueError, IndexError):
+        except ValueError, IndexError:
             logger.warning(f"Could not parse version: {version_str}")
             self.major = 0
             self.minor = 0
             self.patch = 0
 
-    def __lt__(self, other: "VersionInfo") -> bool:
+    def __lt__(self, other: VersionInfo) -> bool:
         """Check if this version is less than other.
 
         Args:
@@ -93,7 +92,7 @@ class VersionInfo:
         # Both prerelease, simple string comparison
         return self.prerelease < other.prerelease
 
-    def __le__(self, other: "VersionInfo") -> bool:
+    def __le__(self, other: VersionInfo) -> bool:
         """Check if this version is <= other.
 
         Args:
@@ -104,7 +103,7 @@ class VersionInfo:
         """
         return self < other or str(self) == str(other)
 
-    def __gt__(self, other: "VersionInfo") -> bool:
+    def __gt__(self, other: VersionInfo) -> bool:
         """Check if this version is greater than other.
 
         Args:
@@ -115,7 +114,7 @@ class VersionInfo:
         """
         return not self <= other
 
-    def __ge__(self, other: "VersionInfo") -> bool:
+    def __ge__(self, other: VersionInfo) -> bool:
         """Check if this version is >= other.
 
         Args:
@@ -159,7 +158,7 @@ class VersionInfo:
 class UpdateChecker:
     """Checks for application updates."""
 
-    def __init__(self, version_file: Optional[Path] = None):
+    def __init__(self, version_file: Path | None = None):
         """Initialize update checker.
 
         Args:
@@ -170,8 +169,8 @@ class UpdateChecker:
             version_file = Path(__file__).parent.parent / "version.json"
 
         self.version_file = version_file
-        self.local_version: Optional[VersionInfo] = None
-        self.remote_version: Optional[VersionInfo] = None
+        self.local_version: VersionInfo | None = None
+        self.remote_version: VersionInfo | None = None
         self.update_available = False
 
     def load_local_version(self) -> bool:
@@ -185,7 +184,7 @@ class UpdateChecker:
                 logger.warning(f"Version file not found: {self.version_file}")
                 return False
 
-            with open(self.version_file, "r", encoding="utf-8") as f:
+            with open(self.version_file, encoding="utf-8") as f:
                 data = json.load(f)
 
             current = data.get("current", "0.0.0")
@@ -193,7 +192,7 @@ class UpdateChecker:
             logger.info(f"Local version: {self.local_version}")
             return True
 
-        except (json.JSONDecodeError, IOError) as e:
+        except (OSError, json.JSONDecodeError) as e:
             logger.error(f"Error loading version file: {e}")
             return False
 
@@ -207,9 +206,9 @@ class UpdateChecker:
             self.load_local_version()
 
         try:
-            with open(self.version_file, "r", encoding="utf-8") as f:
+            with open(self.version_file, encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, IOError):
+        except OSError, json.JSONDecodeError:
             return {
                 "current": "v0.0.0",
                 "release_date": "unknown",

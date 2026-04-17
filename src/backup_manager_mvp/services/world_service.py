@@ -39,9 +39,7 @@ class WorldService:
         Notes:
             Este é o caminho padrão após a atualização 1.21.120 do Minecraft Bedrock.
         """
-        appdata_path = (
-            Path.home() / "AppData" / "Roaming" / "Minecraft Bedrock" / "Users"
-        )
+        appdata_path = Path.home() / "AppData" / "Roaming" / "Minecraft Bedrock" / "Users"
         return appdata_path
 
     def get_uwp_store_path(self) -> Path:
@@ -104,15 +102,13 @@ class WorldService:
             for item in base_path.iterdir():
                 if item.is_dir():
                     account_ids.append(item.name)
-        except (OSError, PermissionError):
+        except OSError, PermissionError:
             # Se não conseguir ler o diretório, retorna vazio
             return []
 
         return sorted(account_ids)
 
-    def _list_worlds_from_path(
-        self, worlds_dir: Path, account_id: str
-    ) -> list[WorldModel]:
+    def _list_worlds_from_path(self, worlds_dir: Path, account_id: str) -> list[WorldModel]:
         """Helper privado: Lista mundos de um diretório específico com account_id dado.
 
         Args:
@@ -145,11 +141,11 @@ class WorldService:
                         version=[1, 0, 0, 0, 0],  # Versão padrão
                     )
                     worlds.append(world)
-                except (FileNotFoundError, ValueError):
+                except FileNotFoundError, ValueError:
                     # Ignorar mundos com problemas
                     continue
 
-        except (OSError, PermissionError):
+        except OSError, PermissionError:
             # Se não conseguir ler o diretório, retorna o que encontrou
             pass
 
@@ -220,9 +216,7 @@ class WorldService:
         except UnicodeDecodeError as e:
             raise ValueError(f"Erro ao decodificar levelname.txt: {e}")
 
-    def get_world_metadata(
-        self, world: WorldModel, backup_service=None
-    ) -> dict[str, str]:
+    def get_world_metadata(self, world: WorldModel, backup_service=None) -> dict[str, str]:
         """Calcula metadados do mundo: tamanho, quantidade de backups, último backup.
 
         Args:
@@ -237,9 +231,7 @@ class WorldService:
         try:
             # === TAMANHO DO MUNDO ===
             if world.path.exists():
-                total_size = sum(
-                    f.stat().st_size for f in world.path.rglob("*") if f.is_file()
-                )
+                total_size = sum(f.stat().st_size for f in world.path.rglob("*") if f.is_file())
                 if total_size < 1024:
                     metadata["size"] = f"{total_size} B"
                 elif total_size < 1024 * 1024:
@@ -255,9 +247,7 @@ class WorldService:
                 try:
                     backups = backup_service.list_backups(world)
                     metadata["backups_count"] = str(len(backups))
-                    logger.debug(
-                        f"Backups encontrados para {world.levelname}: {len(backups)}"
-                    )
+                    logger.debug(f"Backups encontrados para {world.levelname}: {len(backups)}")
 
                     if backups:
                         # Último backup (mais recente)
