@@ -35,13 +35,13 @@ from backup_manager_mvp.ui.customtkinter.components.labels import (
 )
 
 __all__ = [
-    "show_disclaimer_dialog",
     "create_action_button",
     "create_back_button",
-    "create_restore_button",
     "create_header_frame",
-    "create_stats_frame",
     "create_info_frame",
-    "create_title_label",
     "create_metadata_label",
+    "create_restore_button",
+    "create_stats_frame",
+    "create_title_label",
+    "show_disclaimer_dialog",
 ]

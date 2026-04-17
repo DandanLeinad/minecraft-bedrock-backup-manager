@@ -73,16 +73,14 @@ class BackupManagerApp:
         except Exception as e:
             logger.error(f"Erro ao listar mundos: {e}", exc_info=True)
             self.ui.show_error_dialog(
-                "Erro ao listar mundos", f"Não foi possível listar os mundos: {str(e)}"
+                "Erro ao listar mundos", f"Não foi possível listar os mundos: {e!s}"
             )
 
     def _handle_world_selected(self, world: WorldModel) -> None:
         """Chamado quando um mundo é selecionado."""
         if world is None:
             logger.warning("Mundo selecionado é None")
-            self.ui.show_error_dialog(
-                "Erro", "Mundo selecionado é None. Tente novamente."
-            )
+            self.ui.show_error_dialog("Erro", "Mundo selecionado é None. Tente novamente.")
             return
 
         logger.info(f"Mundo selecionado: {world.levelname}")
@@ -95,7 +93,7 @@ class BackupManagerApp:
             logger.error(f"Erro ao carregar detalhes do mundo: {e}", exc_info=True)
             self.ui.show_error_dialog(
                 "Erro ao carregar detalhes",
-                f"Erro ao carregar informações do mundo: {str(e)}",
+                f"Erro ao carregar informações do mundo: {e!s}",
             )
 
     def _handle_create_backup(self, world: WorldModel) -> None:
@@ -130,15 +128,13 @@ class BackupManagerApp:
 
             self.ui.show_error_dialog(
                 "❌ Erro ao Criar Backup",
-                f"Não foi possível criar o backup: {str(e)}\n\n🔍 Verifique:\n• As permissões da pasta\n• Espaço em disco disponível\n• Se o mundo está sendo usado",
+                f"Não foi possível criar o backup: {e!s}\n\n🔍 Verifique:\n• As permissões da pasta\n• Espaço em disco disponível\n• Se o mundo está sendo usado",
             )
 
     def _handle_restore_backup(self, backup: BackupModel, world: WorldModel) -> None:
         """Chamado quando usuário confirma restauração."""
         try:
-            logger.info(
-                f"Restaurando backup de {world.levelname} de {backup.created_at}"
-            )
+            logger.info(f"Restaurando backup de {world.levelname} de {backup.created_at}")
 
             # Mostrar loading e desabilitar botões
             self.ui.show_loading(
@@ -169,7 +165,7 @@ class BackupManagerApp:
 
             self.ui.show_error_dialog(
                 "❌ Erro ao Restaurar Backup",
-                f"Não foi possível restaurar o mundo: {str(e)}\n\n🔍 Verifique:\n• As permissões da pasta\n• Se o mundo está bloqueado\n• Espaço em disco disponível",
+                f"Não foi possível restaurar o mundo: {e!s}\n\n🔍 Verifique:\n• As permissões da pasta\n• Se o mundo está bloqueado\n• Espaço em disco disponível",
             )
 
     def _handle_back(self) -> None:

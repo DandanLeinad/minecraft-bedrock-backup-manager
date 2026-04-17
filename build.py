@@ -77,7 +77,7 @@ def get_version() -> str:
     import json
 
     try:
-        with open(VERSION_JSON, "r", encoding="utf-8") as f:
+        with open(VERSION_JSON, encoding="utf-8") as f:
             data = json.load(f)
             return data.get("current", "unknown")
     except Exception as e:
@@ -195,9 +195,7 @@ def build_executable(debug: bool = False) -> bool:
         logger.error(f"✗ Build falhou com erro: {e}")
         return False
     except FileNotFoundError:
-        logger.error(
-            "✗ PyInstaller não encontrado. Instale com: pip install pyinstaller"
-        )
+        logger.error("✗ PyInstaller não encontrado. Instale com: pip install pyinstaller")
         return False
 
 

@@ -34,10 +34,10 @@ def get_app_version() -> str:
     try:
         version_file = Path(__file__).parent.parent / "version.json"
         if version_file.exists():
-            with open(version_file, "r", encoding="utf-8") as f:
+            with open(version_file, encoding="utf-8") as f:
                 data = json.load(f)
                 return data.get("current", __version__)
-    except (json.JSONDecodeError, IOError, OSError) as e:
+    except (json.JSONDecodeError, OSError) as e:
         logger.debug(f"Could not read version.json: {e}")
 
     return __version__

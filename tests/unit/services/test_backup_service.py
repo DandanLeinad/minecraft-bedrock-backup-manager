@@ -53,9 +53,7 @@ class TestGetBackupBasePath:
     ) -> None:
         """Testa que get_backup_base_path retorna um objeto Path."""
         # Arrange
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=tmp_path
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=tmp_path):
             # Act
             result = backup_service.get_backup_base_path()
 
@@ -69,9 +67,7 @@ class TestGetBackupBasePath:
         # Arrange
         mock_path = tmp_path / "Documents" / "MinecraftBackups"
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=mock_path
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=mock_path):
             # Act
             result = backup_service.get_backup_base_path()
 
@@ -91,9 +87,7 @@ class TestCreateBackup:
         backup_base = tmp_path / "backups"
         backup_base.mkdir()
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.create_backup(sample_world)
 
@@ -109,9 +103,7 @@ class TestCreateBackup:
         world_contents = sample_world.path / "file.txt"
         world_contents.write_text("test content")
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.create_backup(sample_world)
 
@@ -128,9 +120,7 @@ class TestCreateBackup:
         test_file.write_bytes(b"test data")
         backup_base = tmp_path / "backups"
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.create_backup(sample_world)
 
@@ -147,9 +137,7 @@ class TestCreateBackup:
         backup_base = tmp_path / "backups"
         before = datetime.now()
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.create_backup(sample_world)
             after = datetime.now()
@@ -171,9 +159,7 @@ class TestCreateBackup:
         # Arrange
         backup_base = tmp_path / "backups"
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.create_backup(sample_world)
 
@@ -227,9 +213,7 @@ class TestCreateBackup:
             version=[1, 26, 12, 2, 0],
         )
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act 1: Fazer backup do mundo original
             backup1 = backup_service.create_backup(original_world)
 
@@ -261,9 +245,7 @@ class TestListBackups:
         # Arrange
         backup_base = tmp_path / "backups"
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.list_backups(sample_world)
 
@@ -277,9 +259,7 @@ class TestListBackups:
         # Arrange
         backup_base = tmp_path / "backups"
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.list_backups(sample_world)
 
@@ -306,9 +286,7 @@ class TestListBackups:
         for backup_time in backup_times:
             (world_backup_dir / backup_time).mkdir()
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.list_backups(sample_world)
 
@@ -325,9 +303,7 @@ class TestListBackups:
         # Arrange
         backup_base = tmp_path / "backups"
 
-        with patch.object(
-            backup_service, "get_backup_base_path", return_value=backup_base
-        ):
+        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             # Act
             result = backup_service.list_backups(sample_world)
 
@@ -430,18 +406,14 @@ class TestCreateBackupErrors:
 
         with (
             patch.object(service, "get_backup_base_path", return_value=backup_base),
-            patch(
-                "backup_manager_mvp.services.backup_service.shutil.copytree"
-            ) as mock_copytree,
+            patch("backup_manager_mvp.services.backup_service.shutil.copytree") as mock_copytree,
         ):
             mock_copytree.side_effect = OSError("Simulated copy failure")
 
             with pytest.raises(RuntimeError, match="Erro ao criar backup"):
                 service.create_backup(world)
 
-    def test_create_backup_backup_path_exists_gets_removed(
-        self, tmp_path: Path
-    ) -> None:
+    def test_create_backup_backup_path_exists_gets_removed(self, tmp_path: Path) -> None:
         """Teste: Se backup_path existir, é removido e recriado (linhas 73-74)."""
         service = BackupService()
 
@@ -513,9 +485,7 @@ class TestCreateBackupErrors:
 class TestListBackupsErrors:
     """Testes para cobrir casos de erro em list_backups (linhas 130-135)."""
 
-    def test_list_backups_ignores_invalid_timestamp_folders(
-        self, tmp_path: Path
-    ) -> None:
+    def test_list_backups_ignores_invalid_timestamp_folders(self, tmp_path: Path) -> None:
         """Teste: Pastas com timestamp inválido são ignoradas."""
         service = BackupService()
 
@@ -671,9 +641,7 @@ class TestRestoreBackupErrors:
             version=[1, 0, 0, 0, 0],
         )
 
-        with patch(
-            "backup_manager_mvp.services.backup_service.shutil.copytree"
-        ) as mock_copytree:
+        with patch("backup_manager_mvp.services.backup_service.shutil.copytree") as mock_copytree:
             mock_copytree.side_effect = Exception("Copy failed")
 
             with pytest.raises(RuntimeError, match="Erro ao restaurar backup"):
@@ -712,9 +680,11 @@ class TestRestoreBackupErrors:
         def mock_copy2_fail(src, dst):
             raise OSError("Permission denied")
 
-        with patch(
-            "backup_manager_mvp.services.backup_service.shutil.copy2",
-            side_effect=mock_copy2_fail,
+        with (
+            patch(
+                "backup_manager_mvp.services.backup_service.shutil.copy2",
+                side_effect=mock_copy2_fail,
+            ),
+            pytest.raises(RuntimeError, match="Erro ao restaurar backup"),
         ):
-            with pytest.raises(RuntimeError, match="Erro ao restaurar backup"):
-                service.restore_backup(backup, world)
+            service.restore_backup(backup, world)

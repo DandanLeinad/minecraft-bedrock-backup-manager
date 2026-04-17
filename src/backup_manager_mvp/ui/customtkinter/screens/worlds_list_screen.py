@@ -16,7 +16,7 @@
 
 """Tela 1: Lista de mundos."""
 
-from typing import Callable
+from collections.abc import Callable
 
 import customtkinter as ctk
 
@@ -75,9 +75,7 @@ def show_screen_worlds_list(
         for world in worlds:
             # Calcular metadados usando o serviço
             if app and hasattr(app, "world_service"):
-                metadata = app.world_service.get_world_metadata(
-                    world, app.backup_service
-                )
+                metadata = app.world_service.get_world_metadata(world, app.backup_service)
             else:
                 metadata = {
                     "size": "N/A",
@@ -122,9 +120,7 @@ def show_screen_worlds_list(
             backups_label.pack(side="left", padx=(0, 16))
 
             # Último backup
-            last_backup_label = create_metadata_label(
-                metadata_frame, metadata["last_backup"]
-            )
+            last_backup_label = create_metadata_label(metadata_frame, metadata["last_backup"])
             last_backup_label.pack(side="left")
 
             # === BOTÃO ABRIR ===

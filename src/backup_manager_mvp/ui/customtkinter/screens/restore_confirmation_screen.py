@@ -16,7 +16,7 @@
 
 """Tela 3: Confirmação de restauração."""
 
-from typing import Callable
+from collections.abc import Callable
 
 import customtkinter as ctk
 

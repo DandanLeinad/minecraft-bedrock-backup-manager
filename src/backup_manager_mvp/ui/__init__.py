@@ -21,4 +21,4 @@ from backup_manager_mvp.ui.customtkinter.customtkinter_ui import (
     CustomTkinterUIController,
 )
 
-__all__ = ["UIController", "CustomTkinterUIController"]
+__all__ = ["CustomTkinterUIController", "UIController"]

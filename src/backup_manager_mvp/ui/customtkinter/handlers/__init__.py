@@ -31,11 +31,11 @@ from backup_manager_mvp.ui.customtkinter.handlers.world_handlers import (
 )
 
 __all__ = [
-    "on_world_selected",
-    "on_create_backup",
-    "on_backup_selected",
-    "on_sync_backups",
-    "on_restore_backup",
-    "on_cancel_restore",
     "on_back",
+    "on_backup_selected",
+    "on_cancel_restore",
+    "on_create_backup",
+    "on_restore_backup",
+    "on_sync_backups",
+    "on_world_selected",
 ]

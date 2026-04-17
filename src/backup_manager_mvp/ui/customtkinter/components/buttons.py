@@ -16,7 +16,7 @@
 
 """Button component factories."""
 
-from typing import Callable
+from collections.abc import Callable
 
 import customtkinter as ctk
 

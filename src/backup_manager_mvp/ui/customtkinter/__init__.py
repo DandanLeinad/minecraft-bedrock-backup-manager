@@ -43,16 +43,16 @@ from backup_manager_mvp.ui.customtkinter.constants import (
 from backup_manager_mvp.ui.customtkinter.theme import configure_theme
 
 __all__ = [
-    "BackupCache",
-    "COLORS",
-    "BUTTON_HEIGHT",
     "APP_TITLE",
-    "SPACING_SMALL",
-    "SPACING_MEDIUM",
+    "BUTTON_HEIGHT",
+    "COLORS",
     "SPACING_LARGE",
+    "SPACING_MEDIUM",
+    "SPACING_SMALL",
     "WINDOW_MIN_HEIGHT",
     "WINDOW_MIN_WIDTH",
     "WINDOW_PREFERRED_HEIGHT",
     "WINDOW_PREFERRED_WIDTH",
+    "BackupCache",
     "configure_theme",
 ]

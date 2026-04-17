@@ -42,9 +42,9 @@ class BackupCache:
             ttl_seconds: Tempo de vida do cache em segundos (padrão: 60s)
         """
         self.ttl_seconds = ttl_seconds
-        self._cache: dict[str, tuple[list["BackupModel"], float]] = {}
+        self._cache: dict[str, tuple[list[BackupModel], float]] = {}
 
-    def get(self, world_folder_name: str) -> list["BackupModel"] | None:
+    def get(self, world_folder_name: str) -> list[BackupModel] | None:
         """Retorna backups do cache se válido, None caso contrário.
 
         Args:
@@ -64,7 +64,7 @@ class BackupCache:
         logger.debug(f"Cache hit para {world_folder_name}")
         return backups
 
-    def set(self, world_folder_name: str, backups: list["BackupModel"]) -> None:
+    def set(self, world_folder_name: str, backups: list[BackupModel]) -> None:
         """Armazena backups no cache com timestamp.
 
         Args:

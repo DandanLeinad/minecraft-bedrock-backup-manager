@@ -26,7 +26,7 @@ Baseada em CustomTkinter 5.2.2 oficial:
 """
 
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 import customtkinter as ctk
 
@@ -95,9 +95,7 @@ class CustomTkinterUIController(UIController):
         # === CALLBACKS ===
         self._callback_world_selected: Callable[[WorldModel], None] | None = None
         self._callback_create_backup: Callable[[WorldModel], None] | None = None
-        self._callback_restore_backup: (
-            Callable[[BackupModel, WorldModel], None] | None
-        ) = None
+        self._callback_restore_backup: Callable[[BackupModel, WorldModel], None] | None = None
         self._callback_back: Callable[[], None] | None = None
 
         # === ESTADO ===
@@ -143,7 +141,7 @@ class CustomTkinterUIController(UIController):
                 logger.error(f"Erro ao carregar mundos: {e}", exc_info=True)
                 self.show_error_dialog(
                     "Erro ao carregar",
-                    f"Erro ao carregar lista de mundos: {str(e)}",
+                    f"Erro ao carregar lista de mundos: {e!s}",
                 )
 
         self.main_window.mainloop()
@@ -166,13 +164,9 @@ class CustomTkinterUIController(UIController):
             on_world_selected(world, self._callback_world_selected)
 
         # Chamar função extraída
-        show_screen_worlds_list(
-            self._main_frame, worlds, handle_world_selected, self.app
-        )
+        show_screen_worlds_list(self._main_frame, worlds, handle_world_selected, self.app)
 
-    def show_screen_world_details(
-        self, world: WorldModel, backups: list[BackupModel]
-    ) -> None:
+    def show_screen_world_details(self, world: WorldModel, backups: list[BackupModel]) -> None:
         """Exibe tela 2: Detalhes do mundo (delegado ao módulo extraído)."""
         self._current_world = world
         self._backups_list = backups
@@ -217,9 +211,7 @@ class CustomTkinterUIController(UIController):
         self._backup_create_btn = backup_create_btn_ref.get("button")
         self._sync_btn = sync_btn_ref.get("button")
 
-    def show_screen_restore_confirmation(
-        self, world: WorldModel, backup: BackupModel
-    ) -> None:
+    def show_screen_restore_confirmation(self, world: WorldModel, backup: BackupModel) -> None:
         """Exibe diálogo de confirmação de restauração (delegado ao módulo extraído)."""
         self._current_world = world
         self._current_backup = backup
@@ -295,15 +287,11 @@ class CustomTkinterUIController(UIController):
 
     # ========== CALLBACKS (REGISTRO) ==========
 
-    def set_callback_world_selected(
-        self, callback: Callable[[WorldModel], None]
-    ) -> None:
+    def set_callback_world_selected(self, callback: Callable[[WorldModel], None]) -> None:
         """Define callback para seleção de mundo."""
         self._callback_world_selected = callback
 
-    def set_callback_create_backup(
-        self, callback: Callable[[WorldModel], None]
-    ) -> None:
+    def set_callback_create_backup(self, callback: Callable[[WorldModel], None]) -> None:
         """Define callback para criação de backup."""
         self._callback_create_backup = callback
 

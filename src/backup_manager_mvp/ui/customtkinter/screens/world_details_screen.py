@@ -16,7 +16,7 @@
 
 """Tela 2: Detalhes do mundo e seus backups."""
 
-from typing import Callable
+from collections.abc import Callable
 
 import customtkinter as ctk
 
@@ -242,9 +242,7 @@ def show_screen_world_details(
             )
             sep.pack(side="left", padx=(0, 12))
 
-            create_metadata_label(info_frame_backup, f"📊 {backup.size_display}").pack(
-                side="left"
-            )
+            create_metadata_label(info_frame_backup, f"📊 {backup.size_display}").pack(side="left")
 
             # === BOTÃO RESTAURAR ===
             restore_btn = create_action_button(

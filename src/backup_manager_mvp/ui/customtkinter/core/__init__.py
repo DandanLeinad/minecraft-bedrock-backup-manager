@@ -19,4 +19,4 @@
 from backup_manager_mvp.ui.customtkinter.core.disclaimer import DisclaimerDialog
 from backup_manager_mvp.ui.customtkinter.core.window import WindowManager
 
-__all__ = ["WindowManager", "DisclaimerDialog"]
+__all__ = ["DisclaimerDialog", "WindowManager"]

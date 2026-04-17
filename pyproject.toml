@@ -110,6 +110,13 @@ dev-debug = "uv run python -m backup_manager_mvp.main -vv"
 license-add = "uv run python scripts/add_license_header.py"
 license-validate = "uv run python scripts/validate_license_header.py"
 
+# Ruff commands (using uv run)
+ruff-check = "uv run ruff check ."
+ruff-fix = "uv run ruff check . --fix"
+ruff-format-check = "uv run ruff format . --check"
+ruff-format = "uv run ruff format ."
+ruff-all = "uv run ruff check . --fix && uv run ruff format ."
+
 # Versionamento automático
 bump-major = "bump-my-version bump major"
 bump-minor = "bump-my-version bump minor"
