@@ -1,18 +1,49 @@
-name: Tests
+name: Tests & Quality
 
 on:
   push:
-    branches: [main, dev]
+    branches: [ main ]
   pull_request:
-    branches: [main, dev]
+    branches: [ main ]
 
 jobs:
-  test:
+  quality:
+    name: Linting & Type Checking
     runs-on: windows-latest
-
     strategy:
       matrix:
-        python-version: ["3.14"]
+        python-version: [ "3.14" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Lint with Ruff
+        run: uv run task lint
+
+      - name: Format check with Ruff
+        run: uv run ruff format src/ tests/ --check
+
+      - name: Type check with Pyright
+        run: uv run task type-check
+        continue-on-error: true
+
+  tests:
+    name: Tests & Coverage
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [ "3.14" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -29,10 +60,11 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run pytest
-        run: uv run pytest --cov=src --cov-report=xml
+        run: uv run task test-cov
 
-      - name: Upload coverage
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
+          verbose: true

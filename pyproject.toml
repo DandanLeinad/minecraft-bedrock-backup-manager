@@ -96,7 +96,9 @@ bump-major = "bump-my-version bump major"
 bump-minor = "bump-my-version bump minor"
 bump-patch = "bump-my-version bump patch"
 bump-beta = "bump-my-version bump pre_l"
+bump-rc = "bump-my-version bump pre_l --new-version 0.1.0-rc"
 version-show = "bump-my-version show-bump"
+version = "git describe --tags"
 
 # Build tasks com PyInstaller (novo sistema otimizado)
 build = "python build.py"

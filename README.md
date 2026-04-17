@@ -110,8 +110,11 @@ src/backup_manager_mvp/
 # Instalar dependências (incluindo dev)
 uv sync --all-groups
 
+# Instalar pre-commit hooks
+pre-commit install
+
 # Validar setup
-uv run pytest tests/ -q
+uv run task test
 ```
 
 ### Executar
@@ -122,60 +125,150 @@ uv run task dev
 
 # Modo debug (verbose logging)
 uv run task dev-debug
+```
 
+### Testes & Qualidade
+
+```bash
 # Testes
-uv run pytest tests/ -vv
+uv run task test
 
 # Testes com coverage
 uv run task test-cov
 
-# Lint
+# Lint (Ruff)
 uv run task lint
 
-# Format
+# Format (Ruff)
 uv run task format
 
-# Type check
+# Type check (Pyright)
 uv run task type-check
+
+# Todos os hooks pre-commit
+pre-commit run --all-files
 ```
 
 ### Build
 
 ```bash
 # Build com PyInstaller
-uv run task build-pyinstaller
+python build.py
 
-# Build com limpeza
-uv run task build-pyinstaller-clean
+# Build com debug console
+python build.py --debug
+
+# Clean + Build
+python build.py --clean
+```
+
+### Versionamento
+
+```bash
+# Ver o que vai mudar (sem executar)
+uv run task version-show
+
+# Bump de patch (0.1.0-beta → 0.1.1-beta)
+uv run task bump-patch
+
+# Bump de minor (0.1.0-beta → 0.2.0-beta)
+uv run task bump-minor
+
+# Bump de major (0.1.0-beta → 1.0.0-beta)
+uv run task bump-major
+
+# Remover pre-release (0.1.0-beta → 0.1.0)
+uv run task bump-beta
+
+# Ver versão atual
+uv run task version
 ```
 
 ---
 
 ## 🤝 Contribuindo
 
-**Hobby Project Policy:** Este é um projeto pessoal mantido por uma pessoa. **Por enquanto, não estou aceitando Pull Requests.**
+### Workflow - Trunk-Based Development
 
-### Como Participar?
+Este projeto segue **Trunk-Based Development** com branches curtas (máx 3-5 dias):
 
-✅ **Issues** - Bem-vindas! (reporte bugs, sugestões)
-✅ **Discussions** - Ideias, feedback e perguntas
-❌ **PRs** - Não aceitando por enquanto
+1. **Criar branch** - `feature/nome`, `fix/nome`, `chore/nome`
+2. **Commits pequenos** - Cada commit compila/testa
+3. **PR em main** - Testes automáticos rodam
+4. **Merge rápido** - Após review
+5. **Delete branch** - Cleanup
 
-### Por Que Não PRs Agora?
+**Workflow Completo:**
 
-- É um hobby project (tempo limitado)
-- Mantém o código mais focado e consistente
-- Permite que eu trabalhe no ritmo próprio
-- Se o projeto crescer, revisarei essa política
+```bash
+# 1. Atualizar main
+git checkout main
+git pull origin main
 
-### Se o Projeto Crescer
+# 2. Criar feature
+git checkout -b feature/nome-descritivo
 
-Quando/se o projeto ganhar tração, abro para PRs com:
+# 3. Desenvolver (commits pequenos)
+git add .
+git commit -m "feat: descrição"
 
-- Workflow de branches (`develop` + `feature/*`)
-- Conventional Commits (`feat:`, `fix:`, etc.)
+# 4. Push
+git push origin feature/nome-descritivo
 
-**Por enquanto: issues e feedback são ouro! 🙏**
+# 5. Abrir PR no GitHub
+# → Testes rodam automaticamente
+# → Code review
+# → Merge quando aprovado
+
+# 6. Cleanup
+git branch -d feature/nome-descritivo
+git push origin --delete feature/nome-descritivo
+```
+
+**Commits:** Seguem [Conventional Commits](https://www.conventionalcommits.org/)
+
+```
+feat:  nova funcionalidade
+fix:   correção de bug
+docs:  documentação
+style: formatação
+test:  testes
+chore: dependências, build
+```
+
+### Feature Flags
+
+Para features inacabadas, use flags:
+
+```python
+from backup_manager_mvp.config import FEATURE_FLAGS
+
+if FEATURE_FLAGS.ENABLE_AUTO_BACKUP:
+    # Feature em desenvolvimento
+    pass
+```
+
+Ativar em desenvolvimento:
+
+```bash
+FF_AUTO_BACKUP=true uv run python -m backup_manager_mvp.main
+```
+
+Veja [FEATURE_FLAGS.md](docs/FEATURE_FLAGS.md) para guia completo.
+
+### Documentação
+
+- [Trunk-Based Development Guide](docs/TRUNK_BASED_DEVELOPMENT.md)
+- [Feature Flags Guide](docs/FEATURE_FLAGS.md)
+- [Short Branches Best Practices](docs/SHORT_BRANCHES.md)
+- [TESTING.md](docs/TESTING.md)
+- [DEVELOPMENT.md](docs/DEVELOPMENT.md)
+
+### Issues e Feedback
+
+✅ **Issues** - Bugs, sugestões, discussões
+✅ **Pull Requests** - Contribuições bem-vindas!
+✅ **Discussions** - Ideias e feedback
 
 ---
 
@@ -203,11 +296,23 @@ Veja [CHANGELOG.md](CHANGELOG.md) para histórico completo.
 
 - ⚠️ Backups são **cópias simples** de arquivo (copy-pasta)
 - ⚠️ Sem compressão ou deduplicação
-- ⚠️ Sem agendamento automático
-- ⚠️ Sem sincronização com cloud
 - ⚠️ Manutenção conforme tempo (hobby project)
 
-Essas features podem chegar em versões futuras se houver feedback/interesse e eu tiver tempo.
+### Features Planejadas (Em Desenvolvimento)
+
+Essas features estão em desenvolvimento usando **Feature Flags** (desativadas por padrão):
+
+- 🚧 Auto-backup em background (`FF_AUTO_BACKUP`)
+- 🚧 Sincronização com cloud (`FF_CLOUD_SYNC`)
+- 🚧 Preview antes de restaurar (`FF_RESTORE_PREVIEW`)
+- 🚧 Operações paralelas (`FF_MULTI_THREADING`)
+- 🚧 Logs avançados para debug (`FF_ADVANCED_LOGGING`)
+
+Ative no desenvolvimento:
+
+```bash
+FF_AUTO_BACKUP=true uv run python -m backup_manager_mvp.main
+```
 
 ---
 
