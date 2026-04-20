@@ -46,9 +46,7 @@ class ToastManager:
         self._main_frame = main_frame
         self._toast_label: ctk.CTkLabel | None = None
 
-    def show_toast(
-        self, message: str, success: bool = True, duration: int = 2000
-    ) -> None:
+    def show_toast(self, message: str, success: bool = True, duration: int = 2000) -> None:
         """Exibe toast notification temporal.
 
         Args:

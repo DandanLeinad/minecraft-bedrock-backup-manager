@@ -20,23 +20,10 @@ repos:
       - id: ruff
         args:
           [
-            --fix,
-            --show-fixes,
-            --select=E,
-            F,
-            W,
-            I,
-            N,
-            UP,
-            B,
-            A,
-            C4,
-            PIE,
-            SIM,
-            RUF,
-            --ignore=E501,
-            UP009,
-            B904,
+            "--fix",
+            "--show-fixes",
+            "--select=E,F,W,I,N,UP,B,A,C4,PIE,SIM,RUF",
+            "--ignore=E501,UP009,B904",
           ]
       - id: ruff-format
 

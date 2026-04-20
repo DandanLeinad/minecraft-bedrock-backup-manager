@@ -137,9 +137,7 @@ class TestListWorldsMultipleSources:
             worlds = service.list_worlds()
 
         # Filtrar mundos com account_id que NÃO são especiais
-        normal_worlds = [
-            w for w in worlds if w.account_id not in ("UWP-Store", "Shared")
-        ]
+        normal_worlds = [w for w in worlds if w.account_id not in ("UWP-Store", "Shared")]
         # Se houver mundos normais, devem estar lá
         # (Este teste passa mesmo se não houver mundos no sistema)
         assert isinstance(normal_worlds, list)

@@ -49,15 +49,11 @@ class FeatureFlags:
 
     # Features experimentais
     ENABLE_MULTI_THREADING: bool = _parse_bool(os.getenv("FF_MULTI_THREADING", "false"))
-    ENABLE_ADVANCED_LOGGING: bool = _parse_bool(
-        os.getenv("FF_ADVANCED_LOGGING", "false")
-    )
+    ENABLE_ADVANCED_LOGGING: bool = _parse_bool(os.getenv("FF_ADVANCED_LOGGING", "false"))
 
     def __post_init__(self):
         """Log flags ativadas no init."""
-        enabled_flags = [
-            name for name in self.__dataclass_fields__ if getattr(self, name) is True
-        ]
+        enabled_flags = [name for name in self.__dataclass_fields__ if getattr(self, name) is True]
         if enabled_flags:
             logger.info(f"Feature flags ativadas: {', '.join(enabled_flags)}")
 

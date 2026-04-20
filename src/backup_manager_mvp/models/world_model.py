@@ -36,9 +36,7 @@ class WorldModel(BaseModel):
     folder_name: str = Field(..., min_length=1, max_length=12)  # Nome da pasta do mundo
     levelname: str = Field(..., min_length=1)  # Nome do mundo exibido no jogo
     path: Path = Field(...)  # Caminho completo para a pasta do mundo
-    account_id: str = Field(
-        ..., min_length=1
-    )  # ID da conta da Microsoft associada ao mundo
+    account_id: str = Field(..., min_length=1)  # ID da conta da Microsoft associada ao mundo
     version: list[int] = Field(
         ..., min_length=5, max_length=5
     )  # Versão do Mundo (lastOpenedWithVersion)
