@@ -73,9 +73,7 @@ class TestEnsureDirectories:
         """ensure_directories deve criar BACKUPS_ROOT."""
         # Mock BACKUPS_ROOT para tmp_path
         test_backups_root = tmp_path / "TestBackups"
-        monkeypatch.setattr(
-            "backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root
-        )
+        monkeypatch.setattr("backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root)
 
         # Não deve existir ainda
         assert not test_backups_root.exists()
@@ -93,12 +91,8 @@ class TestEnsureDirectories:
         test_backups_root = tmp_path / "TestBackups"
         test_backups_dir = test_backups_root / "backups"
 
-        monkeypatch.setattr(
-            "backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root
-        )
-        monkeypatch.setattr(
-            "backup_manager_mvp.utils.paths.BACKUPS_DIR", test_backups_dir
-        )
+        monkeypatch.setattr("backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root)
+        monkeypatch.setattr("backup_manager_mvp.utils.paths.BACKUPS_DIR", test_backups_dir)
 
         # Não deve existir ainda
         assert not test_backups_dir.exists()
@@ -115,12 +109,8 @@ class TestEnsureDirectories:
         test_backups_root = tmp_path / "TestBackups"
         test_backups_dir = test_backups_root / "backups"
 
-        monkeypatch.setattr(
-            "backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root
-        )
-        monkeypatch.setattr(
-            "backup_manager_mvp.utils.paths.BACKUPS_DIR", test_backups_dir
-        )
+        monkeypatch.setattr("backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root)
+        monkeypatch.setattr("backup_manager_mvp.utils.paths.BACKUPS_DIR", test_backups_dir)
 
         # Primeira chamada
         ensure_directories()
@@ -138,12 +128,8 @@ class TestEnsureDirectories:
         test_backups_root = tmp_path / "deep" / "nested" / "path" / "TestBackups"
         test_backups_dir = test_backups_root / "backups"
 
-        monkeypatch.setattr(
-            "backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root
-        )
-        monkeypatch.setattr(
-            "backup_manager_mvp.utils.paths.BACKUPS_DIR", test_backups_dir
-        )
+        monkeypatch.setattr("backup_manager_mvp.utils.paths.BACKUPS_ROOT", test_backups_root)
+        monkeypatch.setattr("backup_manager_mvp.utils.paths.BACKUPS_DIR", test_backups_dir)
 
         # Chamar ensure_directories
         ensure_directories()

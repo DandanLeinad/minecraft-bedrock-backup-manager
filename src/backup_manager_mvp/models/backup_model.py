@@ -72,9 +72,7 @@ class BackupModel(BaseModel):
     def size_display(self) -> str:
         """Retorna o tamanho do backup em formato legível."""
         try:
-            total_size = sum(
-                f.stat().st_size for f in self.backup_path.rglob("*") if f.is_file()
-            )
+            total_size = sum(f.stat().st_size for f in self.backup_path.rglob("*") if f.is_file())
             if total_size < 1024:
                 return f"{total_size} B"
             elif total_size < 1024 * 1024:

@@ -96,9 +96,7 @@ class WindowManager:
 
     def _setup_notifications_frame(self) -> None:
         """Cria o frame para notificações."""
-        self._notifications_frame = ctk.CTkFrame(
-            self.main_window, fg_color="transparent"
-        )
+        self._notifications_frame = ctk.CTkFrame(self.main_window, fg_color="transparent")
         # NÃO empacotar aqui - apenas quando houver notificação
 
     def _setup_main_frame(self) -> None:

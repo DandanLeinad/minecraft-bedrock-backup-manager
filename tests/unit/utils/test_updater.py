@@ -212,10 +212,7 @@ class TestUpdateChecker:
             update_info = checker.get_update_info()
             assert update_info["current"] == "v0.1.0-beta"
             assert update_info["update_url"] == "https://github.com/owner/repo/releases"
-            assert (
-                update_info["changelog_url"]
-                == "https://github.com/owner/repo/CHANGELOG.md"
-            )
+            assert update_info["changelog_url"] == "https://github.com/owner/repo/CHANGELOG.md"
 
 
 class TestVersionComparisons:

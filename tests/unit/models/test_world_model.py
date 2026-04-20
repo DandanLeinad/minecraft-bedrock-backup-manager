@@ -100,9 +100,7 @@ def test_world_model_valid(
         "folder_name_missing_padding",
     ],
 )
-def test_world_model_validation_error(
-    field, invalid_value, test_id, make_invalid_world_data
-):
+def test_world_model_validation_error(field, invalid_value, test_id, make_invalid_world_data):
     """Testa que WorldModel rejeita diversos valores inválidos.
 
     Esta função consolidou 22 testes individuais em 1 função parametrizada.

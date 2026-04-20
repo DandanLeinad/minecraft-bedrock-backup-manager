@@ -134,11 +134,11 @@ class BackupService:
                         backup_path=backup_folder,
                     )
                     backups.append(backup)
-                except (ValueError, OSError):
+                except ValueError, OSError:
                     # Ignorar pastas com nomes inválidos
                     continue
 
-        except (OSError, PermissionError):
+        except OSError, PermissionError:
             return []
 
         # Ordenar do mais recente ao mais antigo

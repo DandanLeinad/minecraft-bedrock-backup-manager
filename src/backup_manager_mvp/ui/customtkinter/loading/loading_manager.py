@@ -84,9 +84,7 @@ class LoadingManager:
                 )
 
             if self._loading_label and self._loading_label.winfo_exists():
-                self._loading_label.configure(
-                    text=f"{self._spinner_frames[0]} {message}"
-                )
+                self._loading_label.configure(text=f"{self._spinner_frames[0]} {message}")
                 self._loading_label.pack(pady=20)
                 self._update_spinner()  # Iniciar animação
                 self.main_window.update()
