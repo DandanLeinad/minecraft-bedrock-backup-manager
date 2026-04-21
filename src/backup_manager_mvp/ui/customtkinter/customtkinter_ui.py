@@ -31,6 +31,7 @@ from collections.abc import Callable
 import customtkinter as ctk
 
 from backup_manager_mvp.models.backup_model import BackupModel
+from backup_manager_mvp.models.progress_model import ProgressModel
 from backup_manager_mvp.models.world_model import WorldModel
 from backup_manager_mvp.ui.base import UIController
 from backup_manager_mvp.ui.customtkinter.cache import BackupCache
@@ -43,6 +44,7 @@ from backup_manager_mvp.ui.customtkinter.handlers import (
 )
 from backup_manager_mvp.ui.customtkinter.loading import LoadingManager
 from backup_manager_mvp.ui.customtkinter.notifications import ToastManager
+from backup_manager_mvp.ui.customtkinter.progress_widget import ProgressBarWidget
 from backup_manager_mvp.ui.customtkinter.screens import (
     show_screen_restore_confirmation,
     show_screen_world_details,
@@ -91,6 +93,7 @@ class CustomTkinterUIController(UIController):
         self._toast_manager: ToastManager | None = None
         self._loading_manager: LoadingManager | None = None
         self._disclaimer_dialog: DisclaimerDialog | None = None
+        self._progress_widget: ProgressBarWidget | None = None
 
         # === CALLBACKS ===
         self._callback_world_selected: Callable[[WorldModel], None] | None = None
@@ -266,6 +269,38 @@ class CustomTkinterUIController(UIController):
         """Esconde label de loading."""
         if self._loading_manager:
             self._loading_manager.hide_loading()
+
+    def show_progress_bar(self) -> None:
+        """Exibe barra de progresso para operações de backup/restore."""
+        if self._progress_widget is None:
+            self._progress_widget = ProgressBarWidget(self._main_frame)
+            self._progress_widget.grid(
+                row=10, column=0, columnspan=2, padx=20, pady=10, sticky="nsew"
+            )
+        else:
+            # Se o widget já existe, apenas o torna visível
+            self._progress_widget.grid(
+                row=10, column=0, columnspan=2, padx=20, pady=10, sticky="nsew"
+            )
+
+        if self.main_window:
+            self.main_window.update_idletasks()
+
+    def hide_progress_bar(self) -> None:
+        """Esconde barra de progresso."""
+        if self._progress_widget and self._progress_widget.winfo_exists():
+            self._progress_widget.grid_forget()
+
+        if self.main_window:
+            self.main_window.update_idletasks()
+
+    def update_progress(self, progress: ProgressModel) -> None:
+        """Atualiza a barra de progresso com dados."""
+        if self._progress_widget and self._progress_widget.winfo_exists():
+            self._progress_widget.update_progress(progress)
+
+        if self.main_window:
+            self.main_window.update_idletasks()
 
     def disable_buttons(self) -> None:
         """Desabilita botões de ação."""
