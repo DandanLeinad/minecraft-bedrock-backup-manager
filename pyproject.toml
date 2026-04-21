@@ -8,7 +8,7 @@ python-downloads = "manual"
 
 [project]
 name = "minecraft-bedrock-backup-manager"
-version = "0.1.0-beta"
+version = "0.2.0-beta"
 description = "NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT. Gerenciador de backups de mundos Minecraft Bedrock Edition para Windows 10/11"
 readme = "README.md"
 requires-python = ">=3.14"
