@@ -152,14 +152,21 @@ class CustomTkinterUIController(UIController):
     def _clear_frame(self, frame: ctk.CTkFrame) -> None:
         """Limpa todos os widgets de um frame."""
         for widget in frame.winfo_children():
-            # Não apagar _loading_label e _toast_label se estiverem visíveis
-            if widget is not self._loading_label and widget is not self._toast_label:
+            # Não apagar _loading_label, _toast_label e _progress_widget se estiverem visíveis
+            if (
+                widget is not self._loading_label
+                and widget is not self._toast_label
+                and widget is not self._progress_widget
+            ):
                 widget.destroy()
 
     # ========== TELAS ==========
 
     def show_screen_worlds_list(self, worlds: list[WorldModel]) -> None:
         """Exibe tela 1: Lista de mundos (delegado ao módulo extraído)."""
+        # Esconder barra de progresso quando muda de tela
+        self.hide_progress_bar()
+
         self._worlds_list = worlds
 
         # Criar callback adaptado para usar self._callback_world_selected
@@ -171,6 +178,9 @@ class CustomTkinterUIController(UIController):
 
     def show_screen_world_details(self, world: WorldModel, backups: list[BackupModel]) -> None:
         """Exibe tela 2: Detalhes do mundo (delegado ao módulo extraído)."""
+        # Esconder barra de progresso quando muda de tela
+        self.hide_progress_bar()
+
         self._current_world = world
         self._backups_list = backups
 
@@ -216,6 +226,9 @@ class CustomTkinterUIController(UIController):
 
     def show_screen_restore_confirmation(self, world: WorldModel, backup: BackupModel) -> None:
         """Exibe diálogo de confirmação de restauração (delegado ao módulo extraído)."""
+        # Esconder barra de progresso quando muda de tela
+        self.hide_progress_bar()
+
         self._current_world = world
         self._current_backup = backup
 
@@ -276,8 +289,14 @@ class CustomTkinterUIController(UIController):
             self._progress_widget = ProgressBarWidget(self._main_frame)
             self._progress_widget.pack(fill="x", padx=20, pady=10)
         else:
-            # Se o widget já existe, apenas o torna visível
-            self._progress_widget.pack(fill="x", padx=20, pady=10)
+            # Se o widget existe mas não está mais no container (p.ex. após _clear_frame),
+            # verificar se ele ainda tem um parent
+            if self._progress_widget.winfo_exists() and self._progress_widget.winfo_manager() == "":
+                # Widget existe mas não está packed/gridded, re-adicionar
+                self._progress_widget.pack(fill="x", padx=20, pady=10)
+            elif self._progress_widget.winfo_exists():
+                # Widget existe e está no container, apenas mostrar se estava escondido
+                self._progress_widget.pack(fill="x", padx=20, pady=10)
 
         if self.main_window:
             self.main_window.update_idletasks()
