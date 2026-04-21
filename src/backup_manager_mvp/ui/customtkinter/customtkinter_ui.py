@@ -255,14 +255,34 @@ class CustomTkinterUIController(UIController):
 
     # ========== DIÁLOGOS ==========
 
+    @staticmethod
+    def _remove_emojis(text: str) -> str:
+        """Remove emojis de um texto para evitar erro de encoding no Windows.
+
+        Args:
+            text: Texto que pode conter emojis
+
+        Returns:
+            Texto sem emojis
+        """
+        # Remove emojis comuns usados na aplicação
+        emojis = ["✅", "✨", "❌", "📁", "💾", "⚠️"]
+        result = text
+        for emoji in emojis:
+            result = result.replace(emoji, "")
+        # Remove múltiplos espaços
+        result = " ".join(result.split())
+        return result
+
     def show_info_dialog(self, title: str, message: str) -> None:
         """Exibe diálogo informativo com toast."""
         # Toast rápido
         if self._toast_manager:
             self._toast_manager.show_toast(title, success=True, duration=2000)
         # Log completo (remover emojis para evitar erro de encoding no Windows)
-        log_title = title.replace("✅", "").replace("✨", "").strip()
-        logger.info(f"{log_title}: {message}")
+        log_title = self._remove_emojis(title)
+        log_message = self._remove_emojis(message)
+        logger.info(f"{log_title}: {log_message}")
 
     def show_error_dialog(self, title: str, message: str) -> None:
         """Exibe diálogo de erro com toast."""
@@ -270,8 +290,9 @@ class CustomTkinterUIController(UIController):
         if self._toast_manager:
             self._toast_manager.show_toast(title, success=False, duration=3000)
         # Log completo (remover emojis para evitar erro de encoding no Windows)
-        log_title = title.replace("❌", "").strip()
-        logger.error(f"{log_title}: {message}")
+        log_title = self._remove_emojis(title)
+        log_message = self._remove_emojis(message)
+        logger.error(f"{log_title}: {log_message}")
 
     # ========== LOADING ==========
 
@@ -287,6 +308,7 @@ class CustomTkinterUIController(UIController):
 
     def show_progress_bar(self) -> None:
         """Exibe barra de progresso para operações de backup/restore."""
+        logger.debug("Showing progress bar...")
         if self._progress_widget is None:
             self._progress_widget = ProgressBarWidget(self._main_frame)
             self._progress_widget.pack(fill="x", padx=20, pady=10)
@@ -305,6 +327,7 @@ class CustomTkinterUIController(UIController):
 
     def hide_progress_bar(self) -> None:
         """Esconde barra de progresso."""
+        logger.debug("Hiding progress bar...")
         if self._progress_widget and self._progress_widget.winfo_exists():
             self._progress_widget.pack_forget()
 

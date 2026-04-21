@@ -23,9 +23,13 @@ Baseado na documentação de CustomTkinter:
 https://customtkinter.tomschimansky.com/documentation/widgets/progressbar
 """
 
+import logging
+
 import customtkinter as ctk
 
 from backup_manager_mvp.models.progress_model import ProgressModel
+
+logger = logging.getLogger(__name__)
 
 
 class ProgressBarWidget(ctk.CTkFrame):
@@ -122,6 +126,9 @@ class ProgressBarWidget(ctk.CTkFrame):
 
         self._stage_label.configure(text=stage_text)
         self._percentage_label.configure(text=percentage_text)
+
+        # Log visual para debug
+        logger.debug(f"Progress Bar: {percentage_text} | {stage_text}")
 
         # Atualizar UI (evita freezing em operações longas)
         self.update_idletasks()

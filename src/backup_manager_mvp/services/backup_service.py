@@ -78,9 +78,12 @@ class BackupService:
 
         # Criar diretórios se não existirem
         backup_path.mkdir(parents=True, exist_ok=True)
+        # Garantir que a pasta base de backups do mundo exista
+        world_backup_dir.mkdir(parents=True, exist_ok=True)
 
         # Copiar a pasta do mundo para o backup
         # Primeiro, removemos a pasta de destino se ela existir (normalmente não existe)
+        # Limpar destino se por algum motivo já existir (evita erro no copytree)
         if backup_path.exists():
             shutil.rmtree(backup_path)
 

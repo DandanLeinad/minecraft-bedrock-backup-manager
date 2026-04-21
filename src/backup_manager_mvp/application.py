@@ -19,6 +19,7 @@
 import logging
 
 from backup_manager_mvp.models.backup_model import BackupModel
+from backup_manager_mvp.models.progress_model import ProgressModel
 from backup_manager_mvp.models.world_model import WorldModel
 from backup_manager_mvp.services.backup_service import BackupService
 from backup_manager_mvp.services.world_service import WorldService
@@ -106,7 +107,7 @@ class BackupManagerApp:
             self.ui.disable_buttons()
 
             # Criar callback de progresso
-            def on_progress(progress) -> None:  # progress: ProgressModel
+            def on_progress(progress: ProgressModel) -> None:
                 self.ui.update_progress(progress)
 
             backup = self.backup_service.create_backup(world, progress_callback=on_progress)

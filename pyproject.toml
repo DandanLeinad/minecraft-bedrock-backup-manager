@@ -90,6 +90,7 @@ ignore = [
     "B904",
 ] # UP009: removes unnecessary parentheses; B904: raise from err
 
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
