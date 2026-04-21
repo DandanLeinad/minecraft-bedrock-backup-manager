@@ -16,10 +16,12 @@
 
 import logging
 import shutil
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
 from backup_manager_mvp.models.backup_model import BackupModel
+from backup_manager_mvp.models.progress_model import ProgressModel
 from backup_manager_mvp.models.world_model import WorldModel
 from backup_manager_mvp.utils.paths import BACKUPS_DIR
 
@@ -41,11 +43,18 @@ class BackupService:
         """
         return BACKUPS_DIR
 
-    def create_backup(self, world: WorldModel) -> BackupModel:
-        """Cria um backup de um mundo.
+    def create_backup(
+        self,
+        world: WorldModel,
+        progress_callback: Callable[[ProgressModel], None] | None = None,
+    ) -> BackupModel:
+        """Cria um backup de um mundo com rastreamento de progresso opcional.
 
         Args:
             world (WorldModel): Modelo do mundo a ser feito backup.
+            progress_callback: Função chamada com ProgressModel durante a cópia.
+                              Assinatura: callback(progress: ProgressModel) -> None
+                              Opcional, pode ser None.
 
         Returns:
             BackupModel: Modelo contendo informações sobre o backup criado.
@@ -56,6 +65,7 @@ class BackupService:
             - Estrutura: backup_base / {folder_name} / {YYYY-MM-DD_HH-MM-SS}
             - O conteúdo completo da pasta do mundo é copiado
             - Se a pasta de backup não existir, é criada automaticamente
+            - Progress callback é chamado durante a cópia de arquivos
         """
         # Gerar timestamp para o backup
         now = datetime.now()
@@ -75,8 +85,23 @@ class BackupService:
             shutil.rmtree(backup_path)
 
         try:
+            # Reportar início da operação
+            if progress_callback:
+                progress_callback(ProgressModel(current=0, total=1, stage="Preparando backup..."))
+
             # Copiar todo o conteúdo do mundo
+            # TODO: Implementar cópia com rastreamento de arquivos individuais
             shutil.copytree(world.path, backup_path, dirs_exist_ok=True)
+
+            # Reportar conclusão
+            if progress_callback:
+                progress_callback(
+                    ProgressModel(
+                        current=1,
+                        total=1,
+                        stage=f"Backup concluído: {backup_path.name}",
+                    )
+                )
         except Exception as e:
             # Se falhar, tentar remover a pasta criada
             if backup_path.exists():
