@@ -19,6 +19,7 @@
 import logging
 
 from backup_manager_mvp.models.backup_model import BackupModel
+from backup_manager_mvp.models.progress_model import ProgressModel
 from backup_manager_mvp.models.world_model import WorldModel
 from backup_manager_mvp.services.backup_service import BackupService
 from backup_manager_mvp.services.world_service import WorldService
@@ -101,15 +102,19 @@ class BackupManagerApp:
         try:
             logger.info(f"Criando backup para: {world.levelname}")
 
-            # Mostrar loading e desabilitar botões
-            self.ui.show_loading(f"Criando backup de '{world.levelname}'...")
+            # Mostrar barra de progresso e desabilitar botões
+            self.ui.show_progress_bar()
             self.ui.disable_buttons()
 
-            backup = self.backup_service.create_backup(world)
+            # Criar callback de progresso
+            def on_progress(progress: ProgressModel) -> None:
+                self.ui.update_progress(progress)
+
+            backup = self.backup_service.create_backup(world, progress_callback=on_progress)
             logger.info(f"Backup criado com sucesso: {backup.backup_path}")
 
-            # Esconder loading e reabilitar botões
-            self.ui.hide_loading()
+            # Esconder barra de progresso e reabilitar botões
+            self.ui.hide_progress_bar()
             self.ui.enable_buttons()
 
             self.ui.show_info_dialog(
@@ -122,8 +127,8 @@ class BackupManagerApp:
         except Exception as e:
             logger.error(f"Erro ao criar backup: {e}", exc_info=True)
 
-            # Esconder loading e reabilitar botões mesmo em erro
-            self.ui.hide_loading()
+            # Esconder barra de progresso e reabilitar botões mesmo em erro
+            self.ui.hide_progress_bar()
             self.ui.enable_buttons()
 
             self.ui.show_error_dialog(
@@ -136,17 +141,19 @@ class BackupManagerApp:
         try:
             logger.info(f"Restaurando backup de {world.levelname} de {backup.created_at}")
 
-            # Mostrar loading e desabilitar botões
-            self.ui.show_loading(
-                f"Restaurando mundo '{world.levelname}'...\n\nIsso pode levar alguns minutos..."
-            )
+            # Mostrar barra de progresso e desabilitar botões
+            self.ui.show_progress_bar()
             self.ui.disable_buttons()
 
-            self.backup_service.restore_backup(backup, world)
+            # Criar callback de progresso
+            def on_progress(progress) -> None:  # progress: ProgressModel
+                self.ui.update_progress(progress)
+
+            self.backup_service.restore_backup(backup, world, progress_callback=on_progress)
             logger.info(f"Backup restaurado com sucesso para {world.levelname}")
 
-            # Esconder loading e reabilitar botões
-            self.ui.hide_loading()
+            # Esconder barra de progresso e reabilitar botões
+            self.ui.hide_progress_bar()
             self.ui.enable_buttons()
 
             self.ui.show_info_dialog(
@@ -159,8 +166,8 @@ class BackupManagerApp:
         except Exception as e:
             logger.error(f"Erro ao restaurar backup: {e}", exc_info=True)
 
-            # Esconder loading e reabilitar botões mesmo em erro
-            self.ui.hide_loading()
+            # Esconder barra de progresso e reabilitar botões mesmo em erro
+            self.ui.hide_progress_bar()
             self.ui.enable_buttons()
 
             self.ui.show_error_dialog(

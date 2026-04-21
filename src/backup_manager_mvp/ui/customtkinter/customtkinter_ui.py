@@ -31,6 +31,7 @@ from collections.abc import Callable
 import customtkinter as ctk
 
 from backup_manager_mvp.models.backup_model import BackupModel
+from backup_manager_mvp.models.progress_model import ProgressModel
 from backup_manager_mvp.models.world_model import WorldModel
 from backup_manager_mvp.ui.base import UIController
 from backup_manager_mvp.ui.customtkinter.cache import BackupCache
@@ -43,6 +44,7 @@ from backup_manager_mvp.ui.customtkinter.handlers import (
 )
 from backup_manager_mvp.ui.customtkinter.loading import LoadingManager
 from backup_manager_mvp.ui.customtkinter.notifications import ToastManager
+from backup_manager_mvp.ui.customtkinter.progress_widget import ProgressBarWidget
 from backup_manager_mvp.ui.customtkinter.screens import (
     show_screen_restore_confirmation,
     show_screen_world_details,
@@ -91,6 +93,7 @@ class CustomTkinterUIController(UIController):
         self._toast_manager: ToastManager | None = None
         self._loading_manager: LoadingManager | None = None
         self._disclaimer_dialog: DisclaimerDialog | None = None
+        self._progress_widget: ProgressBarWidget | None = None
 
         # === CALLBACKS ===
         self._callback_world_selected: Callable[[WorldModel], None] | None = None
@@ -149,14 +152,21 @@ class CustomTkinterUIController(UIController):
     def _clear_frame(self, frame: ctk.CTkFrame) -> None:
         """Limpa todos os widgets de um frame."""
         for widget in frame.winfo_children():
-            # Não apagar _loading_label e _toast_label se estiverem visíveis
-            if widget is not self._loading_label and widget is not self._toast_label:
+            # Não apagar _loading_label, _toast_label e _progress_widget se estiverem visíveis
+            if (
+                widget is not self._loading_label
+                and widget is not self._toast_label
+                and widget is not self._progress_widget
+            ):
                 widget.destroy()
 
     # ========== TELAS ==========
 
     def show_screen_worlds_list(self, worlds: list[WorldModel]) -> None:
         """Exibe tela 1: Lista de mundos (delegado ao módulo extraído)."""
+        # Esconder barra de progresso quando muda de tela
+        self.hide_progress_bar()
+
         self._worlds_list = worlds
 
         # Criar callback adaptado para usar self._callback_world_selected
@@ -168,6 +178,9 @@ class CustomTkinterUIController(UIController):
 
     def show_screen_world_details(self, world: WorldModel, backups: list[BackupModel]) -> None:
         """Exibe tela 2: Detalhes do mundo (delegado ao módulo extraído)."""
+        # Esconder barra de progresso quando muda de tela
+        self.hide_progress_bar()
+
         self._current_world = world
         self._backups_list = backups
 
@@ -213,6 +226,9 @@ class CustomTkinterUIController(UIController):
 
     def show_screen_restore_confirmation(self, world: WorldModel, backup: BackupModel) -> None:
         """Exibe diálogo de confirmação de restauração (delegado ao módulo extraído)."""
+        # Esconder barra de progresso quando muda de tela
+        self.hide_progress_bar()
+
         self._current_world = world
         self._current_backup = backup
 
@@ -239,21 +255,44 @@ class CustomTkinterUIController(UIController):
 
     # ========== DIÁLOGOS ==========
 
+    @staticmethod
+    def _remove_emojis(text: str) -> str:
+        """Remove emojis de um texto para evitar erro de encoding no Windows.
+
+        Args:
+            text: Texto que pode conter emojis
+
+        Returns:
+            Texto sem emojis
+        """
+        # Remove emojis comuns usados na aplicação
+        emojis = ["✅", "✨", "❌", "📁", "💾", "⚠️"]
+        result = text
+        for emoji in emojis:
+            result = result.replace(emoji, "")
+        # Remove múltiplos espaços
+        result = " ".join(result.split())
+        return result
+
     def show_info_dialog(self, title: str, message: str) -> None:
         """Exibe diálogo informativo com toast."""
         # Toast rápido
         if self._toast_manager:
             self._toast_manager.show_toast(title, success=True, duration=2000)
-        # Log completo
-        logger.info(f"{title}: {message}")
+        # Log completo (remover emojis para evitar erro de encoding no Windows)
+        log_title = self._remove_emojis(title)
+        log_message = self._remove_emojis(message)
+        logger.info(f"{log_title}: {log_message}")
 
     def show_error_dialog(self, title: str, message: str) -> None:
         """Exibe diálogo de erro com toast."""
         # Toast rápido
         if self._toast_manager:
             self._toast_manager.show_toast(title, success=False, duration=3000)
-        # Log completo
-        logger.error(f"{title}: {message}")
+        # Log completo (remover emojis para evitar erro de encoding no Windows)
+        log_title = self._remove_emojis(title)
+        log_message = self._remove_emojis(message)
+        logger.error(f"{log_title}: {log_message}")
 
     # ========== LOADING ==========
 
@@ -266,6 +305,42 @@ class CustomTkinterUIController(UIController):
         """Esconde label de loading."""
         if self._loading_manager:
             self._loading_manager.hide_loading()
+
+    def show_progress_bar(self) -> None:
+        """Exibe barra de progresso para operações de backup/restore."""
+        logger.debug("Showing progress bar...")
+        if self._progress_widget is None:
+            self._progress_widget = ProgressBarWidget(self._main_frame)
+            self._progress_widget.pack(fill="x", padx=20, pady=10)
+        else:
+            # Se o widget existe mas não está mais no container (p.ex. após _clear_frame),
+            # verificar se ele ainda tem um parent
+            if self._progress_widget.winfo_exists() and self._progress_widget.winfo_manager() == "":
+                # Widget existe mas não está packed/gridded, re-adicionar
+                self._progress_widget.pack(fill="x", padx=20, pady=10)
+            elif self._progress_widget.winfo_exists():
+                # Widget existe e está no container, apenas mostrar se estava escondido
+                self._progress_widget.pack(fill="x", padx=20, pady=10)
+
+        if self.main_window:
+            self.main_window.update_idletasks()
+
+    def hide_progress_bar(self) -> None:
+        """Esconde barra de progresso."""
+        logger.debug("Hiding progress bar...")
+        if self._progress_widget and self._progress_widget.winfo_exists():
+            self._progress_widget.pack_forget()
+
+        if self.main_window:
+            self.main_window.update_idletasks()
+
+    def update_progress(self, progress: ProgressModel) -> None:
+        """Atualiza a barra de progresso com dados."""
+        if self._progress_widget and self._progress_widget.winfo_exists():
+            self._progress_widget.update_progress(progress)
+
+        if self.main_window:
+            self.main_window.update_idletasks()
 
     def disable_buttons(self) -> None:
         """Desabilita botões de ação."""

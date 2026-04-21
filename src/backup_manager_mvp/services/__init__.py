@@ -13,3 +13,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+"""Serviços da aplicação."""
+
+from .backup_service import BackupService
+from .progress_service import ProgressService
+from .world_service import WorldService
+
+__all__ = ["BackupService", "ProgressService", "WorldService"]

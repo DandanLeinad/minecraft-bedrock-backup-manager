@@ -9,11 +9,18 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-21
+
 ### Added
 
 - Nova estrutura de Trunk-Based Development
 - Versionamento automático com `bump-my-version`
 - Feature flags para features em desenvolvimento
+- Barra de progresso visual para operações de backup/restore (MC-2)
+  - Componente customizado com CustomTkinter
+  - Callback pattern para rastreamento de progresso
+  - Integração com BackupService e UI controller
+  - Suporte a múltiplos stages de operação
 
 ### Changed
 
