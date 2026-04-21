@@ -260,16 +260,18 @@ class CustomTkinterUIController(UIController):
         # Toast rápido
         if self._toast_manager:
             self._toast_manager.show_toast(title, success=True, duration=2000)
-        # Log completo
-        logger.info(f"{title}: {message}")
+        # Log completo (remover emojis para evitar erro de encoding no Windows)
+        log_title = title.replace("✅", "").replace("✨", "").strip()
+        logger.info(f"{log_title}: {message}")
 
     def show_error_dialog(self, title: str, message: str) -> None:
         """Exibe diálogo de erro com toast."""
         # Toast rápido
         if self._toast_manager:
             self._toast_manager.show_toast(title, success=False, duration=3000)
-        # Log completo
-        logger.error(f"{title}: {message}")
+        # Log completo (remover emojis para evitar erro de encoding no Windows)
+        log_title = title.replace("❌", "").strip()
+        logger.error(f"{log_title}: {message}")
 
     # ========== LOADING ==========
 
