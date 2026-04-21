@@ -171,12 +171,20 @@ class BackupService:
 
         return backups
 
-    def restore_backup(self, backup: BackupModel, world: WorldModel) -> None:
-        """Restaura um mundo a partir de um backup.
+    def restore_backup(
+        self,
+        backup: BackupModel,
+        world: WorldModel,
+        progress_callback: Callable[[ProgressModel], None] | None = None,
+    ) -> None:
+        """Restaura um mundo a partir de um backup com rastreamento de progresso opcional.
 
         Args:
             backup (BackupModel): Backup a ser restaurado.
             world (WorldModel): Mundo que será substituído.
+            progress_callback: Função chamada com ProgressModel durante a restauração.
+                              Assinatura: callback(progress: ProgressModel) -> None
+                              Opcional, pode ser None.
 
         Raises:
             FileNotFoundError: Se o backup não existir.
@@ -194,6 +202,12 @@ class BackupService:
             raise FileNotFoundError(f"Mundo não encontrado: {world.path}")
 
         try:
+            # Reportar início da operação
+            if progress_callback:
+                progress_callback(
+                    ProgressModel(current=0, total=1, stage="Limpando mundo atual...")
+                )
+
             # Remover conteúdo atual da pasta do mundo (mantendo a pasta)
             for item in world.path.iterdir():
                 if item.is_dir():
@@ -201,12 +215,22 @@ class BackupService:
                 else:
                     item.unlink()
 
+            # Reportar fase de cópia
+            if progress_callback:
+                progress_callback(
+                    ProgressModel(current=0, total=1, stage="Restaurando arquivos do backup...")
+                )
+
             # Copiar conteúdo do backup para o mundo
             for item in backup.backup_path.iterdir():
                 if item.is_dir():
                     shutil.copytree(item, world.path / item.name)
                 else:
                     shutil.copy2(item, world.path / item.name)
+
+            # Reportar conclusão
+            if progress_callback:
+                progress_callback(ProgressModel(current=1, total=1, stage="Restauração concluída!"))
 
         except Exception as e:
             raise RuntimeError(f"Erro ao restaurar backup: {e}")
