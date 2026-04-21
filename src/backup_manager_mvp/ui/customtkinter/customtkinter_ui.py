@@ -274,14 +274,10 @@ class CustomTkinterUIController(UIController):
         """Exibe barra de progresso para operações de backup/restore."""
         if self._progress_widget is None:
             self._progress_widget = ProgressBarWidget(self._main_frame)
-            self._progress_widget.grid(
-                row=10, column=0, columnspan=2, padx=20, pady=10, sticky="nsew"
-            )
+            self._progress_widget.pack(fill="x", padx=20, pady=10)
         else:
             # Se o widget já existe, apenas o torna visível
-            self._progress_widget.grid(
-                row=10, column=0, columnspan=2, padx=20, pady=10, sticky="nsew"
-            )
+            self._progress_widget.pack(fill="x", padx=20, pady=10)
 
         if self.main_window:
             self.main_window.update_idletasks()
@@ -289,7 +285,7 @@ class CustomTkinterUIController(UIController):
     def hide_progress_bar(self) -> None:
         """Esconde barra de progresso."""
         if self._progress_widget and self._progress_widget.winfo_exists():
-            self._progress_widget.grid_forget()
+            self._progress_widget.pack_forget()
 
         if self.main_window:
             self.main_window.update_idletasks()
