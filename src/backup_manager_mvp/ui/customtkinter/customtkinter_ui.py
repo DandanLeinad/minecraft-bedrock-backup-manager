@@ -26,6 +26,7 @@ Baseada em CustomTkinter 5.2.2 oficial:
 """
 
 import logging
+import re
 from collections.abc import Callable
 
 import customtkinter as ctk
@@ -311,17 +312,24 @@ class CustomTkinterUIController(UIController):
     def _remove_emojis(text: str) -> str:
         """Remove emojis de um texto para evitar erro de encoding no Windows.
 
+        Windows console usa cp1252 que não suporta emojis Unicode.
+        Esta função remove todos os emojis para logging seguro.
+        Os emojis são mantidos na UI (dialogs, toasts) mas removidos nos logs.
+
         Args:
             text: Texto que pode conter emojis
 
         Returns:
             Texto sem emojis
         """
-        # Remove emojis comuns usados na aplicação
-        emojis = ["✅", "✨", "❌", "📁", "💾", "⚠️"]
-        result = text
-        for emoji in emojis:
-            result = result.replace(emoji, "")
+        # Regex para remover emojis (inclusive símbolos especiais)
+        # Ranges: U+1F300-U+1F9FF (emojis principais) + variações
+        emoji_pattern = re.compile(
+            r"[\U0001F300-\U0001F9FF]|[\u2600-\u27BF]|[\u2300-\u23FF]|"
+            r"[\u2000-\u206F]|[\u3000-\u303F]|[\u0000-\u001F]|[\u007F-\u009F]",
+            flags=re.UNICODE,
+        )
+        result = emoji_pattern.sub("", text)
         # Remove múltiplos espaços
         result = " ".join(result.split())
         return result
