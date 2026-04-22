@@ -26,10 +26,12 @@ Baseada em CustomTkinter 5.2.2 oficial:
 """
 
 import logging
+import re
 from collections.abc import Callable
 
 import customtkinter as ctk
 
+from backup_manager_mvp.config.feature_flags import FEATURE_FLAGS
 from backup_manager_mvp.models.backup_model import BackupModel
 from backup_manager_mvp.models.progress_model import ProgressModel
 from backup_manager_mvp.models.world_model import WorldModel
@@ -47,6 +49,7 @@ from backup_manager_mvp.ui.customtkinter.notifications import ToastManager
 from backup_manager_mvp.ui.customtkinter.progress_widget import ProgressBarWidget
 from backup_manager_mvp.ui.customtkinter.screens import (
     show_screen_restore_confirmation,
+    show_screen_restore_preview,
     show_screen_world_details,
     show_screen_worlds_list,
 )
@@ -189,7 +192,24 @@ class CustomTkinterUIController(UIController):
             on_back(self._callback_back)
 
         def handle_backup_selected(backup: BackupModel, world: WorldModel) -> None:
-            self.show_screen_restore_confirmation(world, backup)
+            """Chamado quando usuário seleciona um backup.
+
+            Se FF_RESTORE_PREVIEW está ativado, mostra preview do conteúdo.
+            Senão, mostra confirmação direto.
+            """
+            if FEATURE_FLAGS.ENABLE_RESTORE_PREVIEW and self.app:
+                try:
+                    # Obter preview das informações do backup
+                    preview_info = self.app.backup_service.get_backup_preview_info(backup)
+                    # Mostrar preview
+                    self.show_screen_restore_preview(world, backup, preview_info)
+                except Exception as e:
+                    logger.error(f"Erro ao gerar preview do backup: {e}", exc_info=True)
+                    # Fallback para confirmação normal se preview falhar
+                    self.show_screen_restore_confirmation(world, backup)
+            else:
+                # Sem flag: mostrar confirmação direto (behavior antigo)
+                self.show_screen_restore_confirmation(world, backup)
 
         def handle_create_backup(world: WorldModel) -> None:
             if self._callback_create_backup:
@@ -253,11 +273,48 @@ class CustomTkinterUIController(UIController):
             handle_restore_confirm,
         )
 
+    def show_screen_restore_preview(
+        self, world: WorldModel, backup: BackupModel, preview_info: dict
+    ) -> None:
+        """Exibe preview do conteúdo do backup antes de restaurar (FF_RESTORE_PREVIEW)."""
+        # Esconder barra de progresso quando muda de tela
+        self.hide_progress_bar()
+
+        self._current_world = world
+        self._current_backup = backup
+
+        # Criar callbacks adaptados
+        def handle_cancel_preview() -> None:
+            if self._backups_list:
+                on_cancel_restore(
+                    self._backups_list,
+                    world,
+                    lambda w, b: self.show_screen_world_details(w, b),
+                )
+
+        def handle_restore_confirm() -> None:
+            # backup e world já estão capturados no escopo (closure)
+            on_restore_backup(backup, world, self._callback_restore_backup)
+
+        # Chamar função extraída
+        show_screen_restore_preview(
+            self._main_frame,
+            world,
+            backup,
+            preview_info,
+            handle_cancel_preview,
+            handle_restore_confirm,  # Sem argumentos
+        )
+
     # ========== DIÁLOGOS ==========
 
     @staticmethod
     def _remove_emojis(text: str) -> str:
         """Remove emojis de um texto para evitar erro de encoding no Windows.
+
+        Windows console usa cp1252 que não suporta emojis Unicode.
+        Esta função remove todos os emojis para logging seguro.
+        Os emojis são mantidos na UI (dialogs, toasts) mas removidos nos logs.
 
         Args:
             text: Texto que pode conter emojis
@@ -265,11 +322,14 @@ class CustomTkinterUIController(UIController):
         Returns:
             Texto sem emojis
         """
-        # Remove emojis comuns usados na aplicação
-        emojis = ["✅", "✨", "❌", "📁", "💾", "⚠️"]
-        result = text
-        for emoji in emojis:
-            result = result.replace(emoji, "")
+        # Regex para remover emojis (inclusive símbolos especiais)
+        # Ranges: U+1F300-U+1F9FF (emojis principais) + variações
+        emoji_pattern = re.compile(
+            r"[\U0001F300-\U0001F9FF]|[\u2600-\u27BF]|[\u2300-\u23FF]|"
+            r"[\u2000-\u206F]|[\u3000-\u303F]|[\u0000-\u001F]|[\u007F-\u009F]",
+            flags=re.UNICODE,
+        )
+        result = emoji_pattern.sub("", text)
         # Remove múltiplos espaços
         result = " ".join(result.split())
         return result

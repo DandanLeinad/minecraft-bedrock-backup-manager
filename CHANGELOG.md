@@ -9,7 +9,25 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-04-21
+## [0.3.0-beta] - 2026-04-22
+
+### Added
+
+- Preview de conteúdo do backup antes de restaurar (MC-3)
+  - Novo método `BackupService.get_backup_preview_info()`
+  - Tela customizada mostrando arquivos e pastas do backup
+  - Tamanho total e metadados do backup
+  - Feature flag: `FF_RESTORE_PREVIEW` (ativável com `FF_RESTORE_PREVIEW=true`)
+  - 10 testes abrangentes (205 total)
+
+### Fixed
+
+- UnicodeEncodeError ao fazer log de mensagens com emojis no Windows
+  - Regex pattern para remover todos os emojis antes de logging
+  - Mantém emojis na UI (dialogs, toasts)
+  - Remove emojis apenas nos logs (compatível com cp1252)
+
+## [0.2.0-beta] - 2026-04-21
 
 ### Added
 
