@@ -7,12 +7,13 @@
 ![Version](https://img.shields.io/badge/version-0.1.0--beta-blue)
 ![License](https://img.shields.io/badge/license-AGPL--3.0-green)
 ![Python](https://img.shields.io/badge/python-3.14%2B-blue)
+![Tests](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/actions/workflows/tests.yml/badge.svg)
 
 ---
 
 ## 🚀 O que é?
 
-Um **MVP (Minimum Viable Product) - Hobby Project** que criei para resolver um problema real: backup automático de mundos de Minecraft Bedrock no Windows, sem complicações.
+Um **MVP (Minimum Viable Product) - Hobby Project** que criei para resolver um problema real: backup simples de mundos de Minecraft Bedrock no Windows, sem complicações.
 
 Basicamente: você clica em "Criar Backup" → o app copia a pasta do mundo inteira com timestamp → pronto. Se quer restaurar, seleciona um backup anterior. Simples assim.
 
@@ -267,7 +268,6 @@ Veja [FEATURE_FLAGS.md](docs/FEATURE_FLAGS.md) para guia completo.
 ### Issues e Feedback
 
 ✅ **Issues** - Bugs, sugestões, discussões
-✅ **Pull Requests** - Contribuições bem-vindas!
 ✅ **Discussions** - Ideias e feedback
 
 ---
