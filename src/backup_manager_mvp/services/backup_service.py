@@ -237,3 +237,83 @@ class BackupService:
 
         except Exception as e:
             raise RuntimeError(f"Erro ao restaurar backup: {e}")
+
+    def get_backup_preview_info(self, backup: BackupModel) -> dict:
+        """Retorna informações sobre o conteúdo do backup para preview.
+
+        Args:
+            backup (BackupModel): Backup a ser analisado.
+
+        Returns:
+            dict: Dicionário com estrutura do backup:
+                {
+                    "total_files": int,           # Total de arquivos (recursivo)
+                    "total_dirs": int,             # Total de diretórios (recursivo)
+                    "total_size": int,             # Tamanho em bytes
+                    "top_level_items": list,       # Itens de nível 1
+                    "error": str|None              # Erro se houver
+                }
+
+        Notes:
+            - top_level_items: lista de {"name": str, "type": "file"|"dir", "size": int}
+            - Se um arquivo for muito grande, mostra "..." no final da lista
+            - Útil para FF_RESTORE_PREVIEW (mostrar conteúdo antes de restaurar)
+        """
+        try:
+            if not backup.backup_path.exists():
+                return {
+                    "total_files": 0,
+                    "total_dirs": 0,
+                    "total_size": 0,
+                    "top_level_items": [],
+                    "error": f"Backup não encontrado: {backup.backup_path}",
+                }
+
+            total_files = 0
+            total_dirs = 0
+            total_size = 0
+            top_level_items = []
+
+            # Contar recursivamente todos os arquivos e diretórios
+            for item in backup.backup_path.rglob("*"):
+                if item.is_dir():
+                    total_dirs += 1
+                else:
+                    total_files += 1
+                    total_size += item.stat().st_size
+
+            # Listar apenas itens do nível 1 para a UI
+            for item in backup.backup_path.iterdir():
+                if item.is_dir():
+                    # Calcular tamanho recursivo
+                    item_size = sum(f.stat().st_size for f in item.rglob("*") if f.is_file())
+                    top_level_items.append({"name": item.name, "type": "dir", "size": item_size})
+                else:
+                    item_size = item.stat().st_size
+                    top_level_items.append({"name": item.name, "type": "file", "size": item_size})
+
+            # Ordenar: diretórios primeiro, depois alfabeticamente
+            top_level_items.sort(key=lambda x: (x["type"] != "dir", x["name"]))
+
+            # Limitar a 20 itens para não poluir a UI
+            if len(top_level_items) > 20:
+                top_level_items = top_level_items[:20]
+                top_level_items.append({"name": "... e mais itens", "type": "ellipsis", "size": 0})
+
+            return {
+                "total_files": total_files,
+                "total_dirs": total_dirs,
+                "total_size": total_size,
+                "top_level_items": top_level_items,
+                "error": None,
+            }
+
+        except Exception as e:
+            logger.error(f"Erro ao analisar preview do backup: {e}", exc_info=True)
+            return {
+                "total_files": 0,
+                "total_dirs": 0,
+                "total_size": 0,
+                "top_level_items": [],
+                "error": f"Erro ao ler backup: {e!s}",
+            }
