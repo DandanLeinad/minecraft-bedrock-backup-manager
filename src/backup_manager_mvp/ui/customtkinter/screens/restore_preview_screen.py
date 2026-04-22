@@ -45,7 +45,7 @@ def show_screen_restore_preview(
     backup: BackupModel,
     preview_info: dict,
     on_cancel: Callable[[], None],
-    on_confirm: Callable[[BackupModel, WorldModel], None],
+    on_confirm: Callable[[], None],
 ) -> None:
     """Exibe tela de preview: Conteúdo do backup antes de restaurar.
 
@@ -54,8 +54,8 @@ def show_screen_restore_preview(
         world: Mundo que será restaurado
         backup: Backup a ser restaurado
         preview_info: Dicionário retornado por BackupService.get_backup_preview_info()
-        on_cancel: Callback para cancelar
-        on_confirm: Callback para confirmar restauração
+        on_cancel: Callback para cancelar (sem argumentos)
+        on_confirm: Callback para confirmar restauração (sem argumentos - backup/world já estão em escopo)
     """
     hide_loading(None)
     clear_frame(main_frame)
@@ -249,7 +249,7 @@ def show_screen_restore_preview(
     restore_btn = ctk.CTkButton(
         buttons_frame,
         text="Restaurar Agora",
-        command=lambda: on_confirm(backup, world),
+        command=on_confirm,  # on_confirm já tem backup/world no escopo
         width=140,
         height=40,
         font=ctk.CTkFont(size=11, weight="bold"),

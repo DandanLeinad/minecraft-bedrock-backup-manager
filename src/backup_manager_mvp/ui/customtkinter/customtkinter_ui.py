@@ -292,6 +292,7 @@ class CustomTkinterUIController(UIController):
                 )
 
         def handle_restore_confirm() -> None:
+            # backup e world já estão capturados no escopo (closure)
             on_restore_backup(backup, world, self._callback_restore_backup)
 
         # Chamar função extraída
@@ -301,7 +302,7 @@ class CustomTkinterUIController(UIController):
             backup,
             preview_info,
             handle_cancel_preview,
-            handle_restore_confirm,
+            handle_restore_confirm,  # Sem argumentos
         )
 
     # ========== DIÁLOGOS ==========
