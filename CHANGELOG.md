@@ -9,6 +9,8 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0-beta] - 2026-04-22
+
 ### Added
 
 - Preview de conteúdo do backup antes de restaurar (MC-3)
