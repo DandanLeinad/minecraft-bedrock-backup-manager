@@ -25,7 +25,6 @@ from backup_manager_mvp.core.models.backup_model import BackupModel
 
 @pytest.fixture
 def valid_backup_data() -> dict:
-    """Fixture com dados válidos para BackupModel."""
     return {
         "world_folder_name": "6LknJ-+T-Ks=",
         "world_account_id": "account123",
@@ -37,13 +36,8 @@ def valid_backup_data() -> dict:
 
 
 def test_backup_model_valid(valid_backup_data: dict) -> None:
-    """Testa criação válida do BackupModel."""
-    # Arrange (dados já fornecidos)
-
-    # Act
     backup = BackupModel(**valid_backup_data)
 
-    # Assert
     assert backup.world_folder_name == valid_backup_data["world_folder_name"]
     assert backup.world_account_id == valid_backup_data["world_account_id"]
     assert backup.created_at == valid_backup_data["created_at"]
@@ -53,20 +47,16 @@ def test_backup_model_valid(valid_backup_data: dict) -> None:
 @pytest.mark.parametrize(
     "field,invalid_value,test_id",
     [
-        # Tipos inválidos
         ("world_folder_name", 123, "folder_name_type"),
         ("world_account_id", 123, "account_id_type"),
-        # None
         ("world_folder_name", None, "folder_name_none"),
         ("world_account_id", None, "account_id_none"),
         ("created_at", None, "created_at_none"),
         ("backup_path", None, "backup_path_none"),
-        # Vazio/whitespace
         ("world_folder_name", "", "folder_name_empty"),
         ("world_account_id", "", "account_id_empty"),
         ("world_folder_name", "   ", "folder_name_whitespace"),
         ("world_account_id", "   ", "account_id_whitespace"),
-        # Path vazio
         ("backup_path", Path(""), "backup_path_empty"),
     ],
     ids=[
@@ -86,22 +76,14 @@ def test_backup_model_valid(valid_backup_data: dict) -> None:
 def test_backup_model_validation_error(
     field: str, invalid_value, test_id: str, valid_backup_data: dict
 ) -> None:
-    """Testa que BackupModel rejeita valores inválidos.
-
-    Testa diversos cenários de validação: tipos inválidos, None, vazios, whitespace.
-    """
-    # Arrange
     invalid_data = valid_backup_data.copy()
     invalid_data[field] = invalid_value
 
-    # Act & Assert
     with pytest.raises(ValidationError):
         BackupModel(**invalid_data)
 
 
 def test_backup_model_created_at_format_validation() -> None:
-    """Testa que created_at deve ser um datetime válido."""
-    # Arrange
     invalid_data = {
         "world_folder_name": "6LknJ-+T-Ks=",
         "world_account_id": "account123",
@@ -111,17 +93,12 @@ def test_backup_model_created_at_format_validation() -> None:
         ),
     }
 
-    # Act & Assert
     with pytest.raises(ValidationError):
         BackupModel(**invalid_data)
 
 
 class TestBackupModelSizeDisplay:
-    """Testes para a propriedade size_display do BackupModel."""
-
     def test_backup_model_name_property(self, tmp_path: Path) -> None:
-        """Testa a propriedade name que retorna o nome do diretório."""
-        # Arrange
         backup_path = tmp_path / "2025-04-13_21-30-45"
         backup_path.mkdir()
 
@@ -132,15 +109,9 @@ class TestBackupModelSizeDisplay:
             backup_path=backup_path,
         )
 
-        # Act
-        name = backup.name
-
-        # Assert
-        assert name == "2025-04-13_21-30-45"
+        assert backup.name == "2025-04-13_21-30-45"
 
     def test_size_display_bytes(self, tmp_path: Path) -> None:
-        """Testa formatação de tamanho em bytes (< 1024)."""
-        # Arrange
         backup_dir = tmp_path / "backup"
         backup_dir.mkdir()
         (backup_dir / "file.txt").write_bytes(b"x" * 512)
@@ -152,19 +123,15 @@ class TestBackupModelSizeDisplay:
             backup_path=backup_dir,
         )
 
-        # Act
         size = backup.size_display
 
-        # Assert
         assert "B" in size
         assert not any(unit in size for unit in ["KB", "MB", "GB"])
 
     def test_size_display_kilobytes(self, tmp_path: Path) -> None:
-        """Testa formatação de tamanho em KB (1024 to 1MB)."""
-        # Arrange
         backup_dir = tmp_path / "backup"
         backup_dir.mkdir()
-        (backup_dir / "file.txt").write_bytes(b"x" * (1024 * 50))  # 50 KB
+        (backup_dir / "file.txt").write_bytes(b"x" * (1024 * 50))
 
         backup = BackupModel(
             world_folder_name="test_world=",
@@ -173,18 +140,14 @@ class TestBackupModelSizeDisplay:
             backup_path=backup_dir,
         )
 
-        # Act
         size = backup.size_display
 
-        # Assert
         assert "KB" in size
 
     def test_size_display_megabytes(self, tmp_path: Path) -> None:
-        """Testa formatação de tamanho em MB (1MB to 1GB)."""
-        # Arrange
         backup_dir = tmp_path / "backup"
         backup_dir.mkdir()
-        (backup_dir / "file.txt").write_bytes(b"x" * (1024 * 1024 * 5))  # 5 MB
+        (backup_dir / "file.txt").write_bytes(b"x" * (1024 * 1024 * 5))
 
         backup = BackupModel(
             world_folder_name="test_world=",
@@ -193,17 +156,13 @@ class TestBackupModelSizeDisplay:
             backup_path=backup_dir,
         )
 
-        # Act
         size = backup.size_display
 
-        # Assert
         assert "MB" in size
 
     def test_size_display_gigabytes(self, tmp_path: Path) -> None:
-        """Testa formatação de tamanho em GB (>= 1GB usando mock)."""
         from unittest.mock import patch
 
-        # Arrange
         backup_dir = tmp_path / "backup"
         backup_dir.mkdir()
         (backup_dir / "file.txt").write_bytes(b"x")
@@ -215,18 +174,14 @@ class TestBackupModelSizeDisplay:
             backup_path=backup_dir,
         )
 
-        # Act - Mock sum para retornar tamanho >= 1GB
         with patch("builtins.sum", return_value=2 * (1024**3)):
             size = backup.size_display
 
-        # Assert
         assert "GB" in size
 
     def test_size_display_exception(self, tmp_path: Path) -> None:
-        """Testa que exceção retorna 'N/A'."""
         from unittest.mock import patch
 
-        # Arrange
         backup = BackupModel(
             world_folder_name="test_world=",
             world_account_id="account123",
@@ -234,9 +189,7 @@ class TestBackupModelSizeDisplay:
             backup_path=tmp_path / "backup",
         )
 
-        # Act - Mock sum para lançar exceção
         with patch("builtins.sum", side_effect=OSError("Permission denied")):
             size = backup.size_display
 
-        # Assert
         assert size == "N/A"
