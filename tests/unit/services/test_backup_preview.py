@@ -20,8 +20,9 @@ from datetime import datetime
 
 import pytest
 
-from backup_manager_mvp.models.backup_model import BackupModel
-from backup_manager_mvp.services.backup_service import BackupService
+from backup_manager_mvp.core.models.backup_model import BackupModel
+from backup_manager_mvp.core.services.backup_service import BackupService
+from backup_manager_mvp.infra.repository import FileSystemBackupRepository
 
 
 class TestGetBackupPreviewInfo:
@@ -30,7 +31,7 @@ class TestGetBackupPreviewInfo:
     @pytest.fixture
     def backup_service(self):
         """Fixture para BackupService."""
-        return BackupService()
+        return BackupService(FileSystemBackupRepository())
 
     @pytest.fixture
     def sample_backup_with_content(self, tmp_path):

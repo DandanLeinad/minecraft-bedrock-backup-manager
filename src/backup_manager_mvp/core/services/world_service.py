@@ -18,7 +18,8 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from backup_manager_mvp.models.world_model import WorldModel
+from backup_manager_mvp.core.models.world_model import WorldModel
+from backup_manager_mvp.core.ports.world_repository import WorldRepositoryPort
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,10 @@ ACCOUNT_SHARED = "Shared"  # Modo compartilhado
 class WorldService:
     """Serviço para operações relacionadas a mundos Minecraft Bedrock."""
 
+    def __init__(self, repository: WorldRepositoryPort):
+        """Inicializa o serviço com uma implementação de repositório de mundos."""
+        self.repository = repository
+
     def get_worlds_base_path(self) -> Path:
         """Retorna o caminho base para os mundos Minecraft Bedrock.
 
@@ -39,8 +44,7 @@ class WorldService:
         Notes:
             Este é o caminho padrão após a atualização 1.21.120 do Minecraft Bedrock.
         """
-        appdata_path = Path.home() / "AppData" / "Roaming" / "Minecraft Bedrock" / "Users"
-        return appdata_path
+        return self.repository.get_worlds_base_path()
 
     def get_uwp_store_path(self) -> Path:
         """Retorna o caminho para mundos do UWP Store (Windows 10 Microsoft Store).
@@ -51,18 +55,7 @@ class WorldService:
         Notes:
             Esta é a localização de mundos para a versão UWP do Minecraft no Windows 10.
         """
-        uwp_path = (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Packages"
-            / "Microsoft.MinecraftUWP_8wekyb3d8bbwe"
-            / "LocalState"
-            / "games"
-            / "com.mojang"
-            / "minecraftWorlds"
-        )
-        return uwp_path
+        return self.repository.get_uwp_store_path()
 
     def get_shared_path(self) -> Path:
         """Retorna o caminho para mundos compartilhados (Shared).
@@ -73,14 +66,7 @@ class WorldService:
         Notes:
             Esta é a localização de mundos em modo compartilhado (menos comum).
         """
-        shared_path = (
-            self.get_worlds_base_path().parent
-            / "Shared"
-            / "games"
-            / "com.mojang"
-            / "minecraftWorlds"
-        )
-        return shared_path
+        return self.repository.get_shared_path(self.get_worlds_base_path())
 
     def list_account_ids(self) -> list[str]:
         """Lista todos os account_ids presentes no sistema.
@@ -94,13 +80,13 @@ class WorldService:
         """
         base_path = self.get_worlds_base_path()
 
-        if not base_path.exists():
+        if not self.repository.path_exists(base_path):
             return []
 
         account_ids = []
         try:
-            for item in base_path.iterdir():
-                if item.is_dir():
+            for item in self.repository.list_directory(base_path):
+                if self.repository.is_directory(item):
                     account_ids.append(item.name)
         except OSError, PermissionError:
             # Se não conseguir ler o diretório, retorna vazio
@@ -120,12 +106,12 @@ class WorldService:
         """
         worlds = []
 
-        if not worlds_dir.exists():
+        if not self.repository.path_exists(worlds_dir):
             return worlds
 
         try:
-            for world_folder in worlds_dir.iterdir():
-                if not world_folder.is_dir():
+            for world_folder in self.repository.list_directory(worlds_dir):
+                if not self.repository.is_directory(world_folder):
                     continue
 
                 # Tentar ler levelname.txt
@@ -205,11 +191,11 @@ class WorldService:
         """
         levelname_file = world_path / "levelname.txt"
 
-        if not levelname_file.exists():
+        if not self.repository.path_exists(levelname_file):
             raise FileNotFoundError(f"levelname.txt não encontrado em {world_path}")
 
         try:
-            levelname = levelname_file.read_text(encoding="utf-8").strip()
+            levelname = self.repository.read_text_file(levelname_file).strip()
             if not levelname:
                 raise ValueError("levelname.txt está vazio ou contém apenas whitespace")
             return levelname
@@ -230,8 +216,8 @@ class WorldService:
 
         try:
             # === TAMANHO DO MUNDO ===
-            if world.path.exists():
-                total_size = sum(f.stat().st_size for f in world.path.rglob("*") if f.is_file())
+            if self.repository.path_exists(world.path):
+                total_size = self.repository.calculate_total_size(world.path)
                 if total_size < 1024:
                     metadata["size"] = f"{total_size} B"
                 elif total_size < 1024 * 1024:

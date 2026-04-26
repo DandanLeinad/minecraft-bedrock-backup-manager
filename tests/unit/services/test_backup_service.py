@@ -20,15 +20,16 @@ from unittest.mock import patch
 
 import pytest
 
-from backup_manager_mvp.models.backup_model import BackupModel
-from backup_manager_mvp.models.world_model import WorldModel
-from backup_manager_mvp.services.backup_service import BackupService
+from backup_manager_mvp.core.models.backup_model import BackupModel
+from backup_manager_mvp.core.models.world_model import WorldModel
+from backup_manager_mvp.core.services.backup_service import BackupService
+from backup_manager_mvp.infra.repository import FileSystemBackupRepository
 
 
 @pytest.fixture
 def backup_service() -> BackupService:
     """Fixture que fornece uma instância de BackupService."""
-    return BackupService()
+    return BackupService(FileSystemBackupRepository())
 
 
 @pytest.fixture
@@ -389,7 +390,7 @@ class TestCreateBackupErrors:
 
     def test_create_backup_fails_on_copytree_error(self, tmp_path: Path) -> None:
         """Teste: create_backup levanta RuntimeError se copytree falha."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -406,7 +407,7 @@ class TestCreateBackupErrors:
 
         with (
             patch.object(service, "get_backup_base_path", return_value=backup_base),
-            patch("backup_manager_mvp.services.backup_service.shutil.copytree") as mock_copytree,
+            patch.object(service.repository, "copy_tree") as mock_copytree,
         ):
             mock_copytree.side_effect = OSError("Simulated copy failure")
 
@@ -415,7 +416,7 @@ class TestCreateBackupErrors:
 
     def test_create_backup_backup_path_exists_gets_removed(self, tmp_path: Path) -> None:
         """Teste: Se backup_path existir, é removido e recriado (linhas 73-74)."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -439,7 +440,7 @@ class TestCreateBackupErrors:
 
     def test_create_backup_rmtree_called_when_path_exists(self, tmp_path: Path) -> None:
         """Teste: linha 78 shutil.rmtree in except block after copytree failure ."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         backup_base = tmp_path / "backups"
         backup_base.mkdir(parents=True)
@@ -461,7 +462,7 @@ class TestCreateBackupErrors:
         # 1. Criar a pasta backup_path (existe())
         # 2. Lançar Exception
         # Assim no except, backup_path.exists() == True e rmtree é chamado
-        backup_path_ref = [None]  # Referência para capturar o caminho
+        backup_path_ref: list[Path | None] = [None]  # Referência para capturar o caminho
 
         def mock_copytree_fail(src, dst, **kwargs):
             backup_path_ref[0] = Path(dst)
@@ -489,7 +490,7 @@ class TestListBackupsErrors:
 
     def test_list_backups_ignores_invalid_timestamp_folders(self, tmp_path: Path) -> None:
         """Teste: Pastas com timestamp inválido são ignoradas."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         world = WorldModel(
             folder_name="xyz12345678=",
@@ -514,7 +515,7 @@ class TestListBackupsErrors:
 
     def test_list_backups_handles_permission_error(self, tmp_path: Path) -> None:
         """Teste: list_backups ignora pastas inválidas e continua."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         world = WorldModel(
             folder_name="test1234567=",
@@ -535,7 +536,7 @@ class TestListBackupsErrors:
 
     def test_list_backups_ignores_non_directory_items(self, tmp_path: Path) -> None:
         """Teste: list_backups ignora arquivos que não são diretórios (linha 115)."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         world = WorldModel(
             folder_name="test1234567=",
@@ -571,7 +572,7 @@ class TestRestoreBackupErrors:
 
     def test_restore_backup_fails_if_backup_not_found(self) -> None:
         """Teste: restore_backup lança FileNotFoundError se backup não existe."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         backup = BackupModel(
             world_folder_name="test1234567=",
@@ -593,7 +594,7 @@ class TestRestoreBackupErrors:
 
     def test_restore_backup_fails_if_world_not_found(self, tmp_path: Path) -> None:
         """Teste: restore_backup lança FileNotFoundError se mundo não existe."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         backup_path = tmp_path / "backup"
         backup_path.mkdir()
@@ -618,7 +619,7 @@ class TestRestoreBackupErrors:
 
     def test_restore_backup_handles_restore_error(self, tmp_path: Path) -> None:
         """Teste: restore_backup levanta RuntimeError se falha (linhas 168-180)."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         backup_path = tmp_path / "backup"
         backup_path.mkdir()
@@ -643,7 +644,7 @@ class TestRestoreBackupErrors:
             version=[1, 0, 0, 0, 0],
         )
 
-        with patch("backup_manager_mvp.services.backup_service.shutil.copytree") as mock_copytree:
+        with patch.object(service.repository, "copy_tree") as mock_copytree:
             mock_copytree.side_effect = Exception("Copy failed")
 
             with pytest.raises(RuntimeError, match="Erro ao restaurar backup"):
@@ -651,7 +652,7 @@ class TestRestoreBackupErrors:
 
     def test_restore_backup_handles_copy2_error(self, tmp_path: Path) -> None:
         """Teste: linha 176 shutil.copy2 falha durante restore."""
-        service = BackupService()
+        service = BackupService(FileSystemBackupRepository())
 
         backup_path = tmp_path / "backup"
         backup_path.mkdir()
@@ -683,10 +684,7 @@ class TestRestoreBackupErrors:
             raise OSError("Permission denied")
 
         with (
-            patch(
-                "backup_manager_mvp.services.backup_service.shutil.copy2",
-                side_effect=mock_copy2_fail,
-            ),
+            patch.object(service.repository, "copy_file", side_effect=mock_copy2_fail),
             pytest.raises(RuntimeError, match="Erro ao restaurar backup"),
         ):
             service.restore_backup(backup, world)

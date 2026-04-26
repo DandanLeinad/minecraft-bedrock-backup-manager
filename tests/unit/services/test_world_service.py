@@ -19,14 +19,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from backup_manager_mvp.models.world_model import WorldModel
-from backup_manager_mvp.services.world_service import WorldService
+from backup_manager_mvp.core.models.world_model import WorldModel
+from backup_manager_mvp.core.services.world_service import WorldService
+from backup_manager_mvp.infra.repository import FileSystemWorldRepository
 
 
 @pytest.fixture
 def world_service() -> WorldService:
     """Fixture que fornece uma instância de WorldService."""
-    return WorldService()
+    return WorldService(FileSystemWorldRepository())
 
 
 class TestGetWorldsBasePath:
@@ -246,7 +247,7 @@ class TestListWorldsErrors:
 
     def test_list_worlds_ignores_non_directories(self, tmp_path: Path) -> None:
         """Teste: _list_worlds_from_path ignora arquivos que não são diretórios."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
         worlds_dir.mkdir()
@@ -260,7 +261,7 @@ class TestListWorldsErrors:
 
     def test_list_worlds_handles_permission_error(self, tmp_path: Path) -> None:
         """Teste: _list_worlds_from_path trata diretórios vazios sem erro."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
         worlds_dir.mkdir()
@@ -275,7 +276,7 @@ class TestGetWorldLevelnameErrors:
 
     def test_get_world_levelname_raises_on_unicode_decode_error(self, tmp_path: Path) -> None:
         """Teste: get_world_levelname lança ValueError se UnicodeDecodeError."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -289,7 +290,7 @@ class TestGetWorldLevelnameErrors:
 
     def test_get_world_levelname_raises_on_empty_file(self, tmp_path: Path) -> None:
         """Teste: get_world_levelname lança ValueError se arquivo vazio/whitespace."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -315,7 +316,7 @@ class TestGetWorldLevelnameErrors:
 
     def test_list_worlds_from_path_ignores_non_directories(self, tmp_path: Path) -> None:
         """Teste: _list_worlds_from_path ignora arquivos (não diretórios)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         # Arrange: Criar um arquivo (não diretório) na worlds_dir
         worlds_dir = tmp_path / "worlds"
@@ -330,7 +331,7 @@ class TestGetWorldLevelnameErrors:
 
     def test_list_worlds_from_path_ignores_invalid_world_folders(self, tmp_path: Path) -> None:
         """Teste: _list_worlds_from_path ignora pastas sem levelname.txt."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
         worlds_dir.mkdir()
@@ -347,7 +348,7 @@ class TestGetWorldMetadata:
     def test_calculate_world_size_kilobytes(self, tmp_path: Path) -> None:
         """Testa cálculo de tamanho em KB."""
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         levelname_file = world_path / "levelname.txt"
@@ -374,7 +375,7 @@ class TestGetWorldMetadata:
     def test_no_backups(self, tmp_path: Path) -> None:
         """Testa quando não há backups."""
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("World")
@@ -398,10 +399,10 @@ class TestGetWorldMetadata:
         """Testa backup recente (há segundos)."""
         from datetime import datetime, timedelta
 
-        from backup_manager_mvp.models.backup_model import BackupModel
+        from backup_manager_mvp.core.models.backup_model import BackupModel
 
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("World")
@@ -437,10 +438,10 @@ class TestGetWorldMetadata:
         """Testa que com múltiplos backups retorna o mais recente."""
         from datetime import datetime, timedelta
 
-        from backup_manager_mvp.models.backup_model import BackupModel
+        from backup_manager_mvp.core.models.backup_model import BackupModel
 
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("World")
@@ -481,7 +482,7 @@ class TestGetWorldMetadata:
     def test_nonexistent_world_path(self) -> None:
         """Testa com caminho de mundo inexistente."""
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world = WorldModel(
             folder_name="nonexistent=",
             levelname="Nonexistent",
@@ -502,7 +503,7 @@ class TestGetWorldMetadata:
         self, tmp_path: Path
     ) -> None:
         """Teste: linhas 144-145 - continue no except (FileNotFoundError, ValueError)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
         worlds_dir.mkdir()
@@ -533,7 +534,7 @@ class TestGetWorldMetadata:
         self, tmp_path: Path
     ) -> None:
         """Teste: linhas 148-150 - except (OSError, PermissionError) com patch module."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
         worlds_dir.mkdir()
@@ -554,7 +555,7 @@ class TestGetWorldMetadata:
     def test_calculate_world_size_bytes(self, tmp_path: Path) -> None:
         """Testa cálculo de tamanho em bytes (< 1024)."""
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         levelname_file = world_path / "levelname.txt"
@@ -580,7 +581,7 @@ class TestGetWorldMetadata:
     def test_calculate_world_size_gigabytes(self, tmp_path: Path) -> None:
         """Testa cálculo de tamanho em gigabytes (>= 1024^3)."""
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("Test")
@@ -604,10 +605,10 @@ class TestGetWorldMetadata:
         """Testa formatação de tempo relativo em minutos."""
         from datetime import datetime, timedelta
 
-        from backup_manager_mvp.models.backup_model import BackupModel
+        from backup_manager_mvp.core.models.backup_model import BackupModel
 
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("World")
@@ -643,10 +644,10 @@ class TestGetWorldMetadata:
         """Testa formatação de tempo relativo em horas."""
         from datetime import datetime, timedelta
 
-        from backup_manager_mvp.models.backup_model import BackupModel
+        from backup_manager_mvp.core.models.backup_model import BackupModel
 
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("World")
@@ -681,7 +682,7 @@ class TestGetWorldMetadata:
     def test_get_uwp_store_path_returns_valid_path(self) -> None:
         """Testa que get_uwp_store_path retorna path válido."""
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         # Act
         uwp_path = service.get_uwp_store_path()
@@ -694,7 +695,7 @@ class TestGetWorldMetadata:
     def test_get_world_metadata_exception_on_backup_service(self, tmp_path: Path) -> None:
         """Testa que exceção no backup_service é capturada corretamente."""
         # Arrange
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("World")
@@ -724,9 +725,9 @@ class TestGetWorldMetadata:
         """Testa vários time deltas: segundos, minutos, horas, dias (cobertura completa)."""
         from datetime import datetime, timedelta
 
-        from backup_manager_mvp.models.backup_model import BackupModel
+        from backup_manager_mvp.core.models.backup_model import BackupModel
 
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
         (world_path / "levelname.txt").write_text("World")

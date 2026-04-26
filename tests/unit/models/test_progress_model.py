@@ -18,7 +18,7 @@
 
 import pytest
 
-from backup_manager_mvp.models.progress_model import ProgressModel
+from backup_manager_mvp.core.models.progress_model import ProgressModel
 
 
 class TestProgressModelInitialization:

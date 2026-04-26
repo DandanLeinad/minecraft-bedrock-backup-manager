@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from backup_manager_mvp.models.backup_model import BackupModel
+from backup_manager_mvp.core.models.backup_model import BackupModel
 
 
 @pytest.fixture

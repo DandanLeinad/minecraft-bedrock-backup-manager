@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from backup_manager_mvp.models.world_model import WorldModel
+from backup_manager_mvp.core.models.world_model import WorldModel
 
 
 def test_world_model_valid(

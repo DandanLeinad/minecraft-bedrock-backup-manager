@@ -18,11 +18,15 @@
 
 import logging
 
-from backup_manager_mvp.models.backup_model import BackupModel
-from backup_manager_mvp.models.progress_model import ProgressModel
-from backup_manager_mvp.models.world_model import WorldModel
-from backup_manager_mvp.services.backup_service import BackupService
-from backup_manager_mvp.services.world_service import WorldService
+from backup_manager_mvp.core.models.backup_model import BackupModel
+from backup_manager_mvp.core.models.progress_model import ProgressModel
+from backup_manager_mvp.core.models.world_model import WorldModel
+from backup_manager_mvp.core.services.backup_service import BackupService
+from backup_manager_mvp.core.services.world_service import WorldService
+from backup_manager_mvp.infra.repository import (
+    FileSystemBackupRepository,
+    FileSystemWorldRepository,
+)
 from backup_manager_mvp.ui import CustomTkinterUIController
 
 logger = logging.getLogger(__name__)
@@ -37,8 +41,8 @@ class BackupManagerApp:
 
     def __init__(self):
         """Inicializa a aplicação com serviços e UI."""
-        self.world_service = WorldService()
-        self.backup_service = BackupService()
+        self.world_service = WorldService(FileSystemWorldRepository())
+        self.backup_service = BackupService(FileSystemBackupRepository())
         self.ui = CustomTkinterUIController(app=self)
 
         # Conectar callbacks da UI aos handlers da aplicação

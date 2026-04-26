@@ -22,16 +22,17 @@ from unittest.mock import patch
 
 import pytest
 
-from backup_manager_mvp.models.progress_model import ProgressModel
-from backup_manager_mvp.models.world_model import WorldModel
-from backup_manager_mvp.services.backup_service import BackupService
-from backup_manager_mvp.services.progress_service import ProgressService
+from backup_manager_mvp.core.models.progress_model import ProgressModel
+from backup_manager_mvp.core.models.world_model import WorldModel
+from backup_manager_mvp.core.services.backup_service import BackupService
+from backup_manager_mvp.core.services.progress_service import ProgressService
+from backup_manager_mvp.infra.repository import FileSystemBackupRepository
 
 
 @pytest.fixture
 def backup_service() -> BackupService:
     """Fixture que fornece uma instância de BackupService."""
-    return BackupService()
+    return BackupService(FileSystemBackupRepository())
 
 
 @pytest.fixture

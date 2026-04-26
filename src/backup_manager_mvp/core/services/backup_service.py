@@ -15,21 +15,24 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import shutil
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
-from backup_manager_mvp.models.backup_model import BackupModel
-from backup_manager_mvp.models.progress_model import ProgressModel
-from backup_manager_mvp.models.world_model import WorldModel
-from backup_manager_mvp.utils.paths import BACKUPS_DIR
+from backup_manager_mvp.core.models.backup_model import BackupModel
+from backup_manager_mvp.core.models.progress_model import ProgressModel
+from backup_manager_mvp.core.models.world_model import WorldModel
+from backup_manager_mvp.core.ports.backup_repository import BackupRepositoryPort
 
 logger = logging.getLogger(__name__)
 
 
 class BackupService:
     """Serviço para operações de backup e restauração de mundos Minecraft Bedrock."""
+
+    def __init__(self, repository: BackupRepositoryPort):
+        """Inicializa o serviço com uma implementação de repositório de backup."""
+        self.repository = repository
 
     def get_backup_base_path(self) -> Path:
         """Retorna o caminho base para armazenar backups.
@@ -41,7 +44,7 @@ class BackupService:
             Este é o local fixo onde todos os backups são armazenados.
             Não é configurável no MVP.
         """
-        return BACKUPS_DIR
+        return self.repository.get_backup_base_path()
 
     def create_backup(
         self,
@@ -77,15 +80,13 @@ class BackupService:
         backup_path = world_backup_dir / timestamp
 
         # Criar diretórios se não existirem
-        backup_path.mkdir(parents=True, exist_ok=True)
-        # Garantir que a pasta base de backups do mundo exista
-        world_backup_dir.mkdir(parents=True, exist_ok=True)
+        self.repository.ensure_directory(world_backup_dir)
 
         # Copiar a pasta do mundo para o backup
         # Primeiro, removemos a pasta de destino se ela existir (normalmente não existe)
         # Limpar destino se por algum motivo já existir (evita erro no copytree)
-        if backup_path.exists():
-            shutil.rmtree(backup_path)
+        if self.repository.path_exists(backup_path):
+            self.repository.delete_tree(backup_path)
 
         try:
             # Reportar início da operação
@@ -94,7 +95,7 @@ class BackupService:
 
             # Copiar todo o conteúdo do mundo
             # TODO: Implementar cópia com rastreamento de arquivos individuais
-            shutil.copytree(world.path, backup_path, dirs_exist_ok=True)
+            self.repository.copy_tree(world.path, backup_path, dirs_exist_ok=True)
 
             # Reportar conclusão
             if progress_callback:
@@ -107,8 +108,8 @@ class BackupService:
                 )
         except Exception as e:
             # Se falhar, tentar remover a pasta criada
-            if backup_path.exists():
-                shutil.rmtree(backup_path)
+            if self.repository.path_exists(backup_path):
+                self.repository.delete_tree(backup_path)
             raise RuntimeError(f"Erro ao criar backup: {e}")
 
         # Criar e retornar BackupModel
@@ -139,14 +140,14 @@ class BackupService:
         backup_base = self.get_backup_base_path()
         world_backup_dir = backup_base / world.folder_name
 
-        if not world_backup_dir.exists():
+        if not self.repository.path_exists(world_backup_dir):
             return []
 
         backups = []
 
         try:
-            for backup_folder in world_backup_dir.iterdir():
-                if not backup_folder.is_dir():
+            for backup_folder in self.repository.list_directory(world_backup_dir):
+                if not self.repository.is_directory(backup_folder):
                     continue
 
                 # Tentar extrair timestamp do nome da pasta
@@ -198,10 +199,10 @@ class BackupService:
             - O backup original NÃO é alterado
             - Esta é uma operação destrutiva no mundo atual
         """
-        if not backup.backup_path.exists():
+        if not self.repository.path_exists(backup.backup_path):
             raise FileNotFoundError(f"Backup não encontrado: {backup.backup_path}")
 
-        if not world.path.exists():
+        if not self.repository.path_exists(world.path):
             raise FileNotFoundError(f"Mundo não encontrado: {world.path}")
 
         try:
@@ -212,11 +213,11 @@ class BackupService:
                 )
 
             # Remover conteúdo atual da pasta do mundo (mantendo a pasta)
-            for item in world.path.iterdir():
-                if item.is_dir():
-                    shutil.rmtree(item)
+            for item in self.repository.list_directory(world.path):
+                if self.repository.is_directory(item):
+                    self.repository.delete_tree(item)
                 else:
-                    item.unlink()
+                    self.repository.delete_file(item)
 
             # Reportar fase de cópia
             if progress_callback:
@@ -225,11 +226,11 @@ class BackupService:
                 )
 
             # Copiar conteúdo do backup para o mundo
-            for item in backup.backup_path.iterdir():
-                if item.is_dir():
-                    shutil.copytree(item, world.path / item.name)
+            for item in self.repository.list_directory(backup.backup_path):
+                if self.repository.is_directory(item):
+                    self.repository.copy_tree(item, world.path / item.name)
                 else:
-                    shutil.copy2(item, world.path / item.name)
+                    self.repository.copy_file(item, world.path / item.name)
 
             # Reportar conclusão
             if progress_callback:
@@ -260,7 +261,7 @@ class BackupService:
             - Útil para FF_RESTORE_PREVIEW (mostrar conteúdo antes de restaurar)
         """
         try:
-            if not backup.backup_path.exists():
+            if not self.repository.path_exists(backup.backup_path):
                 return {
                     "total_files": 0,
                     "total_dirs": 0,
@@ -269,31 +270,10 @@ class BackupService:
                     "error": f"Backup não encontrado: {backup.backup_path}",
                 }
 
-            total_files = 0
-            total_dirs = 0
-            total_size = 0
-            top_level_items = []
-
-            # Contar recursivamente todos os arquivos e diretórios
-            for item in backup.backup_path.rglob("*"):
-                if item.is_dir():
-                    total_dirs += 1
-                else:
-                    total_files += 1
-                    total_size += item.stat().st_size
-
-            # Listar apenas itens do nível 1 para a UI
-            for item in backup.backup_path.iterdir():
-                if item.is_dir():
-                    # Calcular tamanho recursivo
-                    item_size = sum(f.stat().st_size for f in item.rglob("*") if f.is_file())
-                    top_level_items.append({"name": item.name, "type": "dir", "size": item_size})
-                else:
-                    item_size = item.stat().st_size
-                    top_level_items.append({"name": item.name, "type": "file", "size": item_size})
-
-            # Ordenar: diretórios primeiro, depois alfabeticamente
-            top_level_items.sort(key=lambda x: (x["type"] != "dir", x["name"]))
+            total_files, total_dirs, total_size = self.repository.read_tree_stats(
+                backup.backup_path
+            )
+            top_level_items = self.repository.read_top_level_items(backup.backup_path)
 
             # Limitar a 20 itens para não poluir a UI
             if len(top_level_items) > 20:

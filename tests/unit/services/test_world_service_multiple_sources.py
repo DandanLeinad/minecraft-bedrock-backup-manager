@@ -19,7 +19,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from backup_manager_mvp.services.world_service import WorldService
+from backup_manager_mvp.core.services.world_service import WorldService
+from backup_manager_mvp.infra.repository import FileSystemWorldRepository
 
 
 class TestGetUWPStorePath:
@@ -27,7 +28,7 @@ class TestGetUWPStorePath:
 
     def test_get_uwp_store_path_returns_path_object(self, tmp_path: Path) -> None:
         """Teste: get_uwp_store_path retorna objeto Path."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         mock_path = (
             tmp_path
             / "AppData"
@@ -42,7 +43,7 @@ class TestGetUWPStorePath:
 
     def test_get_uwp_store_path_contains_minecraft_uwp(self, tmp_path: Path) -> None:
         """Teste: Path contém MinecraftUWP_8wekyb3d8bbwe."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         mock_path = (
             tmp_path
             / "AppData"
@@ -57,7 +58,7 @@ class TestGetUWPStorePath:
 
     def test_get_uwp_store_path_contains_local_state(self, tmp_path: Path) -> None:
         """Teste: Path contém LocalState."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         mock_path = (
             tmp_path
             / "AppData"
@@ -76,7 +77,7 @@ class TestGetSharedPath:
 
     def test_get_shared_path_returns_path_object(self, tmp_path: Path) -> None:
         """Teste: get_shared_path retorna objeto Path."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         mock_path = tmp_path / "Shared" / "minecraftWorlds"
         with patch.object(service, "get_shared_path", return_value=mock_path):
             path = service.get_shared_path()
@@ -84,7 +85,7 @@ class TestGetSharedPath:
 
     def test_get_shared_path_contains_shared_directory(self, tmp_path: Path) -> None:
         """Teste: Path contém diretório Shared."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         mock_path = tmp_path / "Shared" / "minecraftWorlds"
         with patch.object(service, "get_shared_path", return_value=mock_path):
             path = service.get_shared_path()
@@ -92,7 +93,7 @@ class TestGetSharedPath:
 
     def test_get_shared_path_contains_minecraftworlds(self, tmp_path: Path) -> None:
         """Teste: Path contém minecraftWorlds."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
         mock_path = tmp_path / "Shared" / "minecraftWorlds"
         with patch.object(service, "get_shared_path", return_value=mock_path):
             path = service.get_shared_path()
@@ -104,7 +105,7 @@ class TestListWorldsMultipleSources:
 
     def test_list_worlds_returns_list(self, tmp_path: Path) -> None:
         """Teste: list_worlds retorna lista (regressão)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         # Mock all world base paths para tmp_path (isolado)
         with patch.object(service, "get_worlds_base_path", return_value=tmp_path):
@@ -114,20 +115,20 @@ class TestListWorldsMultipleSources:
 
     def test_list_worlds_returns_world_models(self, tmp_path: Path) -> None:
         """Teste: Elementos da lista são WorldModel (regressão)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         with patch.object(service, "get_worlds_base_path", return_value=tmp_path):
             worlds = service.list_worlds()
 
         # Se houver mundos, validar que são WorldModel
         if worlds:
-            from backup_manager_mvp.models.world_model import WorldModel
+            from backup_manager_mvp.core.models.world_model import WorldModel
 
             assert all(isinstance(w, WorldModel) for w in worlds)
 
     def test_list_worlds_includes_normal_account_ids(self, tmp_path: Path) -> None:
         """Teste: Continua detectando contas normais com UUIDs (regressão)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         # Criar estrutura fake
         account_dir = tmp_path / "test_account"
@@ -144,7 +145,7 @@ class TestListWorldsMultipleSources:
 
     def test_list_worlds_may_include_uwp_store_worlds(self, tmp_path: Path) -> None:
         """Teste: Se UWP Store existe, mundos aparecem com account_id = UWP-Store."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         with (
             patch.object(service, "get_worlds_base_path", return_value=tmp_path),
@@ -158,7 +159,7 @@ class TestListWorldsMultipleSources:
 
     def test_list_worlds_may_include_shared_worlds(self, tmp_path: Path) -> None:
         """Teste: Se diretório Shared existe, mundos aparecem com account_id = Shared."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         with (
             patch.object(service, "get_worlds_base_path", return_value=tmp_path),
@@ -173,7 +174,7 @@ class TestListWorldsMultipleSources:
 
     def test_account_id_is_always_string(self, tmp_path: Path) -> None:
         """Teste: account_id é sempre string (normal, UWP ou Shared)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         with patch.object(service, "get_worlds_base_path", return_value=tmp_path):
             worlds = service.list_worlds()
@@ -188,7 +189,7 @@ class TestListAccountIds:
 
     def test_list_account_ids_returns_list(self, tmp_path: Path) -> None:
         """Teste: list_account_ids retorna lista (regressão)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         with patch.object(service, "get_worlds_base_path", return_value=tmp_path):
             account_ids = service.list_account_ids()
@@ -197,7 +198,7 @@ class TestListAccountIds:
 
     def test_list_account_ids_are_strings(self, tmp_path: Path) -> None:
         """Teste: account_ids são strings (regressão)."""
-        service = WorldService()
+        service = WorldService(FileSystemWorldRepository())
 
         with patch.object(service, "get_worlds_base_path", return_value=tmp_path):
             account_ids = service.list_account_ids()

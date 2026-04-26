@@ -18,8 +18,8 @@
 
 from unittest.mock import Mock
 
-from backup_manager_mvp.models.progress_model import ProgressModel
-from backup_manager_mvp.services.progress_service import ProgressService
+from backup_manager_mvp.core.models.progress_model import ProgressModel
+from backup_manager_mvp.core.services.progress_service import ProgressService
 
 
 class TestProgressServiceInitialization:

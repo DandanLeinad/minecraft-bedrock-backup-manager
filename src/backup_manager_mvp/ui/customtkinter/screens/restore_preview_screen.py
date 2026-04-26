@@ -20,8 +20,8 @@ from collections.abc import Callable
 
 import customtkinter as ctk
 
-from backup_manager_mvp.models.backup_model import BackupModel
-from backup_manager_mvp.models.world_model import WorldModel
+from backup_manager_mvp.core.models.backup_model import BackupModel
+from backup_manager_mvp.core.models.world_model import WorldModel
 from backup_manager_mvp.ui.customtkinter.components.frames import create_separator
 from backup_manager_mvp.ui.customtkinter.constants import COLORS
 from backup_manager_mvp.ui.customtkinter.utils import clear_frame, hide_loading
