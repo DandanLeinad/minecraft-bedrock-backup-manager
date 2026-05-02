@@ -7,6 +7,10 @@ Todas as mudanças notáveis deste projeto serão documentadas aqui.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+<!-- Seção mantida para compatibilidade com bump-my-version -->
+
 ## [0.4.0-beta] - 2026-05-02
 
 ### Added
