@@ -45,7 +45,7 @@ class FeatureFlags:
     # Features em desenvolvimento
     ENABLE_AUTO_BACKUP: bool = _parse_bool(os.getenv("FF_AUTO_BACKUP", "false"))
     ENABLE_CLOUD_SYNC: bool = _parse_bool(os.getenv("FF_CLOUD_SYNC", "false"))
-    ENABLE_RESTORE_PREVIEW: bool = _parse_bool(os.getenv("FF_RESTORE_PREVIEW", "false"))
+    ENABLE_RESTORE_PREVIEW: bool = _parse_bool(os.getenv("FF_RESTORE_PREVIEW", "true"))
 
     # Features experimentais
     ENABLE_MULTI_THREADING: bool = _parse_bool(os.getenv("FF_MULTI_THREADING", "false"))

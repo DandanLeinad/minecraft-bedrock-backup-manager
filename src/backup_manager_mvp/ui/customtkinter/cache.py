@@ -27,7 +27,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from backup_manager_mvp.models.backup_model import BackupModel
+    from backup_manager_mvp.core.models.backup_model import BackupModel
 
 logger = logging.getLogger(__name__)
 

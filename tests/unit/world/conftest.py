@@ -14,22 +14,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-"""Handlers para eventos de mundo."""
+from pathlib import Path
 
-import logging
+import pytest
 
 from backup_manager_mvp.core.models.world_model import WorldModel
+from backup_manager_mvp.core.services.world_service import WorldService
+from backup_manager_mvp.infra.repository import FileSystemWorldRepository
 
-logger = logging.getLogger(__name__)
+
+@pytest.fixture
+def world_service() -> WorldService:
+    return WorldService(FileSystemWorldRepository())
 
 
-def on_world_selected(world: WorldModel, callback) -> None:
-    """Handler para seleção de mundo.
+@pytest.fixture
+def sample_world(tmp_path: Path) -> WorldModel:
+    world_path = tmp_path / "test_world"
+    world_path.mkdir()
+    (world_path / "levelname.txt").write_text("Meu Mundo")
+    (world_path / "level.dat").write_bytes(b"\x00")
 
-    Args:
-        world: Mundo selecionado
-        callback: Callback para executar após seleção
-    """
-    logger.debug(f"Mundo selecionado: {world.levelname}")
-    if callback:
-        callback(world)
+    return WorldModel(
+        folder_name="6LknJ-+T-Ks=",
+        levelname="Meu Mundo",
+        path=world_path,
+        account_id="test_account",
+        version=[1, 26, 12, 2, 0],
+    )

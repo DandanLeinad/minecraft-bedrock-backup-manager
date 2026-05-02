@@ -32,9 +32,9 @@ from collections.abc import Callable
 import customtkinter as ctk
 
 from backup_manager_mvp.config.feature_flags import FEATURE_FLAGS
-from backup_manager_mvp.models.backup_model import BackupModel
-from backup_manager_mvp.models.progress_model import ProgressModel
-from backup_manager_mvp.models.world_model import WorldModel
+from backup_manager_mvp.core.models.backup_model import BackupModel
+from backup_manager_mvp.core.models.progress_model import ProgressModel
+from backup_manager_mvp.core.models.world_model import WorldModel
 from backup_manager_mvp.ui.base import UIController
 from backup_manager_mvp.ui.customtkinter.cache import BackupCache
 from backup_manager_mvp.ui.customtkinter.core import DisclaimerDialog, WindowManager

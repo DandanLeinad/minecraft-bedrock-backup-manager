@@ -18,8 +18,8 @@
 
 import logging
 
-from backup_manager_mvp.models.backup_model import BackupModel
-from backup_manager_mvp.models.world_model import WorldModel
+from backup_manager_mvp.core.models.backup_model import BackupModel
+from backup_manager_mvp.core.models.world_model import WorldModel
 
 logger = logging.getLogger(__name__)
 
