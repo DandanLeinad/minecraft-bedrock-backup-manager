@@ -7,7 +7,26 @@ Todas as mudanças notáveis deste projeto serão documentadas aqui.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.0-beta] - 2026-05-02
+
+### Added
+
+- Refatoração para Clean Architecture com separação entre core, infra e ui
+- Reorganização dos testes unitários por comportamento:
+  - tests/unit/backup/
+  - tests/unit/world/
+  - tests/unit/progress/
+- Centralização de fixtures compartilhadas em tests/unit/conftest.py
+
+### Changed
+
+- UI de restauração ajustada para usar o fluxo de preview quando a feature flag está ativa
+- FF_RESTORE_PREVIEW ativada por padrão no ambiente de desenvolvimento
+- Atualização de dependências e tooling:
+  - PyInstaller 6.20.0
+  - pre-commit
+  - pyright
+  - ruff
 
 ## [0.3.0-beta] - 2026-04-22
 
@@ -49,16 +68,16 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- ✅ Listagem automática de mundos Bedrock (3 fontes: Normal, UWP Store, Shared)
-- ✅ Criação de backups com timestamp (YYYY-MM-DD_HH-MM-SS)
-- ✅ Restauração de mundos a partir de backups
-- ✅ Suporte multi-conta Microsoft + UWP Store + Shared
-- ✅ Interface desktop com CustomTkinter
-- ✅ 128 testes automatizados
-- ✅ Validação robusta com Pydantic
-- ✅ Documentação completa (README, TESTING, CONTRIBUTING)
-- ✅ Professional UI/UX com color scheme consistente
-- ✅ Semantic versioning e conventional commits
+- Listagem automática de mundos Bedrock (3 fontes: Normal, UWP Store, Shared)
+- Criação de backups com timestamp (YYYY-MM-DD_HH-MM-SS)
+- Restauração de mundos a partir de backups
+- Suporte multi-conta Microsoft + UWP Store + Shared
+- Interface desktop com CustomTkinter
+- 128 testes automatizados
+- Validação robusta com Pydantic
+- Documentação completa (README, TESTING, CONTRIBUTING)
+- Professional UI/UX com color scheme consistente
+- Semantic versioning e conventional commits
 
 ### Changed
 
@@ -66,12 +85,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Remoção de emojis decorativos de buttons
 - Melhorias visuais (cores, rounded corners, hover effects)
 - Setup inicial com versão beta para feedback
-
-### Notes
-
-- **Estado:** MVP (Mínimo Produto Viável) - Beta
-- **Status:** Funcional e testado
-- **Feedback:** Contribuições e sugestões são bem-vindas!
 
 ---
 
@@ -84,10 +97,10 @@ Este projeto segue [Semantic Versioning](https://semver.org/):
 
 ### Release Strategy
 
-- **0.1.0-beta** — MVP inicial (current)
-- **0.1.0-rc.1** — Release candidate (após testes)
-- **0.1.0** — Versão estável (depois fixes confirmados)
-- **0.2.0** — Features adicionais (se houver feedback)
+- **0.1.0-beta** — MVP inicial ✅
+- **0.4.0-beta** — Clean Architecture + Feature Flags (current)
+- **0.x.0-rc.1** — Release candidate (após testes)
+- **0.x.0** — Versão estável
 - **1.0.0** — Produto consolidado (futuro)
 
 ---
