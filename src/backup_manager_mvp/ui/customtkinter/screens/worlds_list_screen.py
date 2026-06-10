@@ -20,6 +20,7 @@ from collections.abc import Callable
 
 import customtkinter as ctk
 
+from backup_manager_mvp.config.feature_flags import FEATURE_FLAGS
 from backup_manager_mvp.core.models.world_model import WorldModel
 from backup_manager_mvp.ui.customtkinter.components.buttons import create_action_button
 from backup_manager_mvp.ui.customtkinter.components.frames import (
@@ -31,6 +32,7 @@ from backup_manager_mvp.ui.customtkinter.components.labels import (
 )
 from backup_manager_mvp.ui.customtkinter.constants import SPACING_MEDIUM
 from backup_manager_mvp.ui.customtkinter.utils import clear_frame, hide_loading
+from backup_manager_mvp.ui.customtkinter.utils.icon_loader import get_icon_loader
 
 
 def show_screen_worlds_list(
@@ -72,6 +74,9 @@ def show_screen_worlds_list(
         )
         no_worlds.pack(pady=24)
     else:
+        # Inicializar icon loader se feature flag estiver ativa
+        icon_loader = get_icon_loader() if FEATURE_FLAGS.ENABLE_WORLD_ICON_PREVIEW else None
+
         for world in worlds:
             # Calcular metadados usando o serviço
             if app and hasattr(app, "world_service"):
@@ -90,6 +95,18 @@ def show_screen_worlds_list(
             # Frame do item do mundo
             world_frame = create_world_item_frame(scroll_frame)
             world_frame.pack(fill="x", pady=10, padx=10)
+
+            # === IMAGEM DO MUNDO (se feature flag ativa) ===
+            if icon_loader:
+                icon_image = icon_loader.load_icon(world, height=icon_loader.ICON_HEIGHT_SMALL)
+                if icon_image:
+                    icon_label = ctk.CTkLabel(
+                        world_frame,
+                        text="",
+                        image=icon_image,
+                        fg_color="transparent",
+                    )
+                    icon_label.pack(side="left", padx=(12, 8), pady=8)
 
             # Frame de conteúdo (esquerda) - nome e metadados
             content_frame = ctk.CTkFrame(world_frame, fg_color="transparent")

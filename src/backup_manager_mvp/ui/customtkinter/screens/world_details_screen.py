@@ -20,6 +20,7 @@ from collections.abc import Callable
 
 import customtkinter as ctk
 
+from backup_manager_mvp.config.feature_flags import FEATURE_FLAGS
 from backup_manager_mvp.core.models.backup_model import BackupModel
 from backup_manager_mvp.core.models.world_model import WorldModel
 from backup_manager_mvp.ui.customtkinter.components.buttons import (
@@ -40,6 +41,7 @@ from backup_manager_mvp.ui.customtkinter.components.labels import (
 )
 from backup_manager_mvp.ui.customtkinter.constants import SPACING_LARGE, SPACING_MEDIUM
 from backup_manager_mvp.ui.customtkinter.utils import clear_frame, hide_loading
+from backup_manager_mvp.ui.customtkinter.utils.icon_loader import get_icon_loader
 
 
 def show_screen_world_details(
@@ -79,6 +81,19 @@ def show_screen_world_details(
 
     back_btn = create_back_button(header_frame, on_back)
     back_btn.pack(side="left", padx=(0, 10))
+
+    # === IMAGEM DO MUNDO (se feature flag ativa) ===
+    if FEATURE_FLAGS.ENABLE_WORLD_ICON_PREVIEW:
+        icon_loader = get_icon_loader()
+        icon_image = icon_loader.load_icon(world, height=icon_loader.ICON_HEIGHT_LARGE)
+        if icon_image:
+            icon_label = ctk.CTkLabel(
+                header_frame,
+                text="",
+                image=icon_image,
+                fg_color="transparent",
+            )
+            icon_label.pack(side="left", padx=(0, 10))
 
     title = create_title_label(header_frame, world.levelname, size=14)
     title.pack(side="left")
