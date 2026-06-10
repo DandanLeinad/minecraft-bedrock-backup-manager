@@ -9,6 +9,8 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0-beta] - 2026-06-10
+
 ### Added
 
 - Preview de ícone do mundo (world_icon.jpeg) na lista de mundos e detalhes
