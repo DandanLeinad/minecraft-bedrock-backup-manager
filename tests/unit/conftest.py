@@ -27,6 +27,9 @@ def valid_world_model_data() -> dict[str, Path | str | list[int]]:
         "path": Path(
             "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ3qXcJo="
         ),
+        "world_icon_path": Path(
+            "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ3qXcJo=/world_icon.jpeg"
+        ),
         "account_id": "9603359306719601750",
         "version": [1, 26, 12, 2, 0],
     }

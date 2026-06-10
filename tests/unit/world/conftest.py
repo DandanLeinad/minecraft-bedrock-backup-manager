@@ -38,6 +38,9 @@ def sample_world(tmp_path: Path) -> WorldModel:
     return WorldModel(
         folder_name="6LknJ-+T-Ks=",
         levelname="Meu Mundo",
+        world_icon_path=Path(
+            "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ-+T-Ks=/world_icon.jpeg"
+        ),
         path=world_path,
         account_id="test_account",
         version=[1, 26, 12, 2, 0],
