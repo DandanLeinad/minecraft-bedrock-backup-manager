@@ -8,7 +8,7 @@ python-downloads = "manual"
 
 [project]
 name = "minecraft-bedrock-backup-manager"
-version = "0.5.0-beta"
+version = "0.5.0b0"
 description = "NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT. Gerenciador de backups de mundos Minecraft Bedrock Edition para Windows 10/11"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -36,7 +36,7 @@ Changelog = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/bl
 
 [dependency-groups]
 dev = [
-    "bump-my-version>=1.3.0",
+    "commitizen>=4.16.3",
     "pre-commit>=4.6.0",
     "pyinstaller>=6.20.0",
     "pyright>=1.1.410",
@@ -118,20 +118,35 @@ ruff-format-check = "uv run ruff format . --check"
 ruff-format = "uv run ruff format ."
 ruff-all = "uv run ruff check . --fix && uv run ruff format ."
 
-# Versionamento automático
-bump-major = "bump-my-version bump major"
-bump-minor = "bump-my-version bump minor"
-bump-patch = "bump-my-version bump patch"
-bump-beta = "bump-my-version bump pre_l"
-bump-rc = "bump-my-version bump pre_l --new-version 0.1.0-rc"
-version-show = "bump-my-version show-bump"
-version = "git describe --tags"
-
 # Build tasks com PyInstaller (novo sistema otimizado)
 build = "python build.py"
 build-debug = "python build.py --debug"
 build-clean = "python build.py --clean"
 build-full = "python build.py --clean && python build.py"
 
+# Versionamento com Commitizen
+cz-bump = "cz bump --yes"
+cz-bump-dry = "cz bump --dry-run"
+cz-changelog = "cz changelog"
+cz-version = "cz version"
+cz-check = "cz check"
+
 [tool.pyinstaller]
 compatibility_mode = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.5.0b0"
+tag_format = "v$version"
+legacy_tag_formats = ["v$version"]
+version_files = [
+    "pyproject.toml:version = \"{version}\"",
+    "src/backup_manager_mvp/version.json:\"current\": \"{version}\""
+]
+changelog_file = "CHANGELOG.md"
+changelog_incremental = true
+changelog_merge_pattern = "(?P<version>\\d+\\.\\d+\\.\\d+(?:-[a-z]+(?:\\.\\d+)?))"
+changelog_start_version = "0.1.0-beta"
+commit_parser = "^(?P<type>feat|fix|refactor|perf|docs|test|chore|build|ci|revert)(?:\\((?P<scope>[^)]+)\\))?(?P<breaking>!)?: (?P<message>.+)$"
+bump_message = "bump: version {current_version} → {new_version}"
+bump_pattern = "^(?P<type>feat|fix|refactor|perf|docs|test|chore|build|ci|revert)(?:\\((?P<scope>[^)]+)\\))?(?P<breaking>!)?: (?P<message>.+)$"
