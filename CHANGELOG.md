@@ -9,6 +9,14 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Preview de ícone do mundo (world_icon.jpeg) na lista de mundos e detalhes
+  - Novo utilitário `WorldIconLoader` para carregar/renderizar imagem 800x450 (proporção 16:9)
+  - Feature flag: `ENABLE_WORLD_ICON_PREVIEW` (ativa por padrão)
+  - Tamanhos: 48px altura (~85px largura) na lista, 128px altura (~228px largura) no header
+  - Cache em memória para performance
+
 ## [0.4.0-beta] - 2026-05-02
 
 <!-- Seção mantida para compatibilidade com bump-my-version -->
