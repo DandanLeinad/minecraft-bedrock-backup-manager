@@ -15,6 +15,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from pathlib import Path
+from typing import TypedDict
 
 import pytest
 from pydantic import ValidationError
@@ -22,7 +23,15 @@ from pydantic import ValidationError
 from backup_manager_mvp.core.models.world_model import WorldModel
 
 
-def test_world_model_valid(valid_world_model_data: dict[str, Path | str | list[int]]) -> None:
+class ValidWorldModelData(TypedDict):
+    folder_name: str
+    levelname: str
+    path: Path
+    account_id: str
+    version: list[int]
+
+
+def test_world_model_valid(valid_world_model_data: ValidWorldModelData) -> None:
     world_model = WorldModel(**valid_world_model_data)
 
     assert world_model.folder_name == valid_world_model_data["folder_name"]
@@ -93,4 +102,9 @@ def test_world_model_missing_fields() -> None:
         WorldModel(
             folder_name="6LknJ3qXcJo=",
             levelname="My World",
+            path=Path(
+                "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ3qXcJo="
+            ),
+            account_id="9603359306719601750",
+            version=[1, 2, 3, 4, 5, 6],
         )
