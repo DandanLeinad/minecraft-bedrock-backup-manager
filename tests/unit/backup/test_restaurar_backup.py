@@ -93,6 +93,7 @@ class TestRestoreBackupErrors:
         world = WorldModel(
             folder_name="test1234567=",
             levelname="Test",
+            world_icon_path=Path("/some/path"),
             path=Path("/some/path"),
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -117,6 +118,7 @@ class TestRestoreBackupErrors:
         world = WorldModel(
             folder_name="test1234567=",
             levelname="Test",
+            world_icon_path=tmp_path / "world_icon.jpeg",
             path=tmp_path / "nonexistent_world",
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -145,6 +147,7 @@ class TestRestoreBackupErrors:
         world = WorldModel(
             folder_name="test1234567=",
             levelname="Test",
+            world_icon_path=tmp_path / "world_icon.jpeg",
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -179,6 +182,7 @@ class TestRestoreBackupErrors:
         world = WorldModel(
             folder_name="test1234567=",
             levelname="Test",
+            world_icon_path=tmp_path / "world_icon.jpeg",
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],

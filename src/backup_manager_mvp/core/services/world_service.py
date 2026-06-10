@@ -122,6 +122,7 @@ class WorldService:
                     world = WorldModel(
                         folder_name=world_folder.name,
                         levelname=levelname,
+                        world_icon_path=world_folder / "world_icon.jpeg",
                         path=world_folder,
                         account_id=account_id,
                         version=[1, 0, 0, 0, 0],  # Versão padrão

@@ -95,6 +95,7 @@ class TestGetWorldMetadata:
         world = WorldModel(
             folder_name="testworld12=",
             levelname="Test World",
+            world_icon_path=Path("world_icon.jpeg"),
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -115,6 +116,7 @@ class TestGetWorldMetadata:
         world = WorldModel(
             folder_name="world123456=",
             levelname="World",
+            world_icon_path=Path("world_icon.jpeg"),
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -134,6 +136,7 @@ class TestGetWorldMetadata:
         world = WorldModel(
             folder_name="world123456=",
             levelname="World",
+            world_icon_path=Path("world_icon.jpeg"),
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -165,6 +168,7 @@ class TestGetWorldMetadata:
         world = WorldModel(
             folder_name="world123456=",
             levelname="World",
+            world_icon_path=Path("world_icon.jpeg"),
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -198,6 +202,7 @@ class TestGetWorldMetadata:
         world = WorldModel(
             folder_name="nonexistent=",
             levelname="Nonexistent",
+            world_icon_path=Path("world_icon.jpeg"),
             path=Path("/nonexistent/path/that/does/not/exist"),
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -227,6 +232,7 @@ class TestGetWorldMetadata:
         world = WorldModel(
             folder_name="world123456=",
             levelname="World",
+            world_icon_path=Path("world_icon.jpeg"),
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -250,6 +256,7 @@ class TestGetWorldMetadata:
         world = WorldModel(
             folder_name="world123456=",
             levelname="World",
+            world_icon_path=Path("world_icon.jpeg"),
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],

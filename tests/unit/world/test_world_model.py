@@ -98,9 +98,9 @@ def test_world_model_valid(valid_world_model_data: ValidWorldModelData) -> None:
         "folder_name_missing_padding",
     ],
 )
-def test_world_model_validation_error(field, invalid_value, test_id, make_invalid_world_data):
+def test_world_model_validation_error(field, invalid_value, test_id, make_invalid_world_model_data):
     with pytest.raises(ValidationError):
-        WorldModel(**make_invalid_world_data(field, invalid_value))
+        WorldModel(**make_invalid_world_model_data(field, invalid_value))
 
 
 def test_world_model_missing_fields() -> None:

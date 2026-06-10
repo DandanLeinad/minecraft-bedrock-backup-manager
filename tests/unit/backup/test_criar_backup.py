@@ -132,6 +132,7 @@ class TestCreateBackup:
         original_world = WorldModel(
             folder_name="6LknJ-+T-Ks=",
             levelname="Alicia",
+            world_icon_path=world_path / "world_icon.jpeg",
             path=world_path,
             account_id="test_account",
             version=[1, 26, 12, 2, 0],
@@ -143,6 +144,7 @@ class TestCreateBackup:
             renamed_world = WorldModel(
                 folder_name="6LknJ-+T-Ks=",
                 levelname="Alicia2",
+                world_icon_path=world_path / "world_icon.jpeg",
                 path=world_path,
                 account_id="test_account",
                 version=[1, 26, 12, 2, 0],
@@ -165,6 +167,7 @@ class TestCreateBackupErrors:
             folder_name="test1234567=",
             levelname="Test World",
             path=world_path,
+            world_icon_path=world_path / "world_icon.jpeg",
             account_id="test_account",
             version=[1, 0, 0, 0, 0],
         )
@@ -192,6 +195,7 @@ class TestCreateBackupErrors:
             folder_name="abc123def89=",
             levelname="Test World",
             path=world_path,
+            world_icon_path=world_path / "world_icon.jpeg",
             account_id="test",
             version=[1, 0, 0, 0, 0],
         )
@@ -219,6 +223,7 @@ class TestCreateBackupErrors:
             path=world_path,
             account_id="test",
             version=[1, 0, 0, 0, 0],
+            world_icon_path=world_path / "world_icon.jpeg",
         )
 
         backup_path_ref: list[Path | None] = [None]
