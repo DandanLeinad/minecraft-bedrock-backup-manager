@@ -122,6 +122,7 @@ class WorldService:
                     world = WorldModel(
                         folder_name=world_folder.name,
                         levelname=levelname,
+                        world_icon_path=self.get_world_icon_path(world_folder),
                         path=world_folder,
                         account_id=account_id,
                         version=[1, 0, 0, 0, 0],  # Versão padrão
@@ -201,6 +202,17 @@ class WorldService:
             return levelname
         except UnicodeDecodeError as e:
             raise ValueError(f"Erro ao decodificar levelname.txt: {e}")
+
+    def get_world_icon_path(self, world_path: Path) -> Path:
+        """Obtém o caminho para a imagem do mundo (world_icon.jpeg).
+
+        Args:
+            world_path (Path): Caminho da pasta do mundo.
+
+        Returns:
+            Path: Caminho para a imagem do mundo.
+        """
+        return world_path / "world_icon.jpeg"
 
     def get_world_metadata(self, world: WorldModel, backup_service=None) -> dict[str, str]:
         """Calcula metadados do mundo: tamanho, quantidade de backups, último backup.

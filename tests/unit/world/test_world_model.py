@@ -15,6 +15,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from pathlib import Path
+from typing import TypedDict
 
 import pytest
 from pydantic import ValidationError
@@ -22,11 +23,21 @@ from pydantic import ValidationError
 from backup_manager_mvp.core.models.world_model import WorldModel
 
 
-def test_world_model_valid(valid_world_model_data: dict[str, Path | str | list[int]]) -> None:
+class ValidWorldModelData(TypedDict):
+    folder_name: str
+    levelname: str
+    world_icon_path: Path
+    path: Path
+    account_id: str
+    version: list[int]
+
+
+def test_world_model_valid(valid_world_model_data: ValidWorldModelData) -> None:
     world_model = WorldModel(**valid_world_model_data)
 
     assert world_model.folder_name == valid_world_model_data["folder_name"]
     assert world_model.levelname == valid_world_model_data["levelname"]
+    assert world_model.world_icon_path == valid_world_model_data["world_icon_path"]
     assert world_model.path == valid_world_model_data["path"]
     assert world_model.account_id == valid_world_model_data["account_id"]
     assert world_model.version == valid_world_model_data["version"]
@@ -42,11 +53,13 @@ def test_world_model_valid(valid_world_model_data: dict[str, Path | str | list[i
         ("folder_name", None, "folder_name_none"),
         ("levelname", None, "levelname_none"),
         ("account_id", None, "account_id_none"),
+        ("world_icon_path", None, "world_icon_path_none"),
         ("path", None, "path_none"),
         ("version", None, "version_none"),
         ("folder_name", "", "folder_name_empty"),
         ("levelname", "", "levelname_empty"),
         ("account_id", "", "account_id_empty"),
+        ("world_icon_path", Path(""), "world_icon_path_empty"),
         ("path", Path(""), "path_empty"),
         ("version", [], "version_empty"),
         ("version", [1, 2, 3, 4], "version_too_short"),
@@ -66,11 +79,13 @@ def test_world_model_valid(valid_world_model_data: dict[str, Path | str | list[i
         "folder_name_none",
         "levelname_none",
         "account_id_none",
+        "world_icon_path_none",
         "path_none",
         "version_none",
         "folder_name_empty",
         "levelname_empty",
         "account_id_empty",
+        "world_icon_path_empty",
         "path_empty",
         "version_empty",
         "version_too_short",
@@ -83,9 +98,9 @@ def test_world_model_valid(valid_world_model_data: dict[str, Path | str | list[i
         "folder_name_missing_padding",
     ],
 )
-def test_world_model_validation_error(field, invalid_value, test_id, make_invalid_world_data):
+def test_world_model_validation_error(field, invalid_value, test_id, make_invalid_world_model_data):
     with pytest.raises(ValidationError):
-        WorldModel(**make_invalid_world_data(field, invalid_value))
+        WorldModel(**make_invalid_world_model_data(field, invalid_value))
 
 
 def test_world_model_missing_fields() -> None:
@@ -93,4 +108,12 @@ def test_world_model_missing_fields() -> None:
         WorldModel(
             folder_name="6LknJ3qXcJo=",
             levelname="My World",
+            world_icon_path=Path(
+                "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ3qXcJo=/world_icon.jpeg"
+            ),
+            path=Path(
+                "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ3qXcJo="
+            ),
+            account_id="9603359306719601750",
+            version=[1, 2, 3, 4, 5, 6],
         )

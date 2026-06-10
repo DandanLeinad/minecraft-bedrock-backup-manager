@@ -26,6 +26,7 @@ class TestGetWorldsBasePath:
     def test_get_worlds_base_path_returns_path_object(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+
         with patch.object(world_service, "get_worlds_base_path", return_value=tmp_path):
             result = world_service.get_worlds_base_path()
 

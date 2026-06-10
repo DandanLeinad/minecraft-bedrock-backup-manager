@@ -8,7 +8,7 @@ python-downloads = "manual"
 
 [project]
 name = "minecraft-bedrock-backup-manager"
-version = "0.4.0-beta"
+version = "0.5.0-beta"
 description = "NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT. Gerenciador de backups de mundos Minecraft Bedrock Edition para Windows 10/11"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -25,7 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
     "Topic :: Games/Entertainment",
 ]
-dependencies = ["customtkinter>=5.2.2", "pydantic>=2.12.5"]
+dependencies = ["customtkinter>=5.2.2", "pillow>=12.2.0", "pydantic>=2.13.4"]
 
 [project.urls]
 Homepage = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager"
@@ -39,10 +39,10 @@ dev = [
     "bump-my-version>=1.3.0",
     "pre-commit>=4.6.0",
     "pyinstaller>=6.20.0",
-    "pyright>=1.1.409",
+    "pyright>=1.1.410",
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
-    "ruff>=0.15.12",
+    "ruff>=0.15.16",
     "taskipy>=1.14.1",
 ]
 

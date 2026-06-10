@@ -94,6 +94,7 @@ class TestListBackupsErrors:
         world = WorldModel(
             folder_name="xyz12345678=",
             levelname="Test World",
+            world_icon_path=tmp_path / "world_icon.jpeg",
             path=tmp_path / "world",
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -119,6 +120,7 @@ class TestListBackupsErrors:
         world = WorldModel(
             folder_name="test1234567=",
             levelname="Test",
+            world_icon_path=tmp_path / "world_icon.jpeg",
             path=tmp_path / "world",
             account_id="test",
             version=[1, 0, 0, 0, 0],
@@ -140,6 +142,7 @@ class TestListBackupsErrors:
         world = WorldModel(
             folder_name="test1234567=",
             levelname="TestWorld",
+            world_icon_path=tmp_path / "world_icon.jpeg",
             path=tmp_path / "world",
             account_id="test",
             version=[1, 0, 0, 0, 0],

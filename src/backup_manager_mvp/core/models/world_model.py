@@ -25,6 +25,7 @@ class WorldModel(BaseModel):
     Attributes:
         folder_name (str): Nome da pasta do mundo (obrigatório, min 1 caractere).
         levelname (str): Nome do mundo exibido no jogo (obrigatório, min 1 caractere).
+        world_icon_path (Path): Caminho para a imagem do mundo (world_icon.jpeg).
         path (Path): Caminho completo para a pasta do mundo. Rejeita None, vazio ou ".".
         account_id (str): ID da conta Microsoft (obrigatório, min 1 caractere).
         version (list[int]): Versão do mundo - exatamente 5 inteiros (ex: [1, 26, 12, 2, 0]).
@@ -35,13 +36,16 @@ class WorldModel(BaseModel):
 
     folder_name: str = Field(..., min_length=1, max_length=12)  # Nome da pasta do mundo
     levelname: str = Field(..., min_length=1)  # Nome do mundo exibido no jogo
+    world_icon_path: Path | None = Field(
+        default=None
+    )  # Caminho para a imagem do mundo (pode ser None se a feature estiver desativada)
     path: Path = Field(...)  # Caminho completo para a pasta do mundo
     account_id: str = Field(..., min_length=1)  # ID da conta da Microsoft associada ao mundo
     version: list[int] = Field(
         ..., min_length=5, max_length=5
     )  # Versão do Mundo (lastOpenedWithVersion)
 
-    @field_validator("path", mode="before")
+    @field_validator("path", "world_icon_path", mode="before")
     @classmethod
     def validate_path_not_empty(cls, validate):
         """Valida que o campo path não é None, vazio ou inválido."""
