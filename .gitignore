@@ -74,6 +74,7 @@ MinecraftBackups/
 *.bak
 logs/
 *.log
+PROJECT_ANALYSIS.txt
 
 # Environment files
 .env
