@@ -16,18 +16,22 @@
 
 """Label component factories."""
 
+from typing import Any
+
 import customtkinter as ctk
+
+CTkParent = Any
 
 
 def create_title_label(
-    parent: ctk.CTkFrame,
+    parent: CTkParent,
     text: str,
     size: int = 16,
 ) -> ctk.CTkLabel:
     """Cria label de título.
 
     Args:
-        parent: Frame pai
+        parent: Widget pai (CTkFrame, CTkScrollableFrame, etc.)
         text: Texto do título
         size: Tamanho da fonte
 
@@ -43,14 +47,14 @@ def create_title_label(
 
 
 def create_metadata_label(
-    parent: ctk.CTkFrame,
+    parent: CTkParent,
     text: str,
     size: int = 10,
 ) -> ctk.CTkLabel:
     """Cria label de metadados (tamanho, data, etc).
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
         text: Texto do label
         size: Tamanho da fonte
 
@@ -66,11 +70,11 @@ def create_metadata_label(
     )
 
 
-def create_stat_label(parent: ctk.CTkFrame, text: str) -> ctk.CTkLabel:
+def create_stat_label(parent: CTkParent, text: str) -> ctk.CTkLabel:
     """Cria label de estatística.
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
         text: Texto do label
 
     Returns:
@@ -85,11 +89,11 @@ def create_stat_label(parent: ctk.CTkFrame, text: str) -> ctk.CTkLabel:
     )
 
 
-def create_stat_value_label(parent: ctk.CTkFrame, text: str) -> ctk.CTkLabel:
+def create_stat_value_label(parent: CTkParent, text: str) -> ctk.CTkLabel:
     """Cria label do valor de estatística.
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
         text: Valor a exibir
 
     Returns:
