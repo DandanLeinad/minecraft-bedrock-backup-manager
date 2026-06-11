@@ -156,7 +156,7 @@ class TestRestoreBackupErrors:
         with pytest.raises(RuntimeError, match="Erro ao restaurar backup"):
             from unittest.mock import patch
 
-            with patch.object(service.repository, "copy_tree") as mock_copytree:
+            with patch.object(service.repository, "copy_tree_with_progress") as mock_copytree:
                 mock_copytree.side_effect = Exception("Copy failed")
                 service.restore_backup(backup, world)
 
@@ -188,13 +188,23 @@ class TestRestoreBackupErrors:
             version=[1, 0, 0, 0, 0],
         )
 
-        def mock_copy2_fail(src, dst):
+        def mock_copy_with_progress_fail(
+            source: Path,
+            destination: Path,
+            progress_callback=None,
+            *,
+            dirs_exist_ok: bool = False,
+        ):
             raise OSError("Permission denied")
 
         from unittest.mock import patch
 
         with (
-            patch.object(service.repository, "copy_file", side_effect=mock_copy2_fail),
+            patch.object(
+                service.repository,
+                "copy_tree_with_progress",
+                side_effect=mock_copy_with_progress_fail,
+            ),
             pytest.raises(RuntimeError, match="Erro ao restaurar backup"),
         ):
             service.restore_backup(backup, world)

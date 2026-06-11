@@ -17,6 +17,7 @@
 """Repositorio concreto de backups via filesystem local."""
 
 import shutil
+from collections.abc import Callable
 from pathlib import Path
 
 from backup_manager_mvp.core.ports.backup_repository import BackupRepositoryPort
@@ -40,6 +41,58 @@ class FileSystemBackupRepository(BackupRepositoryPort):
 
     def copy_tree(self, source: Path, destination: Path, *, dirs_exist_ok: bool = False) -> None:
         shutil.copytree(source, destination, dirs_exist_ok=dirs_exist_ok)
+
+    def copy_tree_with_progress(
+        self,
+        source: Path,
+        destination: Path,
+        progress_callback: Callable[[int, int], None] | None = None,
+        *,
+        dirs_exist_ok: bool = False,
+    ) -> None:
+        """Copia uma arvore de diretorios com rastreamento de progresso por arquivo.
+
+        Args:
+            source: Diretorio de origem
+            destination: Diretorio de destino
+            progress_callback: Callback chamado com (current, total) a cada arquivo copiado
+            dirs_exist_ok: Se True, permite que o diretorio de destino ja exista
+        """
+        # Primeiro, contar total de arquivos
+        total_files = 0
+        for item in source.rglob("*"):
+            if item.is_file():
+                total_files += 1
+
+        if total_files == 0:
+            # Nao ha arquivos para copiar, apenas criar diretorio se necessario
+            if dirs_exist_ok:
+                destination.mkdir(parents=True, exist_ok=True)
+            else:
+                destination.mkdir(parents=True)
+            return
+
+        copied = 0
+
+        def _copy_recursive(src: Path, dst: Path) -> None:
+            nonlocal copied
+            for item in src.iterdir():
+                if item.is_dir():
+                    new_dst = dst / item.name
+                    new_dst.mkdir(exist_ok=True)
+                    _copy_recursive(item, new_dst)
+                else:
+                    shutil.copy2(item, dst / item.name)
+                    copied += 1
+                    if progress_callback:
+                        progress_callback(copied, total_files)
+
+        if dirs_exist_ok:
+            destination.mkdir(parents=True, exist_ok=True)
+        else:
+            destination.mkdir(parents=True)
+
+        _copy_recursive(source, destination)
 
     def list_directory(self, path: Path) -> list[Path]:
         return list(path.iterdir())
