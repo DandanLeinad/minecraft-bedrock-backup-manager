@@ -19,10 +19,11 @@
 import shutil
 from pathlib import Path
 
+from backup_manager_mvp.core.ports.backup_repository import BackupRepositoryPort
 from backup_manager_mvp.utils.paths import BACKUPS_DIR
 
 
-class FileSystemBackupRepository:
+class FileSystemBackupRepository(BackupRepositoryPort):
     """Implementacao concreta da porta de backup usando pathlib/shutil."""
 
     def get_backup_base_path(self) -> Path:
