@@ -68,26 +68,22 @@ def show_loading(
         Tuple (loading_label, spinner) para reutilização
     """
     logger.debug(f"Loading: {message}")
-    try:
-        if spinner is None:
-            spinner = LoadingSpinner()
+    if spinner is None:
+        spinner = LoadingSpinner()
 
-        if not spinner.loading_label:
-            spinner.loading_label = ctk.CTkLabel(
-                main_frame,
-                text=f"{SPINNER_FRAMES[0]} {message}",
-                font=ctk.CTkFont(size=12),
-            )
-        else:
-            spinner.loading_label.configure(text=f"{SPINNER_FRAMES[0]} {message}")
+    if not spinner.loading_label:
+        spinner.loading_label = ctk.CTkLabel(
+            main_frame,
+            text=f"{SPINNER_FRAMES[0]} {message}",
+            font=ctk.CTkFont(size=12),
+        )
+    else:
+        spinner.loading_label.configure(text=f"{SPINNER_FRAMES[0]} {message}")
 
-        spinner.loading_label.pack(pady=20)
-        spinner.update()  # Iniciar animação
-        main_frame.update()
-        return spinner.loading_label, spinner
-    except Exception as e:
-        logger.error(f"Erro ao mostrar loading: {e}", exc_info=True)
-        return None, spinner
+    spinner.loading_label.pack(pady=20)
+    spinner.update()  # Iniciar animação
+    main_frame.update()
+    return spinner.loading_label, spinner
 
 
 def hide_loading(loading_label: ctk.CTkLabel | None) -> None:
