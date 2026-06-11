@@ -33,7 +33,7 @@ def show_screen_restore_confirmation(
     world: WorldModel,
     backup: BackupModel,
     on_cancel: Callable[[], None],
-    on_confirm: Callable[[BackupModel, WorldModel], None],
+    on_confirm: Callable[[], None],
 ) -> None:
     """Exibe tela 3: Confirmação de restauração.
 
@@ -42,7 +42,7 @@ def show_screen_restore_confirmation(
         world: Mundo que será restaurado
         backup: Backup a ser restaurado
         on_cancel: Callback para cancelar
-        on_confirm: Callback para confirmar restauração
+        on_confirm: Callback para confirmar restauração (closure capturing backup/world)
     """
     hide_loading(None)
     clear_frame(main_frame)
