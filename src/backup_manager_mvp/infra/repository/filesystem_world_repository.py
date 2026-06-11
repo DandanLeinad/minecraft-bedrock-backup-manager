@@ -18,8 +18,10 @@
 
 from pathlib import Path
 
+from backup_manager_mvp.core.ports.world_repository import WorldRepositoryPort
 
-class FileSystemWorldRepository:
+
+class FileSystemWorldRepository(WorldRepositoryPort):
     """Implementacao concreta da porta de mundos usando pathlib."""
 
     def get_worlds_base_path(self) -> Path:

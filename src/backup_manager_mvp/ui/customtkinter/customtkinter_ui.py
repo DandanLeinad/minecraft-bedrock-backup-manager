@@ -116,6 +116,10 @@ class CustomTkinterUIController(UIController):
         self._sync_btn: ctk.CTkButton | None = None
         self._main_frame: ctk.CTkFrame | None = None
 
+        # === ATRIBUTOS DE COMPATIBILIDADE (para _clear_frame) ===
+        self._loading_label: ctk.CTkLabel | None = None
+        self._toast_label: ctk.CTkLabel | None = None
+
         # === CACHE ===
         self._backup_cache = BackupCache(ttl_seconds=60)
 
@@ -177,6 +181,7 @@ class CustomTkinterUIController(UIController):
             on_world_selected(world, self._callback_world_selected)
 
         # Chamar função extraída
+        assert self._main_frame is not None, "Main frame not initialized"
         show_screen_worlds_list(self._main_frame, worlds, handle_world_selected, self.app)
 
     def show_screen_world_details(self, world: WorldModel, backups: list[BackupModel]) -> None:
@@ -226,6 +231,7 @@ class CustomTkinterUIController(UIController):
         sync_btn_ref = {}
 
         # Chamar função extraída com argumentos na ordem correta
+        assert self._main_frame is not None, "Main frame not initialized"
         show_screen_world_details(
             self._main_frame,
             world,
@@ -265,6 +271,7 @@ class CustomTkinterUIController(UIController):
             on_restore_backup(backup, world, self._callback_restore_backup)
 
         # Chamar função extraída
+        assert self._main_frame is not None, "Main frame not initialized"
         show_screen_restore_confirmation(
             self._main_frame,
             world,
@@ -297,6 +304,7 @@ class CustomTkinterUIController(UIController):
             on_restore_backup(backup, world, self._callback_restore_backup)
 
         # Chamar função extraída
+        assert self._main_frame is not None, "Main frame not initialized"
         show_screen_restore_preview(
             self._main_frame,
             world,
@@ -409,7 +417,8 @@ class CustomTkinterUIController(UIController):
             self._backup_create_btn.configure(state="disabled")
         if self._sync_btn and self._sync_btn.winfo_exists():
             self._sync_btn.configure(state="disabled")
-        self.main_window.update()
+        if self.main_window:
+            self.main_window.update()
 
     def enable_buttons(self) -> None:
         """Habilita botões de ação."""
@@ -418,7 +427,8 @@ class CustomTkinterUIController(UIController):
             self._backup_create_btn.configure(state="normal")
         if self._sync_btn and self._sync_btn.winfo_exists():
             self._sync_btn.configure(state="normal")
-        self.main_window.update()
+        if self.main_window:
+            self.main_window.update()
 
     # ========== CALLBACKS (REGISTRO) ==========
 

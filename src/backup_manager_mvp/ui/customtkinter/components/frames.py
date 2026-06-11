@@ -16,14 +16,19 @@
 
 """Frame component factories."""
 
+from typing import Any
+
 import customtkinter as ctk
 
+# Type alias for any widget that can be a parent (CTkFrame, CTkScrollableFrame, etc.)
+CTkParent = Any
 
-def create_header_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
+
+def create_header_frame(parent: CTkParent) -> ctk.CTkFrame:
     """Cria frame de header com estilo padrão.
 
     Args:
-        parent: Frame pai
+        parent: Widget pai (CTkFrame, CTkScrollableFrame, etc.)
 
     Returns:
         CTkFrame configurado
@@ -31,11 +36,11 @@ def create_header_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
     return ctk.CTkFrame(parent, fg_color="transparent")
 
 
-def create_stats_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
+def create_stats_frame(parent: CTkParent) -> ctk.CTkFrame:
     """Cria frame de estatísticas (3 colunas).
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
 
     Returns:
         CTkFrame configurado
@@ -49,11 +54,11 @@ def create_stats_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
     )
 
 
-def create_info_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
+def create_info_frame(parent: CTkParent) -> ctk.CTkFrame:
     """Cria frame de informações (caminho, conta, etc).
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
 
     Returns:
         CTkFrame configurado
@@ -67,11 +72,11 @@ def create_info_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
     )
 
 
-def create_separator(parent: ctk.CTkFrame, height: int = 1) -> ctk.CTkFrame:
+def create_separator(parent: CTkParent, height: int = 1) -> ctk.CTkFrame:
     """Cria separador visual.
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
         height: Altura do separador
 
     Returns:
@@ -84,11 +89,11 @@ def create_separator(parent: ctk.CTkFrame, height: int = 1) -> ctk.CTkFrame:
     )
 
 
-def create_world_item_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
+def create_world_item_frame(parent: CTkParent) -> ctk.CTkFrame:
     """Cria frame para item de mundo na lista.
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
 
     Returns:
         CTkFrame configurado
@@ -102,11 +107,11 @@ def create_world_item_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
     )
 
 
-def create_backup_item_frame(parent: ctk.CTkFrame) -> ctk.CTkFrame:
+def create_backup_item_frame(parent: CTkParent) -> ctk.CTkFrame:
     """Cria frame para item de backup na lista.
 
     Args:
-        parent: Frame pai
+        parent: Widget pai
 
     Returns:
         CTkFrame configurado

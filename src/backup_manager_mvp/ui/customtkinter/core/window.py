@@ -110,6 +110,7 @@ class WindowManager:
         Returns:
             Janela CTk
         """
+        assert self.main_window is not None, "Main window not initialized"
         return self.main_window
 
     def get_main_frame(self) -> ctk.CTkFrame:
@@ -118,6 +119,7 @@ class WindowManager:
         Returns:
             Frame principal
         """
+        assert self._main_frame is not None, "Main frame not initialized"
         return self._main_frame
 
     def get_notifications_frame(self) -> ctk.CTkFrame:
@@ -126,4 +128,5 @@ class WindowManager:
         Returns:
             Frame de notificações
         """
+        assert self._notifications_frame is not None, "Notifications frame not initialized"
         return self._notifications_frame

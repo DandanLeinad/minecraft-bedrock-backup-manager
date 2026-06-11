@@ -46,33 +46,29 @@ def show_toast(
     Returns:
         Label do toast (para reutilização)
     """
-    try:
-        # Verificar se widget ainda existe
-        if toast_label and toast_label.winfo_exists():
-            toast_label.configure(
-                text=message,
-                fg_color=COLORS["accent_green"] if success else COLORS["accent_red"],
-            )
-            toast_label.pack(pady=10, padx=10)
-        else:
-            # Recriar se foi destruído
-            toast_label = ctk.CTkLabel(
-                main_frame,
-                text=message,
-                font=ctk.CTkFont(size=11),
-                text_color="#FFFFFF",
-                fg_color=COLORS["accent_green"] if success else COLORS["accent_red"],
-                corner_radius=6,
-            )
-            toast_label.pack(pady=10, padx=10)
+    # Verificar se widget ainda existe
+    if toast_label and toast_label.winfo_exists():
+        toast_label.configure(
+            text=message,
+            fg_color=COLORS["accent_green"] if success else COLORS["accent_red"],
+        )
+        toast_label.pack(pady=10, padx=10)
+    else:
+        # Recriar se foi destruído
+        toast_label = ctk.CTkLabel(
+            main_frame,
+            text=message,
+            font=ctk.CTkFont(size=11),
+            text_color="#FFFFFF",
+            fg_color=COLORS["accent_green"] if success else COLORS["accent_red"],
+            corner_radius=6,
+        )
+        toast_label.pack(pady=10, padx=10)
 
-        main_window.update()
-        # Auto-hide após duration
-        main_window.after(duration, lambda: hide_toast(toast_label))
-        return toast_label
-    except Exception as e:
-        logger.error(f"Erro ao mostrar toast: {e}", exc_info=True)
-        return toast_label
+    main_window.update()
+    # Auto-hide após duration
+    main_window.after(duration, lambda: hide_toast(toast_label))
+    return toast_label
 
 
 def hide_toast(toast_label: ctk.CTkLabel | None) -> None:
