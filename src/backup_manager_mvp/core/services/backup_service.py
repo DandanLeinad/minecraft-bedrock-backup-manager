@@ -46,6 +46,21 @@ class BackupService:
         """
         return self.repository.get_backup_base_path()
 
+    def _create_progress_callback(
+        self,
+        progress_callback: Callable[[ProgressModel], None] | None,
+        total: int,
+        stage: str,
+    ) -> Callable[[int, int], None] | None:
+        """Cria callback interno para converter (current, total) em ProgressModel."""
+        if progress_callback is None:
+            return None
+
+        def internal_callback(current: int, total: int) -> None:
+            progress_callback(ProgressModel(current=current, total=total, stage=stage))
+
+        return internal_callback
+
     def create_backup(
         self,
         world: WorldModel,
@@ -93,9 +108,21 @@ class BackupService:
             if progress_callback:
                 progress_callback(ProgressModel(current=0, total=1, stage="Preparando backup..."))
 
-            # Copiar todo o conteúdo do mundo
-            # TODO: Implementar cópia com rastreamento de arquivos individuais
-            self.repository.copy_tree(world.path, backup_path, dirs_exist_ok=True)
+            # Calcular total de arquivos para progresso
+            total_files, _, _ = self.repository.read_tree_stats(world.path)
+
+            # Criar callback interno
+            internal_callback = self._create_progress_callback(
+                progress_callback, total_files, "Copiando arquivos..."
+            )
+
+            # Copiar todo o conteúdo do mundo com progresso
+            self.repository.copy_tree_with_progress(
+                world.path,
+                backup_path,
+                progress_callback=internal_callback,
+                dirs_exist_ok=True,
+            )
 
             # Reportar conclusão
             if progress_callback:
@@ -225,12 +252,21 @@ class BackupService:
                     ProgressModel(current=0, total=1, stage="Restaurando arquivos do backup...")
                 )
 
-            # Copiar conteúdo do backup para o mundo
-            for item in self.repository.list_directory(backup.backup_path):
-                if self.repository.is_directory(item):
-                    self.repository.copy_tree(item, world.path / item.name)
-                else:
-                    self.repository.copy_file(item, world.path / item.name)
+            # Calcular total de arquivos no backup
+            total_files, _, _ = self.repository.read_tree_stats(backup.backup_path)
+
+            # Criar callback interno
+            internal_callback = self._create_progress_callback(
+                progress_callback, total_files, "Restaurando arquivos..."
+            )
+
+            # Copiar conteúdo do backup para o mundo com progresso
+            self.repository.copy_tree_with_progress(
+                backup.backup_path,
+                world.path,
+                progress_callback=internal_callback,
+                dirs_exist_ok=True,
+            )
 
             # Reportar conclusão
             if progress_callback:

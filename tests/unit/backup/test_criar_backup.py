@@ -176,7 +176,7 @@ class TestCreateBackupErrors:
 
         with (
             patch.object(service, "get_backup_base_path", return_value=backup_base),
-            patch.object(service.repository, "copy_tree") as mock_copytree,
+            patch.object(service.repository, "copy_tree_with_progress") as mock_copytree,
         ):
             mock_copytree.side_effect = OSError("Simulated copy failure")
 
@@ -228,15 +228,25 @@ class TestCreateBackupErrors:
 
         backup_path_ref: list[Path | None] = [None]
 
-        def mock_copytree_fail(src, dst, **kwargs):
-            backup_path_ref[0] = Path(dst)
-            Path(dst).mkdir(parents=True, exist_ok=True)
-            (Path(dst) / "partial.txt").write_text("partial")
+        def mock_copy_with_progress_fail(
+            source: Path,
+            destination: Path,
+            progress_callback=None,
+            *,
+            dirs_exist_ok: bool = False,
+        ):
+            backup_path_ref[0] = destination
+            destination.mkdir(parents=True, exist_ok=True)
+            (destination / "partial.txt").write_text("partial")
             raise Exception("Simulated copy failure")
 
         with (
             patch.object(service, "get_backup_base_path", return_value=backup_base),
-            patch("shutil.copytree", side_effect=mock_copytree_fail),
+            patch.object(
+                service.repository,
+                "copy_tree_with_progress",
+                side_effect=mock_copy_with_progress_fail,
+            ),
             pytest.raises(RuntimeError, match="Erro ao criar backup"),
         ):
             service.create_backup(world)
