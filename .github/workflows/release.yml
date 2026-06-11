@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build & Release
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run tests
+        run: uv run task test
+
+      - name: Build executable
+        run: python build.py
+
+      - name: Create release archive
+        run: |
+          cd dist
+          $version = "${{ github.ref_name }}"
+          $archiveName = "minecraft-bedrock-backup-manager-${version}-windows.zip"
+          Compress-Archive -Path "minecraft-bedrock-backup-manager\*" -DestinationPath $archiveName
+          echo "ARCHIVE_NAME=$archiveName" >> $env:GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Minecraft Bedrock Backup Manager ${{ github.ref_name }}
+
+            **Auto-generated release** from tag ${{ github.ref_name }}
+
+            ### Download
+            - `minecraft-bedrock-backup-manager-${{ github.ref_name }}-windows.zip` - Portable executable (Windows 10/11)
+
+            ### Changes
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+
+            ---
+            **Full changelog:** https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.ref_name }}
+
+          files: |
+            dist/${{ env.ARCHIVE_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minecraft-bedrock-backup-manager-${{ github.ref_name }}-windows
+          path: dist/*.zip
+          retention-days: 30
