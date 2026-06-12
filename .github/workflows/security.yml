@@ -28,10 +28,10 @@ jobs:
         run: pip install uv
 
       - name: Install pip-audit
-        run: pip install pip-audit==2.13.0
+        run: pip install pip-audit==2.10.1
 
       - name: Install dependencies
         run: uv sync --all-groups
 
       - name: Run pip-audit
-        run: uv run pip-audit --desc --fail-on=high
+        run: uv run pip-audit --desc
