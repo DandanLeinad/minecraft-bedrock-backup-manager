@@ -17,6 +17,7 @@
 """Application Controller - Orquestra serviços e UI."""
 
 import logging
+import threading
 
 from backup_manager_mvp.core.models.backup_model import BackupModel
 from backup_manager_mvp.core.models.progress_model import ProgressModel
@@ -102,82 +103,120 @@ class BackupManagerApp:
             )
 
     def _handle_create_backup(self, world: WorldModel) -> None:
-        """Chamado quando usuário clica 'Fazer Backup Agora'."""
-        try:
-            logger.info(f"Criando backup para: {world.levelname}")
+        """Chamado quando usuário clica 'Fazer Backup Agora'.
 
-            # Mostrar barra de progresso e desabilitar botões
-            self.ui.show_progress_bar()
-            self.ui.disable_buttons()
+        Executa o backup em uma thread de background para não bloquear a UI.
+        """
+        logger.info(f"Iniciando backup em background para: {world.levelname}")
 
-            # Criar callback de progresso
-            def on_progress(progress: ProgressModel) -> None:
-                self.ui.update_progress(progress)
+        # Mostrar barra de progresso e desabilitar botões (na thread principal)
+        self.ui.show_progress_bar()
+        self.ui.disable_buttons()
 
-            backup = self.backup_service.create_backup(world, progress_callback=on_progress)
-            logger.info(f"Backup criado com sucesso: {backup.backup_path}")
+        # Criar callback de progresso que usa after() para thread-safety
+        def on_progress(progress: ProgressModel) -> None:
+            if self.ui.main_window:
+                self.ui.main_window.after(0, lambda: self.ui.update_progress(progress))
 
-            # Esconder barra de progresso e reabilitar botões
-            self.ui.hide_progress_bar()
-            self.ui.enable_buttons()
+        # Executar backup em background thread
+        def run_backup() -> None:
+            try:
+                backup = self.backup_service.create_backup(world, progress_callback=on_progress)
+                logger.info(f"Backup criado com sucesso: {backup.backup_path}")
 
-            self.ui.show_info_dialog(
-                "✅ Backup Criado com Sucesso!",
-                f"O backup do mundo '{world.levelname}' foi criado com sucesso!\n\n📁 Local: {backup.backup_path}\n\n💾 Tamanho: {backup.size_display}",
-            )
-            # Recarregar a lista de backups
-            backups = self.backup_service.list_backups(world)
-            self.ui.show_screen_world_details(world, backups)
-        except Exception as e:
-            logger.error(f"Erro ao criar backup: {e}", exc_info=True)
+                # Sucesso: agendar UI updates na thread principal
+                def on_success() -> None:
+                    self.ui.hide_progress_bar()
+                    self.ui.enable_buttons()
 
-            # Esconder barra de progresso e reabilitar botões mesmo em erro
-            self.ui.hide_progress_bar()
-            self.ui.enable_buttons()
+                    self.ui.show_info_dialog(
+                        "✅ Backup Criado com Sucesso!",
+                        f"O backup do mundo '{world.levelname}' foi criado com sucesso!\n\n📁 Local: {backup.backup_path}\n\n💾 Tamanho: {backup.size_display}",
+                    )
+                    # Recarregar a lista de backups
+                    backups = self.backup_service.list_backups(world)
+                    self.ui.show_screen_world_details(world, backups)
 
-            self.ui.show_error_dialog(
-                "❌ Erro ao Criar Backup",
-                f"Não foi possível criar o backup: {e!s}\n\n🔍 Verifique:\n• As permissões da pasta\n• Espaço em disco disponível\n• Se o mundo está sendo usado",
-            )
+                if self.ui.main_window:
+                    self.ui.main_window.after(0, on_success)
+
+            except Exception as exc:
+                logger.error(f"Erro ao criar backup: {exc}", exc_info=True)
+
+                # Erro: agendar UI updates na thread principal
+                def on_error(err=exc) -> None:
+                    self.ui.hide_progress_bar()
+                    self.ui.enable_buttons()
+
+                    self.ui.show_error_dialog(
+                        "❌ Erro ao Criar Backup",
+                        f"Não foi possível criar o backup: {err!s}\n\n🔍 Verifique:\n• As permissões da pasta\n• Espaço em disco disponível\n• Se o mundo está sendo usado",
+                    )
+
+                if self.ui.main_window:
+                    self.ui.main_window.after(0, on_error)
+
+        # Iniciar thread de background
+        thread = threading.Thread(target=run_backup, daemon=True)
+        thread.start()
 
     def _handle_restore_backup(self, backup: BackupModel, world: WorldModel) -> None:
-        """Chamado quando usuário confirma restauração."""
-        try:
-            logger.info(f"Restaurando backup de {world.levelname} de {backup.created_at}")
+        """Chamado quando usuário confirma restauração.
 
-            # Mostrar barra de progresso e desabilitar botões
-            self.ui.show_progress_bar()
-            self.ui.disable_buttons()
+        Executa a restauração em uma thread de background para não bloquear a UI.
+        """
+        logger.info(f"Iniciando restauração em background para: {world.levelname}")
 
-            # Criar callback de progresso
-            def on_progress(progress) -> None:  # progress: ProgressModel
-                self.ui.update_progress(progress)
+        # Mostrar barra de progresso e desabilitar botões (na thread principal)
+        self.ui.show_progress_bar()
+        self.ui.disable_buttons()
 
-            self.backup_service.restore_backup(backup, world, progress_callback=on_progress)
-            logger.info(f"Backup restaurado com sucesso para {world.levelname}")
+        # Criar callback de progresso que usa after() para thread-safety
+        def on_progress(progress) -> None:  # progress: ProgressModel
+            if self.ui.main_window:
+                self.ui.main_window.after(0, lambda: self.ui.update_progress(progress))
 
-            # Esconder barra de progresso e reabilitar botões
-            self.ui.hide_progress_bar()
-            self.ui.enable_buttons()
+        # Executar restauração em background thread
+        def run_restore() -> None:
+            try:
+                self.backup_service.restore_backup(backup, world, progress_callback=on_progress)
+                logger.info(f"Backup restaurado com sucesso para {world.levelname}")
 
-            self.ui.show_info_dialog(
-                "✅ Backup Restaurado com Sucesso!",
-                f"✨ O mundo '{world.levelname}' foi restaurado com sucesso!\n\n🎮 Você pode abrir o Minecraft agora para ver as alterações.\n\n⚡ Dica: Faça um novo backup se quiser manter o progresso atual.",
-            )
-            # ✅ Voltar para a tela de backups do MESMO mundo (não para lista de mundos)
-            backups = self.backup_service.list_backups(world)
-            self.ui.show_screen_world_details(world, backups)
-        except Exception as e:
-            logger.error(f"Erro ao restaurar backup: {e}", exc_info=True)
+                # Sucesso: agendar UI updates na thread principal
+                def on_success() -> None:
+                    self.ui.hide_progress_bar()
+                    self.ui.enable_buttons()
 
-            # Esconder barra de progresso e reabilitar botões mesmo em erro
-            self.ui.hide_progress_bar()
-            self.ui.enable_buttons()
+                    self.ui.show_info_dialog(
+                        "✅ Backup Restaurado com Sucesso!",
+                        f"✨ O mundo '{world.levelname}' foi restaurado com sucesso!\n\n🎮 Você pode abrir o Minecraft agora para ver as alterações.\n\n⚡ Dica: Faça um novo backup se quiser manter o progresso atual.",
+                    )
+                    # ✅ Voltar para a tela de backups do MESMO mundo (não para lista de mundos)
+                    backups = self.backup_service.list_backups(world)
+                    self.ui.show_screen_world_details(world, backups)
 
-            self.ui.show_error_dialog(
-                "❌ Erro ao Restaurar Backup",
-                f"Não foi possível restaurar o mundo: {e!s}\n\n🔍 Verifique:\n• As permissões da pasta\n• Se o mundo está bloqueado\n• Espaço em disco disponível",
-            )
+                if self.ui.main_window:
+                    self.ui.main_window.after(0, on_success)
+
+            except Exception as exc:
+                logger.error(f"Erro ao restaurar backup: {exc}", exc_info=True)
+
+                # Erro: agendar UI updates na thread principal
+                def on_error(err=exc) -> None:
+                    self.ui.hide_progress_bar()
+                    self.ui.enable_buttons()
+
+                    self.ui.show_error_dialog(
+                        "❌ Erro ao Restaurar Backup",
+                        f"Não foi possível restaurar o mundo: {err!s}\n\n🔍 Verifique:\n• As permissões da pasta\n• Se o mundo está bloqueado\n• Espaço em disco disponível",
+                    )
+
+                if self.ui.main_window:
+                    self.ui.main_window.after(0, on_error)
+
+        # Iniciar thread de background
+        thread = threading.Thread(target=run_restore, daemon=True)
+        thread.start()
 
     def _handle_back(self) -> None:
         """Chamado quando usuário clica voltar/cancelar."""
