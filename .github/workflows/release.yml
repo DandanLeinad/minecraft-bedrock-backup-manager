@@ -33,7 +33,7 @@ jobs:
         run: uv run task test
 
       - name: Build executable
-        run: python build.py
+        run: uv run python build.py
 
       - name: Create release archive
         run: |
