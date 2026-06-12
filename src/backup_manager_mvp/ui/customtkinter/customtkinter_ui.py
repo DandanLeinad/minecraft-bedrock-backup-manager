@@ -393,22 +393,29 @@ class CustomTkinterUIController(UIController):
         if self.main_window:
             self.main_window.update_idletasks()
 
+    def _schedule_ui_update(self, callback) -> None:
+        """Agenda uma atualização de UI na thread principal de forma thread-safe."""
+        if self.main_window and self.main_window.winfo_exists():
+            self.main_window.after(0, callback)
+
     def hide_progress_bar(self) -> None:
         """Esconde barra de progresso."""
         logger.debug("Hiding progress bar...")
         if self._progress_widget and self._progress_widget.winfo_exists():
             self._progress_widget.pack_forget()
 
-        if self.main_window:
-            self.main_window.update_idletasks()
+        self._schedule_ui_update(
+            lambda: self.main_window.update_idletasks() if self.main_window else None
+        )
 
     def update_progress(self, progress: ProgressModel) -> None:
         """Atualiza a barra de progresso com dados."""
         if self._progress_widget and self._progress_widget.winfo_exists():
             self._progress_widget.update_progress(progress)
 
-        if self.main_window:
-            self.main_window.update_idletasks()
+        self._schedule_ui_update(
+            lambda: self.main_window.update_idletasks() if self.main_window else None
+        )
 
     def disable_buttons(self) -> None:
         """Desabilita botões de ação."""
@@ -417,8 +424,7 @@ class CustomTkinterUIController(UIController):
             self._backup_create_btn.configure(state="disabled")
         if self._sync_btn and self._sync_btn.winfo_exists():
             self._sync_btn.configure(state="disabled")
-        if self.main_window:
-            self.main_window.update()
+        self._schedule_ui_update(lambda: self.main_window.update() if self.main_window else None)
 
     def enable_buttons(self) -> None:
         """Habilita botões de ação."""
@@ -427,8 +433,7 @@ class CustomTkinterUIController(UIController):
             self._backup_create_btn.configure(state="normal")
         if self._sync_btn and self._sync_btn.winfo_exists():
             self._sync_btn.configure(state="normal")
-        if self.main_window:
-            self.main_window.update()
+        self._schedule_ui_update(lambda: self.main_window.update() if self.main_window else None)
 
     # ========== CALLBACKS (REGISTRO) ==========
 

@@ -9,6 +9,20 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0b0] - 2026-06-11
+
+### Added
+- World Icon Preview: world_icon.jpeg preview in worlds list and details
+- Real file-by-file progress tracking for backup/restore operations
+- Background thread execution for backup/restore operations (UI stays responsive)
+
+### Changed
+- Background thread execution for backup/restore operations
+- Thread-safe UI updates via main_window.after() callbacks
+
+### Fixed
+- Pyright type errors (32 errors fixed)
+
 ## [0.5.0b0] - 2026-06-10
 
 ### Added
@@ -127,6 +141,8 @@ Este projeto segue [Semantic Versioning](https://semver.org/) com formatação *
 - **0.1.0b0** — MVP inicial ✅
 - **0.4.0b0** — Clean Architecture + Feature Flags ✅
 - **0.5.0b0** — World Icon Preview + Commitizen migration ✅
+- **0.6.0b0** — Background thread + Real progress tracking ✅
+- **0.7.0b0** — Real file-by-file progress + Background threads (current)
 - **0.x.0rc1** — Release candidate (após testes)
 - **0.x.0** — Versão estável
 - **1.0.0** — Produto consolidado (futuro)
@@ -141,6 +157,8 @@ O versionamento agora é **automático via Conventional Commits**:
 | `feat:` | MINOR | `feat(ui): add world preview` |
 | `BREAKING CHANGE:` | MAJOR | `feat(api)!: change backup format` |
 | `refactor:`, `docs:`, `chore:`, etc. | Nenhum | — |
+
+**Versão atual:** 0.7.0b0
 
 **Comandos:**
 ```bash
@@ -159,4 +177,4 @@ uv run task cz-check       # Valida commits recentes
 
 ---
 
-**Última atualização:** 2026-06-10
+**Última atualização:** 2026-06-11
