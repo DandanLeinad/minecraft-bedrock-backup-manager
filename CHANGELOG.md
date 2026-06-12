@@ -9,6 +9,22 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.7.0b0] - 2026-06-12
+
+### Added
+- Real file-by-file progress tracking for backup/restore operations
+- Background thread execution for backup/restore operations (UI stays responsive)
+- Progress callback with per-file granularity
+
+### Changed
+- Background thread execution for backup/restore operations
+- Thread-safe UI updates via main_window.after() callbacks
+- Progress callback converts (current,total) → ProgressModel
+
+### Fixed
+- UI freeze during backup/restore operations
+- Progress bar now shows real per-file progress
+
 ## [0.6.0b0] - 2026-06-11
 
 ### Added
@@ -26,7 +42,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.5.0b0] - 2026-06-10
 
 ### Added
-
 - Preview de ícone do mundo (world_icon.jpeg) na lista de mundos e detalhes
   - Novo utilitário `WorldIconLoader` para carregar/renderizar imagem 800x450 (proporção 16:9)
   - Feature flag: `ENABLE_WORLD_ICON_PREVIEW` (ativa por padrão)
@@ -34,7 +49,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - Cache em memória para performance
 
 ### Changed
-
 - **Migração de versionamento**: `bump-my-version` → `Commitizen`
   - Remove dependência transitiva vulnerável `idna 3.11` (CVE-2024-3651)
   - Versionamento automático baseado em Conventional Commits (`feat:`, `fix:`, `BREAKING CHANGE:`)
@@ -50,7 +64,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 <!-- Seção mantida para compatibilidade com bump-my-version -->
 
 ### Added
-
 - Refatoração para Clean Architecture com separação entre core, infra e ui
 - Reorganização dos testes unitários por comportamento:
   - tests/unit/backup/
@@ -59,7 +72,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Centralização de fixtures compartilhadas em tests/unit/conftest.py
 
 ### Changed
-
 - UI de restauração ajustada para usar o fluxo de preview quando a feature flag está ativa
 - FF_RESTORE_PREVIEW ativada por padrão no ambiente de desenvolvimento
 - Atualização de dependências e tooling:
@@ -71,7 +83,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.3.0-beta] - 2026-04-22
 
 ### Added
-
 - Preview de conteúdo do backup antes de restaurar (MC-3)
   - Novo método `BackupService.get_backup_preview_info()`
   - Tela customizada mostrando arquivos e pastas do backup
@@ -80,7 +91,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - 10 testes abrangentes (205 total)
 
 ### Fixed
-
 - UnicodeEncodeError ao fazer log de mensagens com emojis no Windows
   - Regex pattern para remover todos os emojis antes de logging
   - Mantém emojis na UI (dialogs, toasts)
@@ -89,7 +99,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.2.0-beta] - 2026-04-21
 
 ### Added
-
 - Nova estrutura de Trunk-Based Development
 - Versionamento automático com `bump-my-version`
 - Feature flags para features em desenvolvimento
@@ -100,14 +109,12 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - Suporte a múltiplos stages de operação
 
 ### Changed
-
 - Migração de Git Flow para Trunk-Based Development
 - Melhorias no fluxo de CI/CD
 
 ## [0.1.0-beta] - 2026-04-14
 
 ### Added
-
 - Listagem automática de mundos Bedrock (3 fontes: Normal, UWP Store, Shared)
 - Criação de backups com timestamp (YYYY-MM-DD_HH-MM-SS)
 - Restauração de mundos a partir de backups
@@ -120,7 +127,6 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Semantic versioning e conventional commits
 
 ### Changed
-
 - Migração de DearPyGui para CustomTkinter
 - Remoção de emojis decorativos de buttons
 - Melhorias visuais (cores, rounded corners, hover effects)
@@ -142,7 +148,7 @@ Este projeto segue [Semantic Versioning](https://semver.org/) com formatação *
 - **0.4.0b0** — Clean Architecture + Feature Flags ✅
 - **0.5.0b0** — World Icon Preview + Commitizen migration ✅
 - **0.6.0b0** — Background thread + Real progress tracking ✅
-- **0.7.0b0** — Real file-by-file progress + Background threads (current)
+- **0.7.0b0** — Real file-by-file progress + Background threads (current) ✅
 - **0.x.0rc1** — Release candidate (após testes)
 - **0.x.0** — Versão estável
 - **1.0.0** — Produto consolidado (futuro)
@@ -177,4 +183,4 @@ uv run task cz-check       # Valida commits recentes
 
 ---
 
-**Última atualização:** 2026-06-11
+**Última atualização:** 2026-06-12
