@@ -14,13 +14,52 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any, TypedDict
 
 import pytest
 
 from backup_manager_mvp.core.models.world_model import WorldModel
 from backup_manager_mvp.core.services.world_service import WorldService
 from backup_manager_mvp.infra.repository import FileSystemWorldRepository
+
+
+class WorldModelData(TypedDict):
+    folder_name: str
+    levelname: str
+    world_icon_path: Path
+    path: Path
+    account_id: str
+    version: list[int]
+
+
+@pytest.fixture
+def valid_world_model_data() -> WorldModelData:
+    return {
+        "folder_name": "6LknJ3qXcJo=",
+        "levelname": "My World",
+        "path": Path(
+            "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ3qXcJo="
+        ),
+        "world_icon_path": Path(
+            "C:/Users/usuario/AppData/Roaming/Minecraft Bedrock/Users/9603359306719601750/games/com.mojang/minecraftWorlds/6LknJ3qXcJo=/world_icon.jpeg"
+        ),
+        "account_id": "9603359306719601750",
+        "version": [1, 26, 12, 2, 0],
+    }
+
+
+@pytest.fixture
+def make_invalid_world_model_data(
+    valid_world_model_data: WorldModelData,
+) -> Callable[[str, Any], WorldModelData]:
+    def _create(field_name: str, invalid_value):
+        data = valid_world_model_data.copy()
+        data[field_name] = invalid_value
+        return data
+
+    return _create
 
 
 @pytest.fixture
