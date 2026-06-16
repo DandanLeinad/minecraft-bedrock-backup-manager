@@ -201,7 +201,7 @@ class WorldService:
                 raise ValueError("levelname.txt está vazio ou contém apenas whitespace")
             return levelname
         except UnicodeDecodeError as e:
-            raise ValueError(f"Erro ao decodificar levelname.txt: {e}")
+            raise ValueError(f"Error decoding levelname.txt: {e}")
 
     def get_world_icon_path(self, world_path: Path) -> Path:
         """Obtém o caminho para a imagem do mundo (world_icon.jpeg).

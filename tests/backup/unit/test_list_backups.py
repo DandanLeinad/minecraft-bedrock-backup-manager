@@ -15,6 +15,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 from pathlib import Path
+from unittest.mock import patch
 
 from backup_manager_mvp.core.models.backup_model import BackupModel
 from backup_manager_mvp.core.models.world_model import WorldModel
@@ -23,24 +24,36 @@ from backup_manager_mvp.infra.repository import FileSystemBackupRepository
 
 
 class TestListBackups:
-    def test_list_backups_returns_list(
+    """Tests for list_backups method.
+
+    Rules:
+    - Returns empty list when no backups exist
+    - Returns list of BackupModel instances
+    - Returns backups sorted by creation date (newest first)
+    - Filters by world folder_name and account_id
+    """
+
+    def test_should_return_empty_list_when_no_backups(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        list_backups should return empty list when no backups exist.
+        """
         backup_base = tmp_path / "backups"
-
-        from unittest.mock import patch
 
         with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             result = backup_service.list_backups(sample_world)
 
         assert isinstance(result, list)
+        assert len(result) == 0
 
-    def test_list_backups_returns_backup_models(
+    def test_should_return_list_of_backup_models(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        list_backups should return a list of BackupModel instances.
+        """
         backup_base = tmp_path / "backups"
-
-        from unittest.mock import patch
 
         with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             result = backup_service.list_backups(sample_world)
@@ -49,9 +62,13 @@ class TestListBackups:
         for backup in result:
             assert isinstance(backup, BackupModel)
 
-    def test_list_backups_sorted_by_creation_date_newest_first(
+    def test_should_return_backups_sorted_by_newest_first(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        list_backups should return backups sorted by creation date,
+        newest first.
+        """
         backup_base = tmp_path / "backups"
         world_backup_dir = backup_base / sample_world.levelname
         world_backup_dir.mkdir(parents=True)
@@ -64,8 +81,6 @@ class TestListBackups:
         for backup_time in backup_times:
             (world_backup_dir / backup_time).mkdir()
 
-        from unittest.mock import patch
-
         with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
             result = backup_service.list_backups(sample_world)
 
@@ -73,22 +88,21 @@ class TestListBackups:
             for i in range(len(result) - 1):
                 assert result[i].created_at >= result[i + 1].created_at
 
-    def test_list_backups_empty_when_no_backups(
-        self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
-    ) -> None:
-        backup_base = tmp_path / "backups"
 
-        from unittest.mock import patch
+class TestListBackupsEdgeCases:
+    """Tests for list_backups edge cases and error handling.
 
-        with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
-            result = backup_service.list_backups(sample_world)
+    Rules:
+    - Ignores folders with invalid timestamp format
+    - Handles permission errors gracefully (returns empty list)
+    - Ignores non-directory items (files) in backup directory
+    """
 
-        assert isinstance(result, list)
-        assert len(result) == 0
-
-
-class TestListBackupsErrors:
-    def test_list_backups_ignores_invalid_timestamp_folders(self, tmp_path: Path) -> None:
+    def test_should_ignore_invalid_timestamp_folders(self, tmp_path: Path) -> None:
+        """
+        list_backups should ignore folders with invalid timestamp format
+        and only return valid backup folders.
+        """
         service = BackupService(FileSystemBackupRepository())
 
         world = WorldModel(
@@ -99,8 +113,6 @@ class TestListBackupsErrors:
             account_id="test",
             version=[1, 0, 0, 0, 0],
         )
-
-        from unittest.mock import patch
 
         with patch.object(service, "get_backup_base_path", return_value=tmp_path):
             backup_dir = tmp_path / world.folder_name
@@ -114,7 +126,11 @@ class TestListBackupsErrors:
             assert len(backups) == 1
             assert "2025-01-01_12-00-00" in str(backups[0].backup_path)
 
-    def test_list_backups_handles_permission_error(self, tmp_path: Path) -> None:
+    def test_should_return_empty_list_when_permission_error(self, tmp_path: Path) -> None:
+        """
+        list_backups should return empty list when permission error occurs
+        while reading backup directory.
+        """
         service = BackupService(FileSystemBackupRepository())
 
         world = WorldModel(
@@ -126,8 +142,6 @@ class TestListBackupsErrors:
             version=[1, 0, 0, 0, 0],
         )
 
-        from unittest.mock import patch
-
         with patch.object(service, "get_backup_base_path") as mock_path:
             backup_base = tmp_path / "backups"
             backup_base.mkdir()
@@ -136,7 +150,10 @@ class TestListBackupsErrors:
             backups = service.list_backups(world)
             assert backups == []
 
-    def test_list_backups_ignores_non_directory_items(self, tmp_path: Path) -> None:
+    def test_should_ignore_non_directory_items(self, tmp_path: Path) -> None:
+        """
+        list_backups should ignore files (non-directories) in the backup directory.
+        """
         service = BackupService(FileSystemBackupRepository())
 
         world = WorldModel(
@@ -157,8 +174,6 @@ class TestListBackupsErrors:
 
         (world_dir / "readme.txt").write_text("file")
         (world_dir / ".gitignore").write_text("ignored")
-
-        from unittest.mock import patch
 
         with patch.object(service, "get_backup_base_path", return_value=backup_base):
             backups = service.list_backups(world)

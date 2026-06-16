@@ -23,18 +23,26 @@ from backup_manager_mvp.infra.repository import FileSystemWorldRepository
 
 
 class TestGetWorldsBasePath:
-    def test_get_worlds_base_path_returns_path_object(
+    """Tests for get_worlds_base_path method."""
+
+    def test_should_return_path_object_when_called(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
-
+        """
+        get_worlds_base_path should return a Path object.
+        """
         with patch.object(world_service, "get_worlds_base_path", return_value=tmp_path):
             result = world_service.get_worlds_base_path()
 
         assert isinstance(result, Path)
 
-    def test_get_worlds_base_path_contains_expected_structure(
+    def test_should_return_expected_path_structure(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+        """
+        get_worlds_base_path should return a path containing the expected
+        Minecraft Bedrock directory structure (AppData/Roaming/Minecraft Bedrock/Users).
+        """
         mock_path = tmp_path / "AppData" / "Roaming" / "Minecraft Bedrock" / "Users"
 
         with patch.object(world_service, "get_worlds_base_path", return_value=mock_path):
@@ -44,17 +52,51 @@ class TestGetWorldsBasePath:
 
 
 class TestListAccountIds:
-    def test_list_account_ids_returns_list(
-        self, tmp_path: Path, world_service: WorldService
+    """Tests for list_account_ids method.
+
+    Rules:
+    - Returns empty list when base path does not exist
+    - Returns empty list when no account directories exist
+    - Returns sorted list of account directory names
+    - Handles permission errors gracefully by returning empty list
+    """
+
+    def test_should_return_empty_list_when_base_path_not_exists(
+        self, world_service: WorldService
     ) -> None:
-        with patch.object(world_service, "get_worlds_base_path", return_value=tmp_path):
+        """
+        list_account_ids should return empty list when base path does not exist.
+        """
+        with patch.object(world_service, "get_worlds_base_path") as mock_base_path:
+            mock_base_path.return_value = Path("/nonexistent/path/that/does/not/exist")
+
             result = world_service.list_account_ids()
 
-        assert isinstance(result, list)
+            assert result == []
 
-    def test_list_account_ids_with_valid_structure(
+    def test_should_return_empty_list_when_no_accounts(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+        """
+        list_account_ids should return empty list when base path exists
+        but contains no account directories.
+        """
+        users_dir = tmp_path / "Users"
+        users_dir.mkdir(parents=True)
+
+        with patch.object(world_service, "get_worlds_base_path", return_value=users_dir):
+            result = world_service.list_account_ids()
+
+            assert isinstance(result, list)
+            assert len(result) == 0
+
+    def test_should_return_sorted_account_ids_when_valid_structure(
+        self, tmp_path: Path, world_service: WorldService
+    ) -> None:
+        """
+        list_account_ids should return sorted list of account directory names
+        when valid structure exists.
+        """
         users_dir = tmp_path / "Users"
         account1 = users_dir / "account_id_1"
         account2 = users_dir / "account_id_2"
@@ -64,23 +106,17 @@ class TestListAccountIds:
         with patch.object(world_service, "get_worlds_base_path", return_value=users_dir):
             result = world_service.list_account_ids()
 
-        assert len(result) >= 2
-        assert "account_id_1" in result
-        assert "account_id_2" in result
+            assert len(result) >= 2
+            assert "account_id_1" in result
+            assert "account_id_2" in result
 
-    def test_list_account_ids_empty_when_no_accounts(
-        self, tmp_path: Path, world_service: WorldService
+    def test_should_return_empty_list_when_permission_error(
+        self, world_service: WorldService
     ) -> None:
-        users_dir = tmp_path / "Users"
-        users_dir.mkdir(parents=True)
-
-        with patch.object(world_service, "get_worlds_base_path", return_value=users_dir):
-            result = world_service.list_account_ids()
-
-        assert isinstance(result, list)
-        assert len(result) == 0
-
-    def test_list_account_ids_handles_permission_error(self, world_service: WorldService) -> None:
+        """
+        list_account_ids should return empty list when permission error occurs
+        while reading base path.
+        """
         with patch.object(world_service, "get_worlds_base_path") as mock_path:
             mock_base = MagicMock()
             mock_base.exists.return_value = True
@@ -90,27 +126,40 @@ class TestListAccountIds:
             account_ids = world_service.list_account_ids()
             assert account_ids == []
 
-    def test_list_account_ids_returns_empty_when_base_path_not_exists(
-        self, world_service: WorldService
-    ) -> None:
-        with patch.object(world_service, "get_worlds_base_path") as mock_base_path:
-            mock_base_path.return_value = Path("/nonexistent/path/that/does/not/exist")
-
-            result = world_service.list_account_ids()
-
-            assert result == []
-
 
 class TestListWorlds:
-    def test_list_worlds_returns_list(self, tmp_path: Path, world_service: WorldService) -> None:
+    """Tests for list_worlds and _list_worlds_from_path methods.
+
+    Rules:
+    - Returns empty list when no worlds exist
+    - Returns WorldModel instances for valid worlds
+    - Valid world requires: directory, levelname.txt (non-empty), level.dat
+    - Ignores non-directories (files)
+    - Ignores folders without levelname.txt
+    - Ignores folders with empty/whitespace levelname.txt
+    - Ignores folders with invalid folder_name format
+    - Handles permission errors gracefully
+    - Searches three sources: normal accounts, UWP Store, Shared
+    """
+
+    def test_should_return_empty_list_when_no_worlds(
+        self, tmp_path: Path, world_service: WorldService
+    ) -> None:
+        """
+        list_worlds should return empty list when no worlds exist.
+        """
         with patch.object(world_service, "get_worlds_base_path", return_value=tmp_path):
             result = world_service.list_worlds()
 
         assert isinstance(result, list)
+        assert len(result) == 0
 
-    def test_list_worlds_returns_world_models(
+    def test_should_return_world_models_when_valid_worlds_exist(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+        """
+        list_worlds should return WorldModel instances when valid worlds exist.
+        """
         users_dir = tmp_path / "Users"
         account_dir = users_dir / "test_account"
         worlds_dir = account_dir / "games" / "com.mojang" / "minecraftWorlds"
@@ -128,9 +177,13 @@ class TestListWorlds:
             for world in result:
                 assert isinstance(world, WorldModel)
 
-    def test_list_worlds_empty_when_no_worlds(
+    def test_should_return_empty_list_when_account_exists_but_no_worlds(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+        """
+        list_worlds should return empty list when account directory exists
+        but contains no world directories.
+        """
         users_dir = tmp_path / "Users"
         account_dir = users_dir / "test_account"
         account_dir.mkdir(parents=True)
@@ -139,8 +192,13 @@ class TestListWorlds:
             result = world_service.list_worlds()
 
         assert isinstance(result, list)
+        assert len(result) == 0
 
-    def test_list_worlds_ignores_non_directories(self, tmp_path: Path) -> None:
+    def test_should_ignore_non_directories_in_worlds_folder(self, tmp_path: Path) -> None:
+        """
+        _list_worlds_from_path should ignore files (non-directories)
+        in the minecraftWorlds directory.
+        """
         service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
@@ -153,7 +211,10 @@ class TestListWorlds:
         assert len(worlds) == 1
         assert worlds[0].folder_name == "abc123def89="
 
-    def test_list_worlds_from_path_ignores_files(self, tmp_path: Path) -> None:
+    def test_should_ignore_files_in_worlds_directory(self, tmp_path: Path) -> None:
+        """
+        _list_worlds_from_path should ignore files in the worlds directory.
+        """
         service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
@@ -163,7 +224,10 @@ class TestListWorlds:
         result = service._list_worlds_from_path(worlds_dir, "account_id")
         assert result == []
 
-    def test_list_worlds_ignores_invalid_world_folders(self, tmp_path: Path) -> None:
+    def test_should_ignore_invalid_world_folders_without_levelname(self, tmp_path: Path) -> None:
+        """
+        _list_worlds_from_path should ignore folders without levelname.txt.
+        """
         service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
@@ -173,9 +237,11 @@ class TestListWorlds:
         result = service._list_worlds_from_path(worlds_dir, "account_id")
         assert result == []
 
-    def test_list_worlds_from_path_handles_file_not_found_and_value_error(
-        self, tmp_path: Path
-    ) -> None:
+    def test_should_ignore_worlds_with_invalid_levelname(self, tmp_path: Path) -> None:
+        """
+        _list_worlds_from_path should ignore worlds with missing or
+        invalid levelname.txt (empty, whitespace only, or FileNotFound/ValueError).
+        """
         service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"
@@ -197,9 +263,13 @@ class TestListWorlds:
         assert len(result) == 1
         assert result[0].folder_name == "abc123def89="
 
-    def test_list_worlds_from_path_handles_permission_error_on_iterdir(
+    def test_should_return_empty_list_when_permission_error_on_iterdir(
         self, tmp_path: Path
     ) -> None:
+        """
+        _list_worlds_from_path should return empty list when permission error
+        occurs while iterating worlds directory.
+        """
         service = WorldService(FileSystemWorldRepository())
 
         worlds_dir = tmp_path / "worlds"

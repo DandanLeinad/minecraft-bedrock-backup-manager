@@ -35,70 +35,100 @@ def valid_backup_data() -> dict:
     }
 
 
-def test_backup_model_valid(valid_backup_data: dict) -> None:
-    backup = BackupModel(**valid_backup_data)
+class TestBackupModelConstruction:
+    """Tests for valid BackupModel creation."""
 
-    assert backup.world_folder_name == valid_backup_data["world_folder_name"]
-    assert backup.world_account_id == valid_backup_data["world_account_id"]
-    assert backup.created_at == valid_backup_data["created_at"]
-    assert backup.backup_path == valid_backup_data["backup_path"]
+    def test_should_create_backup_model_when_all_fields_valid(
+        self, valid_backup_data: dict
+    ) -> None:
+        """
+        A valid BackupModel should be created when all required fields
+        are provided with valid values.
+        """
+        backup = BackupModel(**valid_backup_data)
 
+        assert backup.world_folder_name == valid_backup_data["world_folder_name"]
+        assert backup.world_account_id == valid_backup_data["world_account_id"]
+        assert backup.created_at == valid_backup_data["created_at"]
+        assert backup.backup_path == valid_backup_data["backup_path"]
 
-@pytest.mark.parametrize(
-    "field,invalid_value,test_id",
-    [
-        ("world_folder_name", 123, "folder_name_type"),
-        ("world_account_id", 123, "account_id_type"),
-        ("world_folder_name", None, "folder_name_none"),
-        ("world_account_id", None, "account_id_none"),
-        ("created_at", None, "created_at_none"),
-        ("backup_path", None, "backup_path_none"),
-        ("world_folder_name", "", "folder_name_empty"),
-        ("world_account_id", "", "account_id_empty"),
-        ("world_folder_name", "   ", "folder_name_whitespace"),
-        ("world_account_id", "   ", "account_id_whitespace"),
-        ("backup_path", Path(""), "backup_path_empty"),
-    ],
-    ids=[
-        "folder_name_type",
-        "account_id_type",
-        "folder_name_none",
-        "account_id_none",
-        "created_at_none",
-        "backup_path_none",
-        "folder_name_empty",
-        "account_id_empty",
-        "folder_name_whitespace",
-        "account_id_whitespace",
-        "backup_path_empty",
-    ],
-)
-def test_backup_model_validation_error(
-    field: str, invalid_value, test_id: str, valid_backup_data: dict
-) -> None:
-    invalid_data = valid_backup_data.copy()
-    invalid_data[field] = invalid_value
+    def test_should_reject_backup_model_when_created_at_invalid(
+        self, valid_backup_data: dict
+    ) -> None:
+        """
+        BackupModel should reject creation when created_at is not a valid datetime.
+        """
+        invalid_data = valid_backup_data.copy()
+        invalid_data["created_at"] = "invalid_datetime"
 
-    with pytest.raises(ValidationError):
-        BackupModel(**invalid_data)
+        with pytest.raises(ValidationError):
+            BackupModel(**invalid_data)
 
 
-def test_backup_model_created_at_format_validation() -> None:
-    invalid_data = {
-        "world_folder_name": "6LknJ-+T-Ks=",
-        "world_account_id": "account123",
-        "created_at": "invalid_datetime",
-        "backup_path": Path(
-            "C:\\Users\\user\\Documents\\MinecraftBackups\\Meu Mundo\\2025-04-04_21-00-00"
-        ),
-    }
+class TestBackupModelFieldValidation:
+    """Tests for BackupModel field validation rules.
 
-    with pytest.raises(ValidationError):
-        BackupModel(**invalid_data)
+    Rules:
+    - world_folder_name: must be string, not None, not empty, not whitespace only
+    - world_account_id: must be string, not None, not empty, not whitespace only
+    - created_at: must be datetime, not None
+    - backup_path: must be Path, not None, not empty
+    """
+
+    @pytest.mark.parametrize(
+        "field,invalid_value,description",
+        [
+            ("world_folder_name", 123, "type_int"),
+            ("world_account_id", 123, "type_int"),
+            ("world_folder_name", None, "none"),
+            ("world_account_id", None, "none"),
+            ("created_at", None, "none"),
+            ("backup_path", None, "none"),
+            ("world_folder_name", "", "empty"),
+            ("world_account_id", "", "empty"),
+            ("world_folder_name", "   ", "whitespace_only"),
+            ("world_account_id", "   ", "whitespace_only"),
+            ("backup_path", Path(""), "empty"),
+        ],
+        ids=[
+            "world_folder_name_type_int",
+            "world_account_id_type_int",
+            "world_folder_name_none",
+            "world_account_id_none",
+            "created_at_none",
+            "backup_path_none",
+            "world_folder_name_empty",
+            "world_account_id_empty",
+            "world_folder_name_whitespace_only",
+            "world_account_id_whitespace_only",
+            "backup_path_empty",
+        ],
+    )
+    def test_should_reject_invalid_field_values(
+        self, field: str, invalid_value, description: str, valid_backup_data: dict
+    ) -> None:
+        """
+        BackupModel should reject invalid values for all fields:
+        - wrong type (int instead of string)
+        - None values
+        - empty strings
+        - whitespace-only strings
+        - empty Path
+        """
+        invalid_data = valid_backup_data.copy()
+        invalid_data[field] = invalid_value
+
+        with pytest.raises(ValidationError):
+            BackupModel(**invalid_data)
 
 
-class TestBackupModelSizeDisplay:
-    def test_backup_model_name_property(self, tmp_path: Path) -> None:
+class TestBackupModelProperties:
+    """Tests for BackupModel computed properties."""
+
+    def test_should_return_backup_name_from_path_timestamp(self, tmp_path: Path) -> None:
+        """
+        name property should return the backup directory name (timestamp).
+        """
         backup_path = tmp_path / "2025-04-13_21-30-45"
         backup_path.mkdir()
 
@@ -111,7 +141,10 @@ class TestBackupModelSizeDisplay:
 
         assert backup.name == "2025-04-13_21-30-45"
 
-    def test_size_display_bytes(self, tmp_path: Path) -> None:
+    def test_should_display_size_in_bytes_when_under_kilobyte(self, tmp_path: Path) -> None:
+        """
+        size_display should show size in bytes when under 1 KB.
+        """
         backup_dir = tmp_path / "backup"
         backup_dir.mkdir()
         (backup_dir / "file.txt").write_bytes(b"x" * 512)
@@ -128,7 +161,10 @@ class TestBackupModelSizeDisplay:
         assert "B" in size
         assert not any(unit in size for unit in ["KB", "MB", "GB"])
 
-    def test_size_display_kilobytes(self, tmp_path: Path) -> None:
+    def test_should_display_size_in_kilobytes_when_under_megabyte(self, tmp_path: Path) -> None:
+        """
+        size_display should show size in KB when under 1 MB.
+        """
         backup_dir = tmp_path / "backup"
         backup_dir.mkdir()
         (backup_dir / "file.txt").write_bytes(b"x" * (1024 * 50))
@@ -144,7 +180,10 @@ class TestBackupModelSizeDisplay:
 
         assert "KB" in size
 
-    def test_size_display_megabytes(self, tmp_path: Path) -> None:
+    def test_should_display_size_in_megabytes_when_under_gigabyte(self, tmp_path: Path) -> None:
+        """
+        size_display should show size in MB when under 1 GB.
+        """
         backup_dir = tmp_path / "backup"
         backup_dir.mkdir()
         (backup_dir / "file.txt").write_bytes(b"x" * (1024 * 1024 * 5))
@@ -160,7 +199,10 @@ class TestBackupModelSizeDisplay:
 
         assert "MB" in size
 
-    def test_size_display_gigabytes(self, tmp_path: Path) -> None:
+    def test_should_display_size_in_gigabytes_when_large(self, tmp_path: Path) -> None:
+        """
+        size_display should show size in GB when 1 GB or larger.
+        """
         from unittest.mock import patch
 
         backup_dir = tmp_path / "backup"
@@ -179,7 +221,10 @@ class TestBackupModelSizeDisplay:
 
         assert "GB" in size
 
-    def test_size_display_exception(self, tmp_path: Path) -> None:
+    def test_should_return_na_when_size_calculation_fails(self, tmp_path: Path) -> None:
+        """
+        size_display should return "N/A" when size calculation fails.
+        """
         from unittest.mock import patch
 
         backup = BackupModel(

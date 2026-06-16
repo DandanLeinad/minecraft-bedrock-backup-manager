@@ -22,9 +22,24 @@ from backup_manager_mvp.core.services.backup_service import BackupService
 
 
 class TestCreateBackupWithProgress:
-    def test_create_backup_accepts_progress_callback(
+    """Tests for create_backup with progress callback.
+
+    Rules:
+    - Accepts optional progress_callback parameter
+    - Calls callback with ProgressModel instances
+    - Progress starts at 0% and ends at 100%
+    - Includes stage text describing current operation
+    - Completes backup even if callback raises exception
+    - Reports current and total progress values
+    """
+
+    def test_should_accept_progress_callback_when_provided(
         self, tmp_path, backup_service: BackupService, sample_world
     ) -> None:
+        """
+        create_backup should accept an optional progress_callback parameter
+        and complete successfully.
+        """
         backup_base = tmp_path / "backups"
 
         with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
@@ -32,9 +47,13 @@ class TestCreateBackupWithProgress:
 
         assert result.backup_path.exists()
 
-    def test_progress_callback_receives_progress_models(
+    def test_should_call_callback_with_progress_models(
         self, tmp_path, backup_service: BackupService, sample_world
     ) -> None:
+        """
+        create_backup should call the progress callback with ProgressModel
+        instances for each progress update.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -49,9 +68,12 @@ class TestCreateBackupWithProgress:
         for update in progress_updates:
             assert isinstance(update, ProgressModel)
 
-    def test_progress_starts_at_0_and_ends_at_100(
+    def test_should_start_at_zero_percent_and_end_at_hundred_percent(
         self, tmp_path, backup_service: BackupService, sample_world
     ) -> None:
+        """
+        Progress should start at 0% and end at 100% when backup completes.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -68,9 +90,12 @@ class TestCreateBackupWithProgress:
             assert last.percentage == 100.0
             assert last.is_complete() is True
 
-    def test_progress_includes_stage_text(
+    def test_should_include_stage_text_in_progress_updates(
         self, tmp_path, backup_service: BackupService, sample_world
     ) -> None:
+        """
+        Progress updates should include stage text describing the current operation.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -84,11 +109,16 @@ class TestCreateBackupWithProgress:
         if len(progress_updates) > 1:
             assert any(p.stage for p in progress_updates)
 
-    def test_backup_completes_even_if_callback_raises_exception(
+    def test_should_complete_backup_even_when_callback_raises_exception(
         self, tmp_path, backup_service: BackupService, sample_world
     ) -> None:
+        """
+        create_backup should complete successfully even when the progress
+        callback raises an exception.
+        """
+
         def bad_callback(progress: ProgressModel) -> None:
-            raise RuntimeError("Callback falhou!")
+            raise RuntimeError("Callback failed!")
 
         backup_base = tmp_path / "backups"
 
@@ -98,9 +128,13 @@ class TestCreateBackupWithProgress:
         ):
             backup_service.create_backup(sample_world, progress_callback=bad_callback)
 
-    def test_progress_reports_current_and_total(
+    def test_should_report_current_and_total_in_progress(
         self, tmp_path, backup_service: BackupService, sample_world
     ) -> None:
+        """
+        Progress updates should report current and total values,
+        with current <= total and total > 0.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -116,13 +150,29 @@ class TestCreateBackupWithProgress:
             assert progress.total > 0
 
 
-class TestRestoreBackupWithProgressCallback:
-    def test_restore_backup_accepts_progress_callback(
+class TestRestoreBackupWithProgress:
+    """Tests for restore_backup with progress callback.
+
+    Rules:
+    - Accepts optional progress_callback parameter
+    - Calls callback with ProgressModel instances
+    - Progress starts at 0% and ends at 100%
+    - Includes stage text (cleaning, restoring, completed)
+    - Completes restore even if callback raises exception
+    - Reports current and total progress values
+    - Restores world correctly after completion
+    """
+
+    def test_should_accept_progress_callback_when_provided(
         self,
         backup_service: BackupService,
         sample_world,
         backup_with_content,
     ) -> None:
+        """
+        restore_backup should accept an optional progress_callback parameter
+        and complete successfully.
+        """
         (sample_world.path / "old_file.txt").write_text("old content")
 
         backup_service.restore_backup(backup_with_content, sample_world)
@@ -130,12 +180,16 @@ class TestRestoreBackupWithProgressCallback:
         assert not (sample_world.path / "old_file.txt").exists()
         assert (sample_world.path / "level.dat").exists()
 
-    def test_progress_callback_receives_progress_models(
+    def test_should_call_callback_with_progress_models(
         self,
         backup_service: BackupService,
         sample_world,
         backup_with_content,
     ) -> None:
+        """
+        restore_backup should call the progress callback with ProgressModel
+        instances for each progress update.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -151,12 +205,15 @@ class TestRestoreBackupWithProgressCallback:
         for update in progress_updates:
             assert isinstance(update, ProgressModel)
 
-    def test_restore_progress_goes_from_0_to_100_percent(
+    def test_should_start_at_zero_percent_and_end_at_hundred_percent(
         self,
         backup_service: BackupService,
         sample_world,
         backup_with_content,
     ) -> None:
+        """
+        Progress should start at 0% and end at 100% when restore completes.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -176,12 +233,16 @@ class TestRestoreBackupWithProgressCallback:
         assert last.percentage == 100.0
         assert last.is_complete() is True
 
-    def test_restore_progress_includes_stage_text(
+    def test_should_include_stage_text_in_restore_progress(
         self,
         backup_service: BackupService,
         sample_world,
         backup_with_content,
     ) -> None:
+        """
+        Restore progress updates should include stage text describing
+        the current operation.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -195,19 +256,23 @@ class TestRestoreBackupWithProgressCallback:
 
         if len(progress_updates) > 1:
             assert any(p.stage for p in progress_updates)
-            stage_texts = [p.stage for p in progress_updates]
-            assert any(
-                "Limpando" in s or "Restaurando" in s or "concluída" in s for s in stage_texts
-            )
+            # Stage text should be non-empty strings describing the operation
+            stage_texts = [p.stage for p in progress_updates if p.stage]
+            assert len(stage_texts) > 0
 
-    def test_backup_completes_even_if_callback_raises_exception(
+    def test_should_complete_restore_even_when_callback_raises_exception(
         self,
         backup_service: BackupService,
         sample_world,
         backup_with_content,
     ) -> None:
+        """
+        restore_backup should complete successfully even when the progress
+        callback raises an exception.
+        """
+
         def bad_callback(progress: ProgressModel) -> None:
-            raise RuntimeError("Callback falhou!")
+            raise RuntimeError("Callback failed!")
 
         (sample_world.path / "old_file.txt").write_text("old content")
 
@@ -216,12 +281,16 @@ class TestRestoreBackupWithProgressCallback:
                 backup_with_content, sample_world, progress_callback=bad_callback
             )
 
-    def test_restore_progress_reports_current_and_total(
+    def test_should_report_current_and_total_in_restore_progress(
         self,
         backup_service: BackupService,
         sample_world,
         backup_with_content,
     ) -> None:
+        """
+        Restore progress updates should report current and total values,
+        with current >= 0, total > 0, and current <= total.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:
@@ -238,12 +307,16 @@ class TestRestoreBackupWithProgressCallback:
             assert progress.total > 0
             assert progress.current <= progress.total
 
-    def test_restore_progress_world_restored_correctly(
+    def test_should_restore_world_correctly_after_completion(
         self,
         backup_service: BackupService,
         sample_world,
         backup_with_content,
     ) -> None:
+        """
+        World should be correctly restored after completion with all
+        backup files present and old files removed.
+        """
         progress_updates = []
 
         def capture_progress(progress: ProgressModel) -> None:

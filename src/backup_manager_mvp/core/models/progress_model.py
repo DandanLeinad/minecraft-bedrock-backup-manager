@@ -14,24 +14,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-"""Modelo para rastrear progresso de operações (backup/restore)."""
+"""Model for tracking operation progress (backup/restore)."""
 
 from dataclasses import dataclass
 
 
 @dataclass
 class ProgressModel:
-    """Modelo para rastrear progresso de uma operação.
+    """Model for tracking progress of an operation.
 
-    Genérico e reutilizável para qualquer serviço (backup, restore, cloud sync, etc).
+    Generic and reusable for any service (backup, restore, cloud sync, etc).
 
     Attributes:
-        current: Número de itens processados
-        total: Número total de itens
-        stage: Descrição da etapa atual (ex: "Copiando arquivos...")
+        current: Number of items processed
+        total: Total number of items
+        stage: Description of current stage (e.g., "Copying files...")
 
     Raises:
-        ValueError: Se current < 0 ou total <= 0
+        ValueError: If current < 0 or total <= 0
     """
 
     current: int
@@ -39,36 +39,36 @@ class ProgressModel:
     stage: str = ""
 
     def __post_init__(self) -> None:
-        """Validação após inicialização."""
+        """Validation after initialization."""
         if self.current < 0:
-            raise ValueError("current não pode ser negativo")
+            raise ValueError("current must be non-negative")
         if self.total <= 0:
-            raise ValueError("total deve ser maior que 0")
+            raise ValueError("total must be greater than 0")
 
     @property
     def percentage(self) -> float:
-        """Calcula o percentual de progresso (0-100).
+        """Calculate the progress percentage (0-100).
 
         Returns:
-            float: Percentual de conclusão (0.0 a 100.0), limitado a 100%
+            float: Completion percentage (0.0 to 100.0), capped at 100%
 
         Example:
-            >>> progress = ProgressModel(current=5, total=10, stage="Processando")
+            >>> progress = ProgressModel(current=5, total=10, stage="Processing")
             >>> progress.percentage
             50.0
         """
         percentage = (self.current / self.total) * 100.0
-        # Limitar a 100% como máximo
+        # Cap at 100% maximum
         return min(percentage, 100.0)
 
     def is_complete(self) -> bool:
-        """Verifica se a operação está completa.
+        """Check if the operation is complete.
 
         Returns:
-            bool: True se current == total
+            bool: True if current == total
 
         Example:
-            >>> progress = ProgressModel(current=10, total=10, stage="Pronto")
+            >>> progress = ProgressModel(current=10, total=10, stage="Done")
             >>> progress.is_complete()
             True
         """

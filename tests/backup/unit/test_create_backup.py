@@ -27,17 +27,26 @@ from backup_manager_mvp.infra.repository import FileSystemBackupRepository
 
 
 class TestGetBackupBasePath:
-    def test_get_backup_base_path_returns_path_object(
+    """Tests for get_backup_base_path method."""
+
+    def test_should_return_path_object_when_called(
         self, tmp_path: Path, backup_service: BackupService
     ) -> None:
+        """
+        get_backup_base_path should return a Path object.
+        """
         with patch.object(backup_service, "get_backup_base_path", return_value=tmp_path):
             result = backup_service.get_backup_base_path()
 
         assert isinstance(result, Path)
 
-    def test_get_backup_base_path_contains_documents_dir(
+    def test_should_contain_documents_directory_in_path(
         self, tmp_path: Path, backup_service: BackupService
     ) -> None:
+        """
+        get_backup_base_path should return a path containing Documents directory
+        (English or Portuguese).
+        """
         mock_path = tmp_path / "Documents" / "MinecraftBackups"
 
         with patch.object(backup_service, "get_backup_base_path", return_value=mock_path):
@@ -48,9 +57,23 @@ class TestGetBackupBasePath:
 
 
 class TestCreateBackup:
-    def test_create_backup_returns_backup_model(
+    """Tests for create_backup method.
+
+    Rules:
+    - Returns BackupModel with correct metadata
+    - Creates backup directory with timestamp format YYYY-MM-DD_HH-MM-SS
+    - Copies all world contents recursively
+    - Sets created_at to current time
+    - Backup path includes world folder_name but not levelname
+    - Backups persist after world rename (identified by folder_name)
+    """
+
+    def test_should_return_backup_model_when_backup_created(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        create_backup should return a BackupModel instance.
+        """
         backup_base = tmp_path / "backups"
         backup_base.mkdir()
 
@@ -59,9 +82,12 @@ class TestCreateBackup:
 
         assert isinstance(result, BackupModel)
 
-    def test_create_backup_creates_backup_directory(
+    def test_should_create_backup_directory_when_backup_created(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        create_backup should create a backup directory that exists and is a directory.
+        """
         backup_base = tmp_path / "backups"
         (sample_world.path / "file.txt").write_text("test content")
 
@@ -71,9 +97,12 @@ class TestCreateBackup:
         assert result.backup_path.exists()
         assert result.backup_path.is_dir()
 
-    def test_create_backup_copies_world_contents(
+    def test_should_copy_world_contents_to_backup(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        create_backup should copy all world contents to the backup directory.
+        """
         test_file = sample_world.path / "level.dat"
         test_file.write_bytes(b"test data")
         backup_base = tmp_path / "backups"
@@ -85,9 +114,12 @@ class TestCreateBackup:
         assert restored_file.exists()
         assert restored_file.read_bytes() == b"test data"
 
-    def test_create_backup_sets_created_at(
+    def test_should_set_created_at_to_current_time(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        create_backup should set created_at to a time between before and after the call.
+        """
         backup_base = tmp_path / "backups"
         before = datetime.now()
 
@@ -97,9 +129,14 @@ class TestCreateBackup:
 
         assert before <= result.created_at <= after
 
-    def test_create_backup_includes_levelname_and_timestamp_in_path(
+    def test_should_include_folder_name_and_timestamp_in_backup_path(
         self, tmp_path: Path, backup_service: BackupService, sample_world: WorldModel
     ) -> None:
+        """
+        create_backup should create a backup path containing the world folder_name
+        and a timestamp in format YYYY-MM-DD_HH-MM-SS.
+        The levelname should not be part of the path.
+        """
         backup_base = tmp_path / "backups"
 
         with patch.object(backup_service, "get_backup_base_path", return_value=backup_base):
@@ -110,19 +147,23 @@ class TestCreateBackup:
 
         backup_dirname = result.backup_path.name
         parts = backup_dirname.split("_")
-        assert len(parts) == 2, f"Timestamp inválido: {backup_dirname}"
+        assert len(parts) == 2, f"Invalid timestamp format: {backup_dirname}"
 
         date_part = parts[0]
         date_components = date_part.split("-")
-        assert len(date_components) == 3, f"Data inválida: {date_part}"
+        assert len(date_components) == 3, f"Invalid date format: {date_part}"
 
         time_part = parts[1]
         time_components = time_part.split("-")
-        assert len(time_components) == 3, f"Hora inválida: {time_part}"
+        assert len(time_components) == 3, f"Invalid time format: {time_part}"
 
-    def test_backups_persist_after_world_rename(
+    def test_should_persist_backups_after_world_rename(
         self, tmp_path: Path, backup_service: BackupService
     ) -> None:
+        """
+        Backups should persist and be findable after world is renamed,
+        identified by folder_name (not levelname).
+        """
         backup_base = tmp_path / "backups"
         world_path = tmp_path / "test_world"
         world_path.mkdir()
@@ -157,7 +198,18 @@ class TestCreateBackup:
 
 
 class TestCreateBackupErrors:
-    def test_create_backup_fails_on_copytree_error(self, tmp_path: Path) -> None:
+    """Tests for create_backup error handling.
+
+    Rules:
+    - Raises RuntimeError when copytree fails
+    - Removes existing backup path before creating new one
+    - Cleans up partial backup on copy failure
+    """
+
+    def test_should_raise_runtime_error_when_copytree_fails(self, tmp_path: Path) -> None:
+        """
+        create_backup should raise RuntimeError when copytree operation fails.
+        """
         service = BackupService(FileSystemBackupRepository())
 
         world_path = tmp_path / "world"
@@ -180,10 +232,13 @@ class TestCreateBackupErrors:
         ):
             mock_copytree.side_effect = OSError("Simulated copy failure")
 
-            with pytest.raises(RuntimeError, match="Erro ao criar backup"):
+            with pytest.raises(RuntimeError, match="Error creating backup"):
                 service.create_backup(world)
 
-    def test_create_backup_backup_path_exists_gets_removed(self, tmp_path: Path) -> None:
+    def test_should_remove_existing_backup_path_before_creating_new(self, tmp_path: Path) -> None:
+        """
+        create_backup should remove existing backup directory before creating new one.
+        """
         service = BackupService(FileSystemBackupRepository())
 
         world_path = tmp_path / "world"
@@ -207,7 +262,10 @@ class TestCreateBackupErrors:
             assert backup.backup_path.exists()
             assert (backup.backup_path / "test_file.txt").exists()
 
-    def test_create_backup_rmtree_called_when_path_exists(self, tmp_path: Path) -> None:
+    def test_should_cleanup_partial_backup_on_copy_failure(self, tmp_path: Path) -> None:
+        """
+        create_backup should clean up partially created backup directory on copy failure.
+        """
         service = BackupService(FileSystemBackupRepository())
 
         backup_base = tmp_path / "backups"
@@ -247,7 +305,7 @@ class TestCreateBackupErrors:
                 "copy_tree_with_progress",
                 side_effect=mock_copy_with_progress_fail,
             ),
-            pytest.raises(RuntimeError, match="Erro ao criar backup"),
+            pytest.raises(RuntimeError, match="Error creating backup"),
         ):
             service.create_backup(world)
 

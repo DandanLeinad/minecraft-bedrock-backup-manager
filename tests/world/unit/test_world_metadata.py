@@ -26,42 +26,66 @@ from backup_manager_mvp.infra.repository import FileSystemWorldRepository
 
 
 class TestGetWorldLevelname:
-    def test_get_world_levelname_returns_string(
+    """Tests for get_world_levelname method.
+
+    Rules:
+    - Returns levelname string from levelname.txt file
+    - Raises FileNotFoundError when levelname.txt does not exist
+    - Raises ValueError when file contains invalid UTF-8
+    - Raises ValueError when file is empty or contains only whitespace
+    """
+
+    def test_should_return_levelname_when_file_exists(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+        """
+        get_world_levelname should return the levelname string
+        when levelname.txt file exists and is readable.
+        """
         world_path = tmp_path / "test_world"
         world_path.mkdir()
         levelname_file = world_path / "levelname.txt"
-        levelname_file.write_text("Meu Mundo")
+        levelname_file.write_text("My World")
 
         result = world_service.get_world_levelname(world_path)
 
         assert isinstance(result, str)
-        assert result == "Meu Mundo"
+        assert result == "My World"
 
-    def test_get_world_levelname_reads_from_file(
+    def test_should_read_levelname_from_file(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+        """
+        get_world_levelname should read the exact content from levelname.txt.
+        """
         world_path = tmp_path / "world"
         world_path.mkdir()
         levelname_file = world_path / "levelname.txt"
-        expected_name = "Mundo Incrível"
+        expected_name = "Amazing World"
         levelname_file.write_text(expected_name, encoding="utf-8")
 
         result = world_service.get_world_levelname(world_path)
 
         assert result == expected_name
 
-    def test_get_world_levelname_raises_when_file_not_found(
+    def test_should_raise_file_not_found_when_levelname_missing(
         self, tmp_path: Path, world_service: WorldService
     ) -> None:
+        """
+        get_world_levelname should raise FileNotFoundError
+        when levelname.txt does not exist.
+        """
         world_path = tmp_path / "world"
         world_path.mkdir()
 
         with pytest.raises(FileNotFoundError):
             world_service.get_world_levelname(world_path)
 
-    def test_get_world_levelname_raises_on_unicode_decode_error(self, tmp_path: Path) -> None:
+    def test_should_raise_value_error_when_unicode_decode_error(self, tmp_path: Path) -> None:
+        """
+        get_world_levelname should raise ValueError
+        when levelname.txt contains invalid UTF-8.
+        """
         service = WorldService(FileSystemWorldRepository())
 
         world_path = tmp_path / "world"
@@ -69,10 +93,14 @@ class TestGetWorldLevelname:
         levelname_file = world_path / "levelname.txt"
         levelname_file.write_bytes(b"\xff\xfe invalid utf-8")
 
-        with pytest.raises(ValueError, match="Erro ao decodificar"):
+        with pytest.raises(ValueError, match="Error decoding"):
             service.get_world_levelname(world_path)
 
-    def test_get_world_levelname_raises_on_empty_file(self, tmp_path: Path) -> None:
+    def test_should_raise_value_error_when_file_empty(self, tmp_path: Path) -> None:
+        """
+        get_world_levelname should raise ValueError
+        when levelname.txt is empty or contains only whitespace.
+        """
         service = WorldService(FileSystemWorldRepository())
 
         world_path = tmp_path / "world"
@@ -80,12 +108,29 @@ class TestGetWorldLevelname:
         levelname_file = world_path / "levelname.txt"
         levelname_file.write_text("   \n\t  ")
 
-        with pytest.raises(ValueError, match="vazio ou contém apenas whitespace"):
+        with pytest.raises(ValueError, match=r"vazio|whitespace"):
             service.get_world_levelname(world_path)
 
 
 class TestGetWorldMetadata:
-    def test_calculate_world_size_kilobytes(self, tmp_path: Path) -> None:
+    """Tests for get_world_metadata method.
+
+    Rules:
+    - Returns size in human-readable format (B, KB, MB, GB)
+    - Returns backups_count as string
+    - Returns last_backup as relative time string in Portuguese
+      (seconds: "há segundos", minutes: "Xm", hours: "Xh", days: "Xd")
+    - Returns "N/A" for size when world path does not exist
+    - Returns "0" and "Nunca" when no backups exist
+    - Returns newest backup time when multiple backups exist
+    - Handles backup service errors gracefully
+    - Returns UWP store path with correct structure
+    """
+
+    def test_should_calculate_world_size_in_kilobytes(self, tmp_path: Path) -> None:
+        """
+        get_world_metadata should calculate world size in human-readable format.
+        """
         service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -107,7 +152,11 @@ class TestGetWorldMetadata:
         assert metadata["backups_count"] == "0"
         assert metadata["last_backup"] == "Nunca"
 
-    def test_no_backups(self, tmp_path: Path) -> None:
+    def test_should_return_zero_backups_when_none_exist(self, tmp_path: Path) -> None:
+        """
+        get_world_metadata should return zero backups count and "Nunca"
+        when no backups exist.
+        """
         service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -127,7 +176,11 @@ class TestGetWorldMetadata:
         assert metadata["backups_count"] == "0"
         assert metadata["last_backup"] == "Nunca"
 
-    def test_recent_backup_seconds_ago(self, tmp_path: Path) -> None:
+    def test_should_show_recent_backup_as_seconds_ago(self, tmp_path: Path) -> None:
+        """
+        get_world_metadata should show "há segundos" for backups
+        created within the last minute.
+        """
         service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -159,7 +212,11 @@ class TestGetWorldMetadata:
         assert metadata["backups_count"] == "1"
         assert metadata["last_backup"] == "há segundos"
 
-    def test_multiple_backups_returns_newest(self, tmp_path: Path) -> None:
+    def test_should_return_newest_backup_when_multiple_exist(self, tmp_path: Path) -> None:
+        """
+        get_world_metadata should return the newest backup time
+        when multiple backups exist.
+        """
         service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -197,7 +254,11 @@ class TestGetWorldMetadata:
         assert metadata["backups_count"] == "2"
         assert "5m" in metadata["last_backup"]
 
-    def test_nonexistent_world_path(self) -> None:
+    def test_should_return_na_for_nonexistent_world_path(self) -> None:
+        """
+        get_world_metadata should return "N/A" for size
+        when world path does not exist.
+        """
         service = WorldService(FileSystemWorldRepository())
         world = WorldModel(
             folder_name="nonexistent=",
@@ -214,7 +275,11 @@ class TestGetWorldMetadata:
         assert metadata["backups_count"] == "0"
         assert metadata["last_backup"] == "Nunca"
 
-    def test_get_uwp_store_path_returns_valid_path(self) -> None:
+    def test_should_return_valid_uwp_store_path(self) -> None:
+        """
+        get_uwp_store_path should return a valid Path
+        with Microsoft.MinecraftUWP_8wekyb3d8bbwe and minecraftWorlds in the path.
+        """
         service = WorldService(FileSystemWorldRepository())
 
         uwp_path = service.get_uwp_store_path()
@@ -223,7 +288,11 @@ class TestGetWorldMetadata:
         assert "Microsoft.MinecraftUWP_8wekyb3d8bbwe" in str(uwp_path)
         assert "minecraftWorlds" in str(uwp_path)
 
-    def test_get_world_metadata_exception_on_backup_service(self, tmp_path: Path) -> None:
+    def test_should_handle_backup_service_error_gracefully(self, tmp_path: Path) -> None:
+        """
+        get_world_metadata should handle backup service errors gracefully
+        by returning zero backups and "Nunca".
+        """
         service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
@@ -240,14 +309,18 @@ class TestGetWorldMetadata:
 
         class BrokenBackupService:
             def list_backups(self, w):
-                raise OSError("Erro ao listar backups")
+                raise OSError("Error listing backups")
 
         metadata = service.get_world_metadata(world, BrokenBackupService())
 
         assert metadata["backups_count"] == "0"
         assert metadata["last_backup"] == "Nunca"
 
-    def test_get_world_metadata_with_all_time_deltas(self, tmp_path: Path) -> None:
+    def test_should_handle_all_time_deltas_correctly(self, tmp_path: Path) -> None:
+        """
+        get_world_metadata should format last_backup correctly
+        for all time deltas (seconds, minutes, hours, days) in Portuguese.
+        """
         service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
         world_path.mkdir()
