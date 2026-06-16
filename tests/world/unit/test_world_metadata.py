@@ -118,10 +118,10 @@ class TestGetWorldMetadata:
     Rules:
     - Returns size in human-readable format (B, KB, MB, GB)
     - Returns backups_count as string
-    - Returns last_backup as relative time string in Portuguese
-      (seconds: "há segundos", minutes: "Xm", hours: "Xh", days: "Xd")
+    - Returns last_backup as relative time string
+      (seconds: "seconds ago", minutes: "Xm ago", hours: "Xh ago", days: "Xd ago")
     - Returns "N/A" for size when world path does not exist
-    - Returns "0" and "Nunca" when no backups exist
+    - Returns "0" and "Never" when no backups exist
     - Returns newest backup time when multiple backups exist
     - Handles backup service errors gracefully
     - Returns UWP store path with correct structure
@@ -150,11 +150,11 @@ class TestGetWorldMetadata:
 
         assert "KB" in metadata["size"] or "MB" in metadata["size"]
         assert metadata["backups_count"] == "0"
-        assert metadata["last_backup"] == "Nunca"
+        assert metadata["last_backup"] == "Never"
 
     def test_should_return_zero_backups_when_none_exist(self, tmp_path: Path) -> None:
         """
-        get_world_metadata should return zero backups count and "Nunca"
+        get_world_metadata should return zero backups count and "Never"
         when no backups exist.
         """
         service = WorldService(FileSystemWorldRepository())
@@ -174,11 +174,11 @@ class TestGetWorldMetadata:
         metadata = service.get_world_metadata(world, backup_service=None)
 
         assert metadata["backups_count"] == "0"
-        assert metadata["last_backup"] == "Nunca"
+        assert metadata["last_backup"] == "Never"
 
     def test_should_show_recent_backup_as_seconds_ago(self, tmp_path: Path) -> None:
         """
-        get_world_metadata should show "há segundos" for backups
+        get_world_metadata should show "seconds ago" for backups
         created within the last minute.
         """
         service = WorldService(FileSystemWorldRepository())
@@ -210,7 +210,7 @@ class TestGetWorldMetadata:
         metadata = service.get_world_metadata(world, MockBackupService())
 
         assert metadata["backups_count"] == "1"
-        assert metadata["last_backup"] == "há segundos"
+        assert metadata["last_backup"] == "seconds ago"
 
     def test_should_return_newest_backup_when_multiple_exist(self, tmp_path: Path) -> None:
         """
@@ -273,7 +273,7 @@ class TestGetWorldMetadata:
 
         assert metadata["size"] == "N/A"
         assert metadata["backups_count"] == "0"
-        assert metadata["last_backup"] == "Nunca"
+        assert metadata["last_backup"] == "Never"
 
     def test_should_return_valid_uwp_store_path(self) -> None:
         """
@@ -314,12 +314,12 @@ class TestGetWorldMetadata:
         metadata = service.get_world_metadata(world, BrokenBackupService())
 
         assert metadata["backups_count"] == "0"
-        assert metadata["last_backup"] == "Nunca"
+        assert metadata["last_backup"] == "Never"
 
     def test_should_handle_all_time_deltas_correctly(self, tmp_path: Path) -> None:
         """
         get_world_metadata should format last_backup correctly
-        for all time deltas (seconds, minutes, hours, days) in Portuguese.
+        for all time deltas (seconds, minutes, hours, days).
         """
         service = WorldService(FileSystemWorldRepository())
         world_path = tmp_path / "world"
@@ -338,10 +338,10 @@ class TestGetWorldMetadata:
         now = datetime.now()
 
         test_cases = [
-            (timedelta(seconds=5), "há segundos"),
-            (timedelta(minutes=15), "há 15m"),
-            (timedelta(hours=7), "há 7h"),
-            (timedelta(days=3), "há 3d"),
+            (timedelta(seconds=5), "seconds ago"),
+            (timedelta(minutes=15), "15m ago"),
+            (timedelta(hours=7), "7h ago"),
+            (timedelta(days=3), "3d ago"),
         ]
 
         for delta, expected in test_cases:

@@ -36,47 +36,47 @@ class WorldService:
         self.repository = repository
 
     def get_worlds_base_path(self) -> Path:
-        """Retorna o caminho base para os mundos Minecraft Bedrock.
+        """Returns the base path for Minecraft Bedrock worlds.
 
         Returns:
-            Path: Caminho para C:\\Users\\{usuario}\\AppData\\Roaming\\Minecraft Bedrock\\Users\\
+            Path: Path to C:\\Users\\{user}\\AppData\\Roaming\\Minecraft Bedrock\\Users\\
 
         Notes:
-            Este é o caminho padrão após a atualização 1.21.120 do Minecraft Bedrock.
+            This is the default path after Minecraft Bedrock update 1.21.120.
         """
         return self.repository.get_worlds_base_path()
 
     def get_uwp_store_path(self) -> Path:
-        """Retorna o caminho para mundos do UWP Store (Windows 10 Microsoft Store).
+        """Returns the path for UWP Store worlds (Windows 10 Microsoft Store).
 
         Returns:
-            Path: Caminho para C:\\Users\\{usuario}\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\minecraftWorlds
+            Path: Path to C:\\Users\\{user}\\AppData\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\minecraftWorlds
 
         Notes:
-            Esta é a localização de mundos para a versão UWP do Minecraft no Windows 10.
+            This is the location of worlds for the UWP version of Minecraft on Windows 10.
         """
         return self.repository.get_uwp_store_path()
 
     def get_shared_path(self) -> Path:
-        """Retorna o caminho para mundos compartilhados (Shared).
+        """Returns the path for shared worlds (Shared).
 
         Returns:
-            Path: Caminho para C:\\Users\\{usuario}\\AppData\\Roaming\\Minecraft Bedrock\\Users\\Shared\\games\\com.mojang\\minecraftWorlds
+            Path: Path to C:\\Users\\{user}\\AppData\\Roaming\\Minecraft Bedrock\\Users\\Shared\\games\\com.mojang\\minecraftWorlds
 
         Notes:
-            Esta é a localização de mundos em modo compartilhado (menos comum).
+            This is the location of worlds in shared mode (less common).
         """
         return self.repository.get_shared_path(self.get_worlds_base_path())
 
     def list_account_ids(self) -> list[str]:
-        """Lista todos os account_ids presentes no sistema.
+        """Lists all account_ids present in the system.
 
         Returns:
-            list[str]: Lista contendo os IDs das contas Microsoft encontradas.
-                Retorna lista vazia se nenhuma conta for encontrada.
+            list[str]: List containing Microsoft account IDs found.
+                Returns empty list if no accounts are found.
 
         Notes:
-            Cada account_id é uma pasta dentro do diretório base.
+            Each account_id is a folder inside the base directory.
         """
         base_path = self.get_worlds_base_path()
 
@@ -95,14 +95,14 @@ class WorldService:
         return sorted(account_ids)
 
     def _list_worlds_from_path(self, worlds_dir: Path, account_id: str) -> list[WorldModel]:
-        """Helper privado: Lista mundos de um diretório específico com account_id dado.
+        """Private helper: Lists worlds from a specific directory with given account_id.
 
         Args:
-            worlds_dir (Path): Caminho para a pasta minecraftWorlds.
-            account_id (str): ID da conta a associar aos mundos encontrados.
+            worlds_dir (Path): Path to the minecraftWorlds folder.
+            account_id (str): Account ID to associate with found worlds.
 
         Returns:
-            list[WorldModel]: Lista de mundos encontrados neste diretório.
+            list[WorldModel]: List of worlds found in this directory.
         """
         worlds = []
 
@@ -139,19 +139,19 @@ class WorldService:
         return worlds
 
     def list_worlds(self) -> list[WorldModel]:
-        """Lista todos os mundos de todas as sources (contas normais, UWP, Shared).
+        """Lists all worlds from all sources (normal accounts, UWP, Shared).
 
         Returns:
-            list[WorldModel]: Lista contendo WorldModel para cada mundo encontrado.
-                Retorna lista vazia se nenhum mundo for encontrado.
+            list[WorldModel]: List containing WorldModel for each world found.
+                Returns empty list if no worlds are found.
 
         Notes:
-            Percorre 3 sources:
-            1. Contas normais: base_path/account_id/games/com.mojang/minecraftWorlds/
+            Iterates over 3 sources:
+            1. Normal accounts: base_path/account_id/games/com.mojang/minecraftWorlds/
             2. UWP Store: %LocalAppData%/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/.../minecraftWorlds/
             3. Shared: base_path/../Shared/games/com.mojang/minecraftWorlds/
 
-            Cada pasta recebe validação e conversão em WorldModel.
+            Each folder receives validation and conversion to WorldModel.
         """
         all_worlds = []
 
@@ -178,53 +178,53 @@ class WorldService:
         return all_worlds
 
     def get_world_levelname(self, world_path: Path) -> str:
-        """Lê o levelname de um mundo a partir do arquivo levelname.txt.
+        """Reads the levelname of a world from the levelname.txt file.
 
         Args:
-            world_path (Path): Caminho da pasta do mundo.
+            world_path (Path): Path to the world folder.
 
         Returns:
-            str: Nome do mundo (levelname).
+            str: World name (levelname).
 
         Raises:
-            FileNotFoundError: Se levelname.txt não existir no diretório.
-            ValueError: Se o arquivo estiver vazio ou contiver apenas whitespace.
+            FileNotFoundError: If levelname.txt does not exist in the directory.
+            ValueError: If the file is empty or contains only whitespace.
         """
         levelname_file = world_path / "levelname.txt"
 
         if not self.repository.path_exists(levelname_file):
-            raise FileNotFoundError(f"levelname.txt não encontrado em {world_path}")
+            raise FileNotFoundError(f"levelname.txt not found in {world_path}")
 
         try:
             levelname = self.repository.read_text_file(levelname_file).strip()
             if not levelname:
-                raise ValueError("levelname.txt está vazio ou contém apenas whitespace")
+                raise ValueError("levelname.txt is empty or contains only whitespace")
             return levelname
         except UnicodeDecodeError as e:
             raise ValueError(f"Error decoding levelname.txt: {e}")
 
     def get_world_icon_path(self, world_path: Path) -> Path:
-        """Obtém o caminho para a imagem do mundo (world_icon.jpeg).
+        """Gets the path to the world image (world_icon.jpeg).
 
         Args:
-            world_path (Path): Caminho da pasta do mundo.
+            world_path (Path): Path to the world folder.
 
         Returns:
-            Path: Caminho para a imagem do mundo.
+            Path: Path to the world image.
         """
         return world_path / "world_icon.jpeg"
 
     def get_world_metadata(self, world: WorldModel, backup_service=None) -> dict[str, str]:
-        """Calcula metadados do mundo: tamanho, quantidade de backups, último backup.
+        """Calculates world metadata: size, backup count, last backup.
 
         Args:
-            world: WorldModel para obter metadados
-            backup_service: BackupService opcional para calcular informações de backups
+            world: WorldModel to get metadata for
+            backup_service: Optional BackupService to calculate backup info
 
         Returns:
-            Dict com chaves: 'size', 'backups_count', 'last_backup'
+            Dict with keys: 'size', 'backups_count', 'last_backup'
         """
-        metadata = {"size": "N/A", "backups_count": "0", "last_backup": "Nunca"}
+        metadata = {"size": "N/A", "backups_count": "0", "last_backup": "Never"}
 
         try:
             # === TAMANHO DO MUNDO ===
@@ -240,35 +240,35 @@ class WorldService:
                     metadata["size"] = f"{total_size / (1024 * 1024 * 1024):.1f} GB"
                 logger.debug(f"Tamanho do mundo {world.levelname}: {metadata['size']}")
 
-            # === BACKUPS DO MUNDO ===
+            # === WORLD BACKUPS ===
             if backup_service:
                 try:
                     backups = backup_service.list_backups(world)
                     metadata["backups_count"] = str(len(backups))
-                    logger.debug(f"Backups encontrados para {world.levelname}: {len(backups)}")
+                    logger.debug(f"Backups found for {world.levelname}: {len(backups)}")
 
                     if backups:
-                        # Último backup (mais recente)
+                        # Last backup (most recent)
                         last_backup = max(backups, key=lambda b: b.created_at)
                         time_diff = datetime.now() - last_backup.created_at
 
-                        # Formatar tempo relativo
+                        # Format relative time
                         if time_diff.total_seconds() < 60:
-                            metadata["last_backup"] = "há segundos"
+                            metadata["last_backup"] = "seconds ago"
                         elif time_diff.total_seconds() < 3600:
                             minutes = int(time_diff.total_seconds() / 60)
-                            metadata["last_backup"] = f"há {minutes}m"
+                            metadata["last_backup"] = f"{minutes}m ago"
                         elif time_diff.total_seconds() < 86400:
                             hours = int(time_diff.total_seconds() / 3600)
-                            metadata["last_backup"] = f"há {hours}h"
+                            metadata["last_backup"] = f"{hours}h ago"
                         else:
                             days = int(time_diff.total_seconds() / 86400)
-                            metadata["last_backup"] = f"há {days}d"
-                        logger.debug(f"Último backup: {metadata['last_backup']}")
+                            metadata["last_backup"] = f"{days}d ago"
+                        logger.debug(f"Last backup: {metadata['last_backup']}")
                 except Exception as e:
-                    logger.debug(f"Erro ao calcular metadados de backups: {e}")
+                    logger.debug(f"Error calculating backup metadata: {e}")
 
         except Exception as e:
-            logger.debug(f"Erro ao calcular metadados do mundo: {e}")
+            logger.debug(f"Error calculating world metadata: {e}")
 
         return metadata

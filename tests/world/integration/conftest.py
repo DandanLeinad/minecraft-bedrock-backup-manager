@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-"""Fixtures para testes de integração com filesystem real."""
+"""Fixtures for integration tests with real filesystem."""
 
 import tempfile
 from collections.abc import Generator
@@ -30,11 +30,11 @@ from backup_manager_mvp.infra.repository import (
 
 
 class TestFileSystemWorldRepository(FileSystemWorldRepository):
-    """Repositório de teste que usa diretório temporário em vez do real."""
+    """Test repository that uses a temporary directory instead of the real one."""
 
     def __init__(self, base_path: Path):
         self._test_base_path = base_path
-        # Não chamar super().__init__() para evitar inicialização do pathlib real
+        # Do not call super().__init__() to avoid initializing the real pathlib
 
     def get_worlds_base_path(self) -> Path:
         return self._test_base_path
@@ -45,21 +45,21 @@ class TestFileSystemWorldRepository(FileSystemWorldRepository):
     def get_shared_path(self, worlds_base_path: Path) -> Path:
         return self._test_base_path / "shared"
 
-    # Herdar métodos do pai - FileSystemWorldRepository já implementa:
+    # Inherit methods from parent - FileSystemWorldRepository already implements:
     # path_exists, list_directory, is_directory, read_text_file, calculate_total_size
-    # que usam pathlib.Path métodos nativos
+    # which use native pathlib.Path methods
 
 
 @pytest.fixture
 def temp_dir() -> Generator[Path]:
-    """Cria um diretório temporário que é limpo após o teste."""
+    """Creates a temporary directory that is cleaned up after the test."""
     with tempfile.TemporaryDirectory() as tmp:
         yield Path(tmp)
 
 
 @pytest.fixture
 def test_worlds_base_path(temp_dir: Path) -> Path:
-    """Cria diretório base para mundos de teste."""
+    """Creates base directory for test worlds."""
     base = temp_dir / "minecraft_worlds"
     base.mkdir(parents=True, exist_ok=True)
     return base
@@ -67,24 +67,24 @@ def test_worlds_base_path(temp_dir: Path) -> Path:
 
 @pytest.fixture
 def fs_world_repo(test_worlds_base_path: Path):
-    """Retorna repositório de mundos configurado para testes."""
+    """Returns world repository configured for tests."""
     return TestFileSystemWorldRepository(test_worlds_base_path)
 
 
 @pytest.fixture
 def fs_backup_repo() -> FileSystemBackupRepository:
-    """Retorna repositório de backup com filesystem real."""
+    """Returns backup repository with real filesystem."""
     return FileSystemBackupRepository()
 
 
 @pytest.fixture
 def sample_world_dir(test_worlds_base_path: Path) -> Path:
-    """Cria um diretório de mundo válido para testes no base path correto.
+    """Creates a valid world directory for tests in the correct base path.
 
-    Cria a estrutura esperada pelo WorldService:
+    Creates the structure expected by WorldService:
     test_worlds_base_path / account_id / games / com.mojang / minecraftWorlds / world_folder
     """
-    # Criar a estrutura de diretórios esperada pelo WorldService
+    # Create the directory structure expected by WorldService
     account_id = "test_account_123"
     world_dir = (
         test_worlds_base_path
@@ -96,13 +96,13 @@ def sample_world_dir(test_worlds_base_path: Path) -> Path:
     )
     world_dir.mkdir(parents=True, exist_ok=True)
 
-    # Criar levelname.txt
+    # Create levelname.txt
     (world_dir / "levelname.txt").write_text("Test World", encoding="utf-8")
 
-    # Criar level.dat (arquivo dummy)
+    # Create level.dat (dummy file)
     (world_dir / "level.dat").write_bytes(b"dummy level data")
 
-    # Criar alguns arquivos e subdiretórios para simular mundo real
+    # Create some files and subdirectories to simulate a real world
     (world_dir / "db").mkdir()
     (world_dir / "db" / "leveldb").write_bytes(b"dummy db data")
 
@@ -114,7 +114,7 @@ def sample_world_dir(test_worlds_base_path: Path) -> Path:
 
 @pytest.fixture
 def sample_world_model(sample_world_dir: Path) -> WorldModel:
-    """Cria um WorldModel válido apontando para o diretório de teste."""
+    """Creates a valid WorldModel pointing to the test directory."""
     from backup_manager_mvp.core.models.world_model import WorldModel
 
     return WorldModel(
@@ -129,7 +129,7 @@ def sample_world_model(sample_world_dir: Path) -> WorldModel:
 
 @pytest.fixture
 def backup_base_dir(temp_dir: Path) -> Path:
-    """Cria diretório base para backups."""
+    """Creates base directory for backups."""
     backup_dir = temp_dir / "backups"
     backup_dir.mkdir()
     return backup_dir
@@ -137,16 +137,16 @@ def backup_base_dir(temp_dir: Path) -> Path:
 
 @pytest.fixture
 def fs_backup_repo_with_base(backup_base_dir: Path) -> FileSystemBackupRepository:
-    """Retorna repositório de backup configurado com base dir customizado."""
+    """Returns backup repository configured with custom base dir."""
     import backup_manager_mvp.utils.paths as paths_module
 
-    # Monkey patch temporário do BACKUPS_DIR
+    # Temporary monkey patch of BACKUPS_DIR
     original_backups_dir = paths_module.BACKUPS_DIR
     paths_module.BACKUPS_DIR = backup_base_dir
 
     repo = FileSystemBackupRepository()
 
-    # Restaurar após uso
+    # Restore after use
     yield repo
 
     paths_module.BACKUPS_DIR = original_backups_dir

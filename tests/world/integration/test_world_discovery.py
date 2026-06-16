@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-"""Testes de integração para descoberta de mundos com filesystem real."""
+"""Integration tests for world discovery with real filesystem."""
 
 from pathlib import Path
 
@@ -24,11 +24,13 @@ from backup_manager_mvp.core.services.world_service import WorldService
 
 
 class TestWorldDiscoveryIntegration:
-    """Testes de integração para descoberta de mundos com filesystem real."""
+    """Integration tests for world discovery with real filesystem."""
 
-    def test_list_worlds_finds_valid_worlds(self, fs_world_repo, sample_world_dir: Path) -> None:
-        """Deve encontrar mundos válidos no filesystem real."""
-        # O fs_world_repo já está configurado com o temp_dir correto via fixture
+    def test_should_find_valid_worlds(self, fs_world_repo, sample_world_dir: Path) -> None:
+        """
+        Should find valid worlds in the real filesystem.
+        """
+        # The fs_world_repo is already configured with the correct temp_dir via fixture
         service = WorldService(fs_world_repo)
 
         worlds = service.list_worlds()
@@ -38,14 +40,16 @@ class TestWorldDiscoveryIntegration:
         assert world.folder_name == "6LknJ3qXcJo="
         assert world.levelname == "Test World"
 
-    def test_list_worlds_ignores_invalid_directories(self, fs_world_repo, temp_dir: Path) -> None:
-        """Deve ignorar diretórios que não são mundos válidos."""
-        # Criar diretório sem levelname.txt
+    def test_should_ignore_invalid_directories(self, fs_world_repo, temp_dir: Path) -> None:
+        """
+        Should ignore directories that are not valid worlds.
+        """
+        # Create directory without levelname.txt
         invalid_dir = temp_dir / "not_a_world"
         invalid_dir.mkdir()
 
-        # Criar mundo válido no diretório base do repositório de teste
-        # O fs_world_repo já está configurado com o temp_dir correto
+        # Create a valid world in the test repository base directory
+        # The fs_world_repo is already configured with the correct temp_dir
         base_path = fs_world_repo.get_worlds_base_path()
         account_id = "test_account_123"
         valid_dir = (
@@ -57,44 +61,52 @@ class TestWorldDiscoveryIntegration:
 
         service = WorldService(fs_world_repo)
 
-        # Testar que apenas o mundo válido é encontrado
+        # Test that only the valid world is found
         worlds = service.list_worlds()
         assert len(worlds) == 1
         assert worlds[0].levelname == "Valid World"
 
-    def test_list_worlds_ignores_files_not_directories(self, fs_world_repo, temp_dir: Path) -> None:
-        """Deve ignorar arquivos que não são diretórios."""
-        # Criar arquivo na raiz (não diretório)
+    def test_should_ignore_files_not_directories(self, fs_world_repo, temp_dir: Path) -> None:
+        """
+        Should ignore files that are not directories.
+        """
+        # Create a file at the root (not a directory)
         (temp_dir / "not_a_dir.txt").write_text("not a world")
 
         service = WorldService(fs_world_repo)
         worlds = service.list_worlds()
 
-        # Não deve crashar, apenas ignorar
+        # Should not crash, just ignore
         assert isinstance(worlds, list)
 
-    def test_list_worlds_handles_permission_errors(self, fs_world_repo, temp_dir: Path) -> None:
-        """Deve lidar graciosamente com erros de permissão."""
+    def test_should_handle_permission_errors_gracefully(
+        self, fs_world_repo, temp_dir: Path
+    ) -> None:
+        """
+        Should handle permission errors gracefully.
+        """
         service = WorldService(fs_world_repo)
 
-        # Testar com caminho inexistente
+        # Test with non-existent path
         worlds = service.list_worlds()
         assert isinstance(worlds, list)
 
-    def test_get_world_levelname_reads_from_file(
-        self, fs_world_repo, sample_world_dir: Path
-    ) -> None:
-        """Deve ler levelname do arquivo levelname.txt."""
+    def test_should_read_levelname_from_file(self, fs_world_repo, sample_world_dir: Path) -> None:
+        """
+        Should read levelname from levelname.txt file.
+        """
         service = WorldService(fs_world_repo)
 
         levelname = service.get_world_levelname(sample_world_dir)
 
         assert levelname == "Test World"
 
-    def test_get_world_levelname_raises_on_missing_file(
+    def test_should_raise_file_not_found_when_levelname_missing(
         self, fs_world_repo, temp_dir: Path
     ) -> None:
-        """Deve lançar FileNotFoundError se levelname.txt não existir."""
+        """
+        Should raise FileNotFoundError if levelname.txt does not exist.
+        """
         service = WorldService(fs_world_repo)
 
         invalid_dir = temp_dir / "no_levelname"
@@ -103,26 +115,32 @@ class TestWorldDiscoveryIntegration:
         with pytest.raises(FileNotFoundError):
             service.get_world_levelname(invalid_dir)
 
-    def test_get_world_levelname_raises_on_empty_file(self, fs_world_repo, temp_dir: Path) -> None:
-        """Deve lançar ValueError se levelname.txt estiver vazio."""
+    def test_should_raise_value_error_when_levelname_empty(
+        self, fs_world_repo, temp_dir: Path
+    ) -> None:
+        """
+        Should raise ValueError if levelname.txt is empty.
+        """
         service = WorldService(fs_world_repo)
 
         invalid_dir = temp_dir / "empty_levelname"
         invalid_dir.mkdir()
         (invalid_dir / "levelname.txt").write_text("", encoding="utf-8")
 
-        with pytest.raises(ValueError, match="vazio"):
+        with pytest.raises(ValueError, match="empty"):
             service.get_world_levelname(invalid_dir)
 
-    def test_get_world_levelname_raises_on_whitespace_only(
+    def test_should_raise_value_error_when_levelname_whitespace_only(
         self, fs_world_repo, temp_dir: Path
     ) -> None:
-        """Deve lançar ValueError se levelname.txt tiver apenas whitespace."""
+        """
+        Should raise ValueError if levelname.txt contains only whitespace.
+        """
         service = WorldService(fs_world_repo)
 
         invalid_dir = temp_dir / "whitespace_levelname"
         invalid_dir.mkdir()
         (invalid_dir / "levelname.txt").write_text("   \n\t  ", encoding="utf-8")
 
-        with pytest.raises(ValueError, match="vazio"):
+        with pytest.raises(ValueError, match="empty"):
             service.get_world_levelname(invalid_dir)
