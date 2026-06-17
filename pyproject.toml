@@ -49,6 +49,7 @@ dev = [
     "pytest-cov>=7.1.0",
     "ruff>=0.15.16",
     "taskipy>=1.14.1",
+    "zensical>=0.0.45",
 ]
 
 [project.scripts]
