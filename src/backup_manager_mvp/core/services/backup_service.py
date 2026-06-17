@@ -137,7 +137,7 @@ class BackupService:
             # Se falhar, tentar remover a pasta criada
             if self.repository.path_exists(backup_path):
                 self.repository.delete_tree(backup_path)
-            raise RuntimeError(f"Erro ao criar backup: {e}")
+            raise RuntimeError(f"Error creating backup: {e}")
 
         # Criar e retornar BackupModel
         backup = BackupModel(
@@ -227,10 +227,10 @@ class BackupService:
             - Esta é uma operação destrutiva no mundo atual
         """
         if not self.repository.path_exists(backup.backup_path):
-            raise FileNotFoundError(f"Backup não encontrado: {backup.backup_path}")
+            raise FileNotFoundError(f"Backup not found: {backup.backup_path}")
 
         if not self.repository.path_exists(world.path):
-            raise FileNotFoundError(f"Mundo não encontrado: {world.path}")
+            raise FileNotFoundError(f"World not found: {world.path}")
 
         try:
             # Reportar início da operação
@@ -273,7 +273,7 @@ class BackupService:
                 progress_callback(ProgressModel(current=1, total=1, stage="Restauração concluída!"))
 
         except Exception as e:
-            raise RuntimeError(f"Erro ao restaurar backup: {e}")
+            raise RuntimeError(f"Error restoring backup: {e}")
 
     def get_backup_preview_info(self, backup: BackupModel) -> dict:
         """Retorna informações sobre o conteúdo do backup para preview.
@@ -303,7 +303,7 @@ class BackupService:
                     "total_dirs": 0,
                     "total_size": 0,
                     "top_level_items": [],
-                    "error": f"Backup não encontrado: {backup.backup_path}",
+                    "error": f"Backup not found: {backup.backup_path}",
                 }
 
             total_files, total_dirs, total_size = self.repository.read_tree_stats(
@@ -331,5 +331,5 @@ class BackupService:
                 "total_dirs": 0,
                 "total_size": 0,
                 "top_level_items": [],
-                "error": f"Erro ao ler backup: {e!s}",
+                "error": f"Error reading backup: {e!s}",
             }

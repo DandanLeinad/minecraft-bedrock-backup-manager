@@ -25,7 +25,11 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
     "Topic :: Games/Entertainment",
 ]
-dependencies = ["customtkinter>=5.2.2", "pillow>=12.2.0", "pydantic>=2.13.4"]
+dependencies = [
+    "customtkinter>=5.2.2",
+    "pillow>=12.2.0",
+    "pydantic>=2.13.4"
+]
 
 [project.urls]
 Homepage = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager"

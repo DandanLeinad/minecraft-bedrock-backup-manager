@@ -75,6 +75,7 @@ MinecraftBackups/
 logs/
 *.log
 PROJECT_ANALYSIS.txt
+AGENTS.md
 
 # Environment files
 .env
