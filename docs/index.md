@@ -10,6 +10,10 @@ hide:
 > **Gerenciador de backups de mundos Minecraft Bedrock Edition para Windows 10/11.**
 > Interface gráfica nativa, backups versionados, restauração com preview.
 
+!!! warning "⚠️ Aviso Legal"
+    **NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.**
+    Este é um projeto open-source independente, desenvolvido como hobby/estudo.
+
 [![Download Latest Release](https://img.shields.io/github/v/release/DandanLeinad/minecraft-bedrock-backup-manager?include_prereleases&label=Download&color=4f46e5&style=for-the-badge)](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/releases/latest)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg?style=for-the-badge)](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/LICENSE)
 [![Python 3.14+](https://img.shields.io/badge/Python-3.14%2B-4f46e5?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
@@ -42,6 +46,8 @@ hide:
 ## 🚀 Início Rápido
 
 === "🎮 Usuário Final"
+
+    ⚠️ **Aviso:** Não é produto oficial Minecraft. Não associado à Mojang/Microsoft.
 
     1. [Baixe o `.exe` mais recente](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/releases/latest) :material-download:
     2. Execute — **sem instalação necessária** :material-play-circle:
@@ -269,4 +275,6 @@ Consulte [LICENSE](https://github.com/DandanLeinad/minecraft-bedrock-backup-mana
 
 ---
 
-*Feito com :heart: por [DandanLeinad](https://github.com/DandanLeinad) · Powered by [Zensical](https://zensical.org) · [Editar esta página](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/edit/main/docs/index.md)*
+⚠️ **NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.**
+
+*Feito com :heart: por [DandanLeinad](https://github.com/DandanLeinad) como projeto de hobby/estudo · Powered by [Zensical](https://zensical.org) · [Editar esta página](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/edit/main/docs/index.md)*
