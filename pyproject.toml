@@ -137,6 +137,9 @@ cz-changelog = "cz changelog"
 cz-version = "cz version"
 cz-check = "cz check"
 
+# Pre-commit hooks
+pre-commit = "pre-commit run --all-files"
+
 [tool.pyinstaller]
 compatibility_mode = true
 
