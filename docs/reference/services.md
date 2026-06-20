@@ -38,10 +38,16 @@ class WorldService:
 
 ```mermaid
 flowchart TD
-    WS[WorldService.list_worlds()]
-    WS --> NORMAL["Contas Normais\n%AppData%\...\Users\{id}\games\com.mojang\minecraftWorlds\"]
-    WS --> UWP["UWP Store\n%LocalAppData%\Packages\Microsoft.MinecraftUWP_...\minecraftWorlds\"]
-    WS --> SHARED["Shared\n%AppData%\...\Users\Shared\games\com.mojang\minecraftWorlds\"]
+    WS["WorldService.list_worlds()"]
+
+    WS --> NORMAL[Contas Normais]
+    NORMAL --> P1["%AppData%/.../Users/{id}/games/com.mojang/minecraftWorlds"]
+
+    WS --> UWP[UWP Store]
+    UWP --> P2["%LocalAppData%/Packages/Microsoft.MinecraftUWP_.../minecraftWorlds"]
+
+    WS --> SHARED[Shared]
+    SHARED --> P3["%AppData%/.../Users/Shared/games/com.mojang/minecraftWorlds"]
 ```
 
 ### Fluxo: list_worlds()

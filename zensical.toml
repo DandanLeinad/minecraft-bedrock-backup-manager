@@ -42,6 +42,8 @@ nav = [
     "architecture/index.md",
     "architecture/overview.md",
     "architecture/ports-and-models.md",
+    "architecture/request-flow.md",
+    "architecture/dependency-injection.md",
   ] },
   { "Referência Técnica" = [
     "reference/index.md",

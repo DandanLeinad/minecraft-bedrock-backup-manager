@@ -18,14 +18,15 @@ flowchart TB
         CLICK["Clique no Botão"]
     end
 
-    subgraph UI["UI Layer (CustomTkinter)"]
+    subgraph UI_LAYER["UI Layer (CustomTkinter)"]
         BTN["Botão: Fazer Backup / Restaurar"]
         SCR["Screen Handler"]
         HND["Handler (thin wrapper)"]
+        UIUP["UI Update"]
     end
 
-    subgraph APP["Application Controller"]
-        APP["BackupManagerApp"]
+    subgraph APP_LAYER["Application Controller"]
+        APP_NODE["BackupManagerApp"]
         CB["Callback Registry"]
     end
 
@@ -39,14 +40,13 @@ flowchart TB
     subgraph PROGRESS["Progress Tracking"]
         PC["Progress Callback"]
         AFTER["main_window.after()"]
-        UIUP["UI Update"]
     end
 
     CLICK --> BTN
     BTN --> SCR
     SCR --> HND
-    HND --> APP
-    APP --> CB
+    HND --> APP_NODE
+    APP_NODE --> CB
     CB --> THR
     THR --> SVC
     SVC --> PORT
@@ -54,19 +54,19 @@ flowchart TB
     REPO -->|Progress| PC
     PC --> AFTER
     AFTER --> UIUP
-    UIUP --> UI
+    UIUP --> BTN
 
-    classDef user fill:#1e293b,stroke:#64748b,color:#fff;
-    classDef ui fill:#1e40af,stroke:#3b82f6,color:#fff;
-    classDef app fill:#312e81,stroke:#6366f1,color:#fff;
-    classDef thread fill:#7c2d12,stroke:#f97316,color:#fff;
-    classDef prog fill:#065f46,stroke:#10b981,color:#fff;
+    classDef user fill:#1e293b,stroke:#64748b,color:#fff
+    classDef ui fill:#1e40af,stroke:#3b82f6,color:#fff
+    classDef app fill:#312e81,stroke:#6366f1,color:#fff
+    classDef thread fill:#7c2d12,stroke:#f97316,color:#fff
+    classDef prog fill:#065f46,stroke:#10b981,color:#fff
 
-    class CLICK user;
-    class BTN,SCR,HND ui;
-    class APP,CB app;
-    class THR,SVC,PORT,REPO thread;
-    class PC,AFTER,UIUP prog;
+    class CLICK user
+    class BTN,SCR,HND,UIUP ui
+    class APP_NODE,CB app
+    class THR,SVC,PORT,REPO thread
+    class PC,AFTER prog
 ```
 
 ---
@@ -189,23 +189,23 @@ flowchart LR
     subgraph MAIN["Main Thread (UI)"]
         UI[CustomTkinter Event Loop]
         MW[main_window]
-        AFTER[after(0, callback)]
+        AFTER["after(0, callback)"]
     end
 
     subgraph BG["Background Thread"]
-        TH[threading.Thread<br/>daemon=True]
-        SVC[Service.run_*()]
+        TH["threading.Thread<br/>daemon=True"]
+        SVC["Service.run_*()"]
         REPO[Repository.copy_tree_with_progress]
     end
 
     subgraph PROG["Progress Pipeline"]
-        CB[ProgressModel<br/>(current, total, stage)]
-        AFTER2[after(0, ...)]
+        CB["ProgressModel<br/>(current, total, stage)"]
+        AFTER2["after(0, ...)"]
     end
 
-    UI -->|click| BG
-    BG -->|ProgressModel| PROG
-    PROG -->|after(0, lambda)| AFTER
+    UI -->|click| TH
+    TH -->|ProgressModel| CB
+    CB -->|"after(0, lambda)"| AFTER
     AFTER -->|schedule| UI
     UI -.->|update_progress| UI
 
@@ -249,7 +249,7 @@ self.repository.copy_tree_with_progress(
 ```mermaid
 flowchart TD
     START[App Inicia] --> LOAD[Carrega feature_flags.py]
-    LOAD --> PARSE[os.getenv('FF_*', 'false')]
+    LOAD --> PARSE["os.getenv('FF_*', 'false')"]
 
     PARSE --> AUTO[FF_AUTO_BACKUP]
     PARSE --> PREVIEW[FF_RESTORE_PREVIEW]
