@@ -155,5 +155,7 @@ UI → BackupService.restore_backup(backup, world, progress_callback)
 ## Referências
 
 - [Ports & Models](./ports-and-models.md) — Detalhes de contratos e modelos
+- [Fluxo de Requisição](./request-flow.md) — Backup/Restore Flow, Threading, Feature Flags
+- [Injeção de Dependência](./dependency-injection.md) — Composition Root, DI Manual, Callback Wiring
 - [ADR 0001](../decisions/0001-python-now-rust-tauri-future.md) — Decisão de tecnologia
 - [Development Setup](../getting-started/usage.md) — Como rodar localmente

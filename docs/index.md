@@ -87,6 +87,8 @@ hide:
     Ports & Adapters, Domain Models, Services, Dependency Injection, Patterns.
 
     [:octicons-arrow-right-24: Visão Geral](./architecture/overview.md)
+    [:octicons-arrow-right-24: Fluxo de Requisição](./architecture/request-flow.md)
+    [:octicons-arrow-right-24: Injeção de Dependência](./architecture/dependency-injection.md)
 
 -   :material-book-open-variant:{ .lg .middle } **Guia do Usuário**
 
@@ -118,62 +120,95 @@ hide:
 
 ## 🏗️ Arquitetura em Resumo
 
+Visão arquitetural de alto nível — **Ports & Adapters (Hexagonal)** com **Application Controller** como Composition Root.
+
 ```mermaid
 flowchart TB
-    %% Camadas
-    subgraph UI["UI Layer"]
-        CT[CustomTkinter]
-        SCR[Screens: WorldsList, Details, Restore]
-        HND[Handlers: Navigation, Backup, Restore, World]
+    %% Entry Point
+    subgraph ENTRY["Entry Point"]
+        MAIN["main.py<br/>Composition Root"]
     end
 
-    subgraph APP["Application Layer"]
-        WS[WorldService]
-        BS[BackupService]
-        PS[ProgressService]
+    %% Application Controller
+    subgraph CTRL["Application Controller"]
+        APP["BackupManagerApp<br/>• DI Container<br/>• Callback Wiring<br/>• Thread Management"]
     end
 
-    subgraph DOM["Domain Layer"]
-        WM[WorldModel]
-        BM[BackupModel]
-        PM[ProgressModel]
+    %% UI Layer (Adapter)
+    subgraph UI["UI Layer (Adapter)"]
+        CTK["CustomTkinterUIController"]
+        SCR["Screens<br/>• WorldsList<br/>• WorldDetails<br/>• RestorePreview<br/>• RestoreConfirm"]
+        HND["Handlers<br/>• Navigation<br/>• Backup<br/>• Restore<br/>• World"]
+        MGR["Managers<br/>• Window<br/>• Toast<br/>• Loading<br/>• Progress"]
     end
 
-    subgraph PRT["Ports (Interfaces)"]
-        WRP[WorldRepositoryPort]
-        BRP[BackupRepositoryPort]
+    %% Application Services
+    subgraph SVCS["Application Services"]
+        WS["WorldService"]
+        BS["BackupService"]
+        PS["ProgressService"]
     end
 
-    subgraph INF["Infrastructure"]
-        FWR[FileSystemWorldRepo]
-        FBR[FileSystemBackupRepo]
+    %% Ports (Interfaces)
+    subgraph PORTS["Ports (Interfaces)"]
+        WRP["WorldRepositoryPort"]
+        BRP["BackupRepositoryPort"]
     end
 
-    %% Relacionamentos
-    CT --> WS
-    CT --> BS
-    WS --> WRP
-    BS --> BRP
-    BS --> PS
-    WS --> WM
-    BS --> BM
-    BS --> PM
-    WRP -.-> FWR
-    BRP -.-> FBR
+    %% Domain Models (transversal)
+    subgraph DOM["Domain Models"]
+        WM["WorldModel"]
+        BM["BackupModel"]
+        PM["ProgressModel"]
+    end
 
-    %% Estilos
-    classDef ui fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px;
-    classDef app fill:#fef3c7,stroke:#d97706,stroke-width:2px;
-    classDef dom fill:#dcfce7,stroke:#16a34a,stroke-width:2px;
-    classDef prt fill:#fce7f3,stroke:#ec4899,stroke-width:2px;
-    classDef inf fill:#f3f4f6,stroke:#6b7280,stroke-width:2px;
+    %% Infrastructure
+    subgraph INFRA["Infrastructure"]
+        FWR["FileSystemWorldRepository"]
+        FBR["FileSystemBackupRepository"]
+    end
 
-    class CT,SCR,HND ui;
-    class WS,BS,PS app;
+    %% Dependencies (clean layer boundaries)
+    MAIN --> APP
+    APP --> UI
+    APP --> SVCS
+    UI --> APP
+    SVCS --> PORTS
+    SVCS --> DOM
+    PORTS -.->|implements| INFRA
+    INFRA -.-> DOM
+
+    %% Styling
+    classDef entry fill:#1e293b,stroke:#64748b,color:#fff;
+    classDef ctrl fill:#312e81,stroke:#6366f1,color:#fff;
+    classDef ui fill:#1e40af,stroke:#3b82f6,color:#fff;
+    classDef svc fill:#065f46,stroke:#10b981,color:#fff;
+    classDef port fill:#7c2d12,stroke:#f97316,color:#fff;
+    classDef dom fill:#92400e,stroke:#f59e0b,color:#fff;
+    classDef infra fill:#374151,stroke:#9ca3af,color:#fff;
+
+    class MAIN entry;
+    class APP ctrl;
+    class CTK,SCR,HND,MGR ui;
+    class WS,BS,PS svc;
+    class WRP,BRP port;
     class WM,BM,PM dom;
-    class WRP,BRP prt;
-    class FWR,FBR inf;
+    class FWR,FBR infra;
 ```
+
+### Legenda das Camadas
+
+| Camada | Responsabilidade | Código |
+|--------|------------------|--------|
+| **Entry Point** | Configura logging, instancia App | `main.py:83` |
+| **App Controller** | DI Container, Callback Wiring, Thread Mgmt | `application.py:36` |
+| **UI Layer** | CustomTkinter Adapter, Screens, Handlers, Managers | `ui/customtkinter/` |
+| **Services** | Regras de negócio, orquestração | `core/services/` |
+| **Ports** | Interfaces (ABC) | `core/ports/` |
+| **Domain Models** | Entities/DTOs (transversais) | `core/models/` |
+| **Infrastructure** | Implementações FS dos Ports | `infra/repository/` |
+
+> **Nota:** Domain Models são **transversais** — atravessam todas as camadas como entrada/saída de dados. Por isso não estão no meio da cadeia de dependência.
 
 ---
 
