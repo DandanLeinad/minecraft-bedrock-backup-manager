@@ -75,4 +75,4 @@ uv run pytest tests/ --cov=src       # Com cobertura
 uv run pytest tests/unit/models/     # Apenas models
 ```
 
-Ver [TESTING.md](./TESTING.md) para mais.
+Ver [Testes](../development/testing.md) para mais.
