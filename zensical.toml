@@ -50,7 +50,7 @@ nav = [
     "reference/services.md",
     "reference/config.md",
   ] },
-  { "Decisões (ADRs)" = "decisions/index.md" },
+  { "Decisões (ADRs)" = ["decisions/index.md"] },
   { "Desenvolvimento" = [
     "development/index.md",
     "development/trunk-based-development.md",
