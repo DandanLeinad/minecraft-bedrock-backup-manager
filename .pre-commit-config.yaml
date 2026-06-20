@@ -7,7 +7,7 @@ fail_fast: false
 
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v2.3.0
+    rev: v4.4.0
     hooks:
       - id: conventional-pre-commit
         stages: [ commit-msg ]
@@ -15,7 +15,7 @@ repos:
           - --force-scope
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.11
+    rev: v0.15.18
     hooks:
       - id: ruff
         args:
@@ -28,7 +28,7 @@ repos:
       - id: ruff-format
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -44,7 +44,7 @@ repos:
       - id: check-case-conflict
 
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.32.0
+    rev: v1.38.0
     hooks:
       - id: yamllint
         args: [ --strict ]
