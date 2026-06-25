@@ -203,8 +203,8 @@ backup_service.create_backup(world, progress_callback=progress_service.emit)
 
 ## Referências
 
-- [Código: world_service.py](../../src/backup_manager_mvp/core/services/world_service.py)
-- [Código: backup_service.py](../../src/backup_manager_mvp/core/services/backup_service.py)
-- [Código: progress_service.py](../../src/backup_manager_mvp/core/services/progress_service.py)
+- [Código: world_service.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/services/world_service.py)
+- [Código: backup_service.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/services/backup_service.py)
+- [Código: progress_service.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/services/progress_service.py)
 - [Ports](./ports.md) — Interfaces consumidas
 - [Models](./models.md) — Models manipulados

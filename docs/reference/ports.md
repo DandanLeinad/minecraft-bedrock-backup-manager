@@ -219,9 +219,9 @@ def test_list_worlds_creates_correct_models(tmp_path):
 
 ## Referências
 
-- [Código: world_repository.py](../../src/backup_manager_mvp/core/ports/world_repository.py)
-- [Código: backup_repository.py](../../src/backup_manager_mvp/core/ports/backup_repository.py)
-- [Código: filesystem_world_repository.py](../../src/backup_manager_mvp/infra/repository/filesystem_world_repository.py)
-- [Código: filesystem_backup_repository.py](../../src/backup_manager_mvp/infra/repository/filesystem_backup_repository.py)
+- [Código: world_repository.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/ports/world_repository.py)
+- [Código: backup_repository.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/ports/backup_repository.py)
+- [Código: filesystem_world_repository.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/infra/repository/filesystem_world_repository.py)
+- [Código: filesystem_backup_repository.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/infra/repository/filesystem_backup_repository.py)
 - [Models](./models.md) — Models usados pelos Ports
 - [Services](./services.md) — Consumidores dos Ports

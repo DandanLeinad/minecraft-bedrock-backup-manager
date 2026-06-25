@@ -162,8 +162,8 @@ classDiagram
 
 ## Referências
 
-- [Código: world_model.py](../../src/backup_manager_mvp/core/models/world_model.py)
-- [Código: backup_model.py](../../src/backup_manager_mvp/core/models/backup_model.py)
-- [Código: progress_model.py](../../src/backup_manager_mvp/core/models/progress_model.py)
+- [Código: world_model.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/models/world_model.py)
+- [Código: backup_model.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/models/backup_model.py)
+- [Código: progress_model.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/models/progress_model.py)
 - [Ports](./ports.md) — Interfaces que usam estes models
 - [Services](./services.md) — Lógica que manipula estes models

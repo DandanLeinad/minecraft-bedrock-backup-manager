@@ -288,7 +288,7 @@ def test_list_worlds_creates_correct_models(tmp_path):
 ## Referências
 
 - [Architecture Overview](./overview.md)
-- [WorldService](../core/services/world_service.py) — Uso dos Ports/Models
-- [BackupService](../core/services/backup_service.py) — Uso dos Ports/Models
-- [FileSystemWorldRepo](../infra/repository/filesystem_world_repository.py) — Implementação
-- [FileSystemBackupRepo](../infra/repository/filesystem_backup_repository.py) — Implementação
+- [WorldService](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/services/world_service.py) — Uso dos Ports/Models
+- [BackupService](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/services/backup_service.py) — Uso dos Ports/Models
+- [FileSystemWorldRepo](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/infra/repository/filesystem_world_repository.py) — Implementação
+- [FileSystemBackupRepo](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/infra/repository/filesystem_backup_repository.py) — Implementação

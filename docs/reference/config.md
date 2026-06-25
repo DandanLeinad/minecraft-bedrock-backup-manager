@@ -233,7 +233,7 @@ changelog_incremental = true
 
 ## Referências
 
-- [Código: feature_flags.py](../../src/backup_manager_mvp/config/feature_flags.py)
+- [Código: feature_flags.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/config/feature_flags.py)
 - [Guia: Feature Flags](../development/feature-flags.md)
 - [Guia: Build](../getting-started/usage.md#build-do-executavel)
 - [Guia: Versionamento](../getting-started/usage.md#versionamento-release)

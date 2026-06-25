@@ -292,9 +292,9 @@ worlds = world_service.list_worlds()  # Rápido, sem FS real
 
 ## 📚 Referências
 
-- [Código: main.py](../main.py) — Entry Point
-- [Código: application.py](../application.py) — Composition Root + App Controller
-- [Código: world_service.py](../core/services/world_service.py) — Service com Port
-- [Código: customtkinter_ui.py](../ui/customtkinter/customtkinter_ui.py) — UI com Callback Registry
+- [Código: main.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/main.py) — Entry Point
+- [Código: application.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/application.py) — Composition Root + App Controller
+- [Código: world_service.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/services/world_service.py) — Service com Port
+- [Código: customtkinter_ui.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/ui/customtkinter/customtkinter_ui.py) — UI com Callback Registry
 - [Request Flow](./request-flow.md) — Como as requisições percorrem o sistema
 - [Request Flow - Threading](./request-flow.md#3-threading-model) — Threading Model

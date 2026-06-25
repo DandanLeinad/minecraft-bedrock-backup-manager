@@ -311,9 +311,9 @@ FF_AUTO_BACKUP=true FF_RESTORE_PREVIEW=true uv run task test
 
 ## 📚 Leituras Relacionadas
 
-- [Visão Arquitetural](../index/#arquitetura-em-resumo) — Diagrama 1
+- [Visão Arquitetural](../../index.md#arquitetura-em-resumo) — Diagrama 1
 - [Dependency Injection](./dependency-injection.md) — Diagrama 3
 - [Feature Flags Guide](../development/feature-flags.md)
-- [Código: application.py](../application.py)
-- [Código: backup_service.py](../core/services/backup_service.py)
-- [Código: customtkinter_ui.py](../ui/customtkinter/customtkinter_ui.py)
+- [Código: application.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/application.py)
+- [Código: backup_service.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/core/services/backup_service.py)
+- [Código: customtkinter_ui.py](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/src/backup_manager_mvp/ui/customtkinter/customtkinter_ui.py)
