@@ -18,37 +18,37 @@ Este guia cobre o **workflow de desenvolvimento** completo:
 
     Clone, instale dependências, configure hooks, valide ambiente.
 
-    [:octicons-arrow-right-24: Setup](./usage.md#setup-inicial)
+    [:octicons-arrow-right-24: Setup](usage.md#setup-inicial)
 
 -   :material-play-circle:{ .lg .middle } **Comandos Diários**
 
     Rodar app, testes, lint, format, type-check, build.
 
-    [:octicons-arrow-right-24: Comandos](./usage.md#comandos-diarios-via-taskipy)
+    [:octicons-arrow-right-24: Comandos](usage.md#comandos-diarios-via-taskipy)
 
 -   :material-package:{ .lg .middle } **Build do Executável**
 
     Release, debug, clean, full rebuild com PyInstaller.
 
-    [:octicons-arrow-right-24: Build](./usage.md#build-do-executavel)
+    [:octicons-arrow-right-24: Build](usage.md#build-do-executavel)
 
 -   :material-tag:{ .lg .middle } **Versionamento & Release**
 
     Commitizen, Conventional Commits, bump version, changelog.
 
-    [:octicons-arrow-right-24: Release](./usage.md#versionamento-release)
+    [:octicons-arrow-right-24: Release](usage.md#versionamento-release)
 
 -   :material-git:{ .lg .middle } **Workflow Git**
 
     Trunk-Based Development, branches curtas, PRs, CI/CD.
 
-    [:octicons-arrow-right-24: Git Workflow](./usage.md#workflow-git-trunk-based-prs)
+    [:octicons-arrow-right-24: Git Workflow](usage.md#workflow-git-trunk-based-prs)
 
 -   :material-flag:{ .lg .middle } **Feature Flags**
 
     Desenvolver features incompletas sem quebrar produção.
 
-    [:octicons-arrow-right-24: Feature Flags](./usage.md#feature-flags-features-inacabadas)
+    [:octicons-arrow-right-24: Feature Flags](usage.md#feature-flags-features-inacabadas)
 
 </div>
 

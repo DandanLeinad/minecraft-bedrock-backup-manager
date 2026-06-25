@@ -121,6 +121,6 @@ Faça um **backup do estado atual** *antes* de restaurar (se tiver progresso nov
 
 ## 🔗 Próximos Passos
 
-- [Troubleshooting →](./troubleshooting.md)
-- [Instalação →](./installation.md)
+- [Troubleshooting →](troubleshooting.md)
+- [Instalação →](installation.md)
 - [Desenvolvimento →](../development/index.md)

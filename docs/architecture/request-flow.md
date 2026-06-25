@@ -10,7 +10,7 @@ Detalhamento de como as operações de **Backup** e **Restore** percorrem o sist
 
 ## 🎯 Visão Geral
 
-Este documento complementa a [Visão Arquitetural](../index.md#arquitetura-em-resumo) mostrando o fluxo de execução real de uma requisição.
+Este documento complementa a [Visão Arquitetural](../index/#arquitetura-em-resumo) mostrando o fluxo de execução real de uma requisição.
 
 ```mermaid
 flowchart TB
@@ -311,7 +311,7 @@ FF_AUTO_BACKUP=true FF_RESTORE_PREVIEW=true uv run task test
 
 ## 📚 Leituras Relacionadas
 
-- [Visão Arquitetural](../index.md#arquitetura-em-resumo) — Diagrama 1
+- [Visão Arquitetural](../index/#arquitetura-em-resumo) — Diagrama 1
 - [Dependency Injection](./dependency-injection.md) — Diagrama 3
 - [Feature Flags Guide](../development/feature-flags.md)
 - [Código: application.py](../application.py)

@@ -107,6 +107,6 @@ Após o backup, você pode:
 
 ## 🔗 Próximos Passos
 
-- [Restaurar Mundo →](./restore.md)
-- [Onde Ficam os Backups →](./backup-location.md)
-- [Configurações →](./settings.md)
+- [Restaurar Mundo →](restore.md)
+- [Onde Ficam os Backups →](backup-location.md)
+- [Configurações →](settings.md)

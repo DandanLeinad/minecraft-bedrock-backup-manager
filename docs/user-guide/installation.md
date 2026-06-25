@@ -100,6 +100,6 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\Documents\MinecraftBackups"
 
 ## 🔗 Próximos Passos
 
-- [Primeiro Backup →](./first-backup.md)
-- [Onde Ficam os Backups →](./backup-location.md)
-- [Troubleshooting →](./troubleshooting.md)
+- [Primeiro Backup →](first-backup.md)
+- [Onde Ficam os Backups →](backup-location.md)
+- [Troubleshooting →](troubleshooting.md)

@@ -104,7 +104,7 @@ FF_RESTORE_PREVIEW=true uv run task dev
 
 ## 🔗 Links Relacionados
 
-- [Primeiros Passos](../getting-started/usage.md) — Setup completo
+- [Primeiros Passos](../getting-started/usage/) — Setup completo
 - [Arquitetura](../architecture/overview.md) — Entenda o código antes de contribuir
 - [ADR 0001](../decisions/0001-python-now-rust-tauri-future.md) — Contexto técnico
 - [CONTRIBUTING.md](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/blob/main/CONTRIBUTING.md) — Guia oficial de contribuição

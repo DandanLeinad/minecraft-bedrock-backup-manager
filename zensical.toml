@@ -148,7 +148,6 @@ features = [
   # Navigation - TABS (top-level sections as tabs)
   "navigation.tabs",
   "navigation.tabs.sticky",
-  "navigation.sections",
   "navigation.instant",
   "navigation.instant.prefetch",
   "navigation.path",
@@ -159,9 +158,8 @@ features = [
   # Search
   "search.highlight",
 
-  # Table of contents - integrated in sidebar (conflicts with navigation.indexes)
+  # Table of contents
   "toc.follow",
-  "toc.integrate",
 ]
 
 # ----------------------------------------------------------------------------

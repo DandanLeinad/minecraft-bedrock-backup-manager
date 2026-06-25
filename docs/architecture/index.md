@@ -133,7 +133,7 @@ src/backup_manager_mvp/
 
 - [Visão Geral Detalhada](./overview.md) — Fluxos, camadas, tecnologias, pontos de extensão
 - [Ports & Models](./ports-and-models.md) — Contratos ABC, Models Pydantic, DI, estrutura runtime
-- [Referência: Models](../reference/models.md) — Documentação completa dos Models
-- [Referência: Ports](../reference/ports.md) — Documentação completa dos Ports
-- [Referência: Services](../reference/services.md) — Documentação completa dos Services
+- [Referência: Models](../reference/models/) — Documentação completa dos Models
+- [Referência: Ports](../reference/ports/) — Documentação completa dos Ports
+- [Referência: Services](../reference/services/) — Documentação completa dos Services
 - [ADR 0001](../decisions/0001-python-now-rust-tauri-future.md) — Decisão: Python agora, Rust/Tauri futuro
