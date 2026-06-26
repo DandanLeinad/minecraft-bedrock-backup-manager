@@ -1,5 +1,5 @@
 ---
-icon: lucide/plug
+icon: lucide/link
 ---
 
 # Ports & Models — Contratos e Modelos de Domínio

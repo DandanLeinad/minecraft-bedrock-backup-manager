@@ -1,5 +1,5 @@
 ---
-icon: lucide/sitemap
+icon: lucide/boxes
 ---
 
 # Arquitetura do Minecraft Bedrock Backup Manager
