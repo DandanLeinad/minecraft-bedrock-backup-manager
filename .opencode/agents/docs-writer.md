@@ -1,7 +1,7 @@
 ---
 description: Especialista em documentação técnica — cria, edita e organiza arquivos Markdown para projetos de software usando Zensical
 mode: subagent
-model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+model: nvidia/nemotron-3-ultra-550b-a55b:free?
 temperature: 0.2
 tools:
   bash: false
