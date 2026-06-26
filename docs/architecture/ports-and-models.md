@@ -1,3 +1,7 @@
+---
+icon: lucide/plug
+---
+
 # Ports & Models — Contratos e Modelos de Domínio
 
 ## Ports (Interfaces/Contratos)

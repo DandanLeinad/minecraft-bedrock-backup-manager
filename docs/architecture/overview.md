@@ -1,3 +1,7 @@
+---
+icon: lucide/sitemap
+---
+
 # Arquitetura do Minecraft Bedrock Backup Manager
 
 ## Visão Geral

@@ -142,6 +142,8 @@ sequenceDiagram
         H->>A: _handle_restore_backup(backup, world)
     end
 
+    Note right of UI: FF_RESTORE_PREVIEW padrão é true
+
     A->>A: show_progress_bar() / disable_buttons()
     A->>TH: threading.Thread(target=run_restore)
     TH->>BS: restore_backup(backup, world, progress_callback)
@@ -160,7 +162,7 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     RESTORE[Restaurar Clicado] --> FLAG{FF_RESTORE_PREVIEW?}
-    FLAG -->|true| PREVIEW[show_screen_restore_preview]
+    FLAG -->|true (padrão)| PREVIEW[show_screen_restore_preview]
     FLAG -->|false| DIRECT[Direct Restore]
     PREVIEW --> CONFIRM{Usuário Confirma?}
     CONFIRM -->|Sim| DIRECT
@@ -177,8 +179,8 @@ flowchart TD
 
 | Flag | Valor | Comportamento |
 |------|-------|---------------|
-| `FF_RESTORE_PREVIEW` | `false` (padrão) | Restore direto → Confirmação → Executa |
-| `FF_RESTORE_PREVIEW` | `true` | Preview → Confirmação → Executa |
+| `FF_RESTORE_PREVIEW` | `true` (padrão) | Preview → Confirmação → Executa |
+| `FF_RESTORE_PREVIEW` | `false` | Restore direto → Confirmação → Executa |
 
 ---
 
@@ -249,45 +251,42 @@ self.repository.copy_tree_with_progress(
 ```mermaid
 flowchart TD
     START[App Inicia] --> LOAD[Carrega feature_flags.py]
-    LOAD --> PARSE["os.getenv('FF_*', 'false')"]
+    LOAD --> PARSE["os.getenv('FF_*', defaults)"]
 
-    PARSE --> AUTO[FF_AUTO_BACKUP]
+    PARSE --> ICON[FF_WORLD_ICON_PREVIEW]
     PARSE --> PREVIEW[FF_RESTORE_PREVIEW]
-    PARSE --> CLOUD[FF_CLOUD_SYNC]
     PARSE --> MT[FF_MULTI_THREADING]
     PARSE --> LOG[FF_ADVANCED_LOGGING]
 
-    AUTO -->|true| AUTO_ON[Auto-backup ativo]
-    PREVIEW -->|true| PREVIEW_ON[Restore com Preview]
-    CLOUD -->|true| CLOUD_ON[Cloud Sync WIP]
+    ICON -->|true (padrão)| ICON_ON[World Icon Preview ativo]
+    PREVIEW -->|true (padrão)| PREVIEW_ON[Restore com Preview]
     MT -->|true| MT_ON[Threading experimental]
     LOG -->|true| LOG_ON[Debug verbose]
 
     classDef flag fill:#1e40af,stroke:#3b82f6,color:#fff;
     classDef on fill:#065f46,stroke:#10b981,color:#fff;
 
-    class AUTO,PREVIEW,CLOUD,MT,LOG flag;
-    class AUTO_ON,PREVIEW_ON,CLOUD_ON,MT_ON,LOG_ON on;
+    class ICON,PREVIEW,MT,LOG flag;
+    class ICON_ON,PREVIEW_ON,MT_ON,LOG_ON on;
 ```
 
 ### Tabela de Flags
 
 | Flag | Env Var | Padrão | Status | Descrição |
 |------|---------|--------|--------|-----------|
-| Auto Backup | `FF_AUTO_BACKUP` | `false` | 🧪 Em Dev | Backup automático periódico |
-| Restore Preview | `FF_RESTORE_PREVIEW` | `false` | 🧪 Em Dev | Preview antes de restaurar |
-| Cloud Sync | `FF_CLOUD_SYNC` | `false` | 🧪 Em Dev | Sync com nuvem |
+| World Icon Preview | `FF_WORLD_ICON_PREVIEW` | `true` | ✅ Ativo | Preview de ícone do mundo na lista |
+| Restore Preview | `FF_RESTORE_PREVIEW` | `true` | ✅ Ativo | Preview antes de restaurar |
 | Multi-threading | `FF_MULTI_THREADING` | `false` | ⚡ Experimental | Operações paralelas |
 | Advanced Logging | `FF_ADVANCED_LOGGING` | `false` | ⚡ Experimental | Logs verbosos |
 
 ### Uso
 
 ```bash
-# Desenvolvimento
-FF_AUTO_BACKUP=true FF_RESTORE_PREVIEW=true uv run task dev
+# Desenvolvimento - ativar experimentais
+FF_MULTI_THREADING=true FF_ADVANCED_LOGGING=true uv run task dev
 
-# Testes CI
-FF_AUTO_BACKUP=true FF_RESTORE_PREVIEW=true uv run task test
+# Testes CI - desativar previews se necessário
+FF_WORLD_ICON_PREVIEW=false FF_RESTORE_PREVIEW=false uv run task test
 ```
 
 ---
