@@ -99,8 +99,8 @@ graph TD
 ## 🔧 Feature Flags Relacionadas
 
 ```bash
-# Ativar preview de restauração
-FF_RESTORE_PREVIEW=true uv run task dev
+# Preview de restauração (padrão: true, desativar se quiser)
+FF_RESTORE_PREVIEW=false uv run task dev
 
 # Logs detalhados durante restauração
 FF_ADVANCED_LOGGING=true uv run task dev

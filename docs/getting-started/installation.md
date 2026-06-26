@@ -1,4 +1,8 @@
-# 🔧 Desenvolvimento
+---
+icon: lucide/cpu
+---
+
+# Setup de Desenvolvimento
 
 ## Setup Rápido
 
@@ -36,36 +40,45 @@ uv run task build           # Release
 uv run task build-full      # Limpa + rebuild
 ```
 
-## Git Workflow
+## Git Workflow (Trunk-Based)
 
 ```bash
-# 1. Partir de develop
-git checkout develop
-git pull origin develop
+# 1. Partir de main (protegida)
+git checkout main
+git pull origin main
 
-# 2. Criar feature branch
-git checkout -b feature/my-feature
+# 2. Criar branch curta (max 3-5 dias)
+git checkout -b feature/nome-curto
+# ou fix/, chore/, docs/
 
-# 3. Commitar (siga commitlint)
+# 3. Desenvolver com commits pequenos (Conventional Commits)
 git add .
-git commit -m "feat: add new feature"
+git commit -m "feat: adicionar validação X"
 
-# 4. Push
-git push -u origin feature/my-feature
+git add .
+git commit -m "test: cobrir validação X"
 
-# 5. Pull Request (via GitHub)
-# → Merge em develop
+# 4. Push e PR
+git push origin feature/nome-curto
+# Abrir PR no GitHub → main
 
-# 6. Delete branch
-git push origin --delete feature/my-feature
+# 5. CI roda: pytest + ruff + pyright + commitlint
+# 6. Após aprovação: Squash and Merge
+
+# 7. Limpar branch
+git checkout main
+git pull origin main
+git branch -d feature/nome-curto
+git push origin --delete feature/nome-curto
 ```
 
 ## Branches
 
-- **`main`** — Protegida (releases com tags)
-- **`develop`** — Padrão (onde você trabalha)
-- **`feature/*`** — Features novas
+- **`main`** — Protegida (releases com tags, trunk)
+- **`feature/*`** — Features novas (vida curta: 3-5 dias)
 - **`fix/*`** — Bug fixes
+- **`chore/*`** — Manutenção
+- **`docs/*`** — Documentação
 
 ## Testes
 

@@ -1,3 +1,7 @@
+---
+icon: lucide/terminal
+---
+
 # Uso — Desenvolvimento
 
 Guia rápido para rodar, testar e construir o projeto localmente.
@@ -128,15 +132,23 @@ git push origin --delete feature/nome-curto
 
 ---
 
-## Feature Flags (Features Inacabadas)
+## Feature Flags
 
 ```bash
-# Ativar flag para testar feature em desenvolvimento
-FF_AUTO_BACKUP=true uv run task dev
-FF_RESTORE_PREVIEW=true uv run task dev
+# Preview de ícone do mundo (padrão: true)
+FF_WORLD_ICON_PREVIEW=false uv run task dev
+
+# Preview antes de restaurar (padrão: true)
+FF_RESTORE_PREVIEW=false uv run task dev
+
+# Multi-threading para operações paralelas
+FF_MULTI_THREADING=true uv run task dev
+
+# Logs avançados para debug
+FF_ADVANCED_LOGGING=true uv run task dev
 
 # Múltiplas
-FF_AUTO_BACKUP=true FF_CLOUD_SYNC=true uv run task dev
+FF_MULTI_THREADING=true FF_ADVANCED_LOGGING=true uv run task dev
 ```
 
 Flags disponíveis em `src/backup_manager_mvp/config/feature_flags.py`.
@@ -215,9 +227,8 @@ src/backup_manager_mvp/
 BACKUP_MANAGER_LOG_LEVEL=DEBUG uv run task dev
 
 # Feature flags
-FF_AUTO_BACKUP=true
-FF_CLOUD_SYNC=true
-FF_RESTORE_PREVIEW=true
+FF_WORLD_ICON_PREVIEW=false
+FF_RESTORE_PREVIEW=false
 FF_MULTI_THREADING=true
 FF_ADVANCED_LOGGING=true
 ```

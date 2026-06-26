@@ -37,6 +37,7 @@ nav = [
   { "Primeiros Passos (Dev)" = [
     "getting-started/index.md",
     "getting-started/usage.md",
+    "getting-started/installation.md",
   ] },
   { "Arquitetura" = [
     "architecture/index.md",

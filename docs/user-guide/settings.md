@@ -16,37 +16,44 @@ No MVP, a maioria das configurações é feita via **variáveis de ambiente** (f
 
 ## 🚩 Feature Flags (Variáveis de Ambiente)
 
-Ative features experimentais antes de executar:
+Ative/desative features antes de executar:
 
 ```bash title="PowerShell"
-# Auto-backup em background
-$env:FF_AUTO_BACKUP = "true"
+# Desativar preview de ícone (padrão: true)
+$env:FF_WORLD_ICON_PREVIEW = "false"
 uv run task dev
 
-# Preview antes de restaurar
-$env:FF_RESTORE_PREVIEW = "true"
+# Desativar preview de restauração (padrão: true)
+$env:FF_RESTORE_PREVIEW = "false"
+uv run task dev
+
+# Ativar multi-threading experimental
+$env:FF_MULTI_THREADING = "true"
+uv run task dev
+
+# Ativar logs avançados
+$env:FF_ADVANCED_LOGGING = "true"
 uv run task dev
 
 # Múltiplas flags
-$env:FF_AUTO_BACKUP = "true"
-$env:FF_CLOUD_SYNC = "true"
-$env:FF_RESTORE_PREVIEW = "true"
+$env:FF_MULTI_THREADING = "true"
+$env:FF_ADVANCED_LOGGING = "true"
 uv run task dev
 ```
 
 ```cmd title="CMD"
-set FF_AUTO_BACKUP=true
-set FF_RESTORE_PREVIEW=true
+set FF_WORLD_ICON_PREVIEW=false
+set FF_RESTORE_PREVIEW=false
+set FF_MULTI_THREADING=true
 MinecraftBedrockBackupManager.exe
 ```
 
-| Flag | Padrão | Descrição |
-|------|--------|-----------|
-| `FF_AUTO_BACKUP` | `false` | Backup automático periódico |
-| `FF_CLOUD_SYNC` | `false` | Sincronização com nuvem (WIP) |
-| `FF_RESTORE_PREVIEW` | `false` | Preview de restauração |
-| `FF_MULTI_THREADING` | `false` | Operações paralelas |
-| `FF_ADVANCED_LOGGING` | `false` | Logs verbosos |
+| Flag | Padrão | Status | Descrição |
+|------|--------|--------|-----------|
+| `FF_WORLD_ICON_PREVIEW` | `true` | ✅ Ativo | Preview de ícone do mundo na lista |
+| `FF_RESTORE_PREVIEW` | `true` | ✅ Ativo | Preview do conteúdo antes de restaurar |
+| `FF_MULTI_THREADING` | `false` | ⚡ Experimental | Operações paralelas de copy/delete |
+| `FF_ADVANCED_LOGGING` | `false` | ⚡ Experimental | Logs detalhados para debugging |
 
 ---
 
