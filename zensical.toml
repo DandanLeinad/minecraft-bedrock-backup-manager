@@ -58,7 +58,7 @@ nav = [
     { "Visão Geral" = "development/index.md", icon = "lucide/code" },
     { "Contribuindo" = "development/contributing.md", icon = "lucide/git-commit" },
     { "DCO" = "development/dco.md", icon = "lucide/signature" },
-    { "Licença" = "development/license.md", icon = "lucide/scales" },
+    { "Licença" = "development/license.md", icon = "lucide/shield" },
     { "Trunk-Based Development" = "development/trunk-based-development.md", icon = "lucide/git-branch" },
     { "Feature Flags" = "development/feature-flags.md", icon = "lucide/flag" },
     { "Short Branches" = "development/short-branches.md", icon = "lucide/timer" },

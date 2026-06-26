@@ -1,5 +1,5 @@
 ---
-icon: lucide/scales
+icon: lucide/shield
 ---
 
 # Licença

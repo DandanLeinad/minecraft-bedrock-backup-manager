@@ -154,6 +154,6 @@ Get-ChildItem $backupPath -Directory | Sort-Object Name -Descending | Select-Obj
 
 ## 🔗 Próximos Passos
 
-- [Configurações →](settings.md)
-- [FAQ →](faq.md)
-- [Troubleshooting →](troubleshooting.md)
+- [Configurações →](./settings.md)
+- [FAQ →](./faq.md)
+- [Troubleshooting →](./troubleshooting.md)

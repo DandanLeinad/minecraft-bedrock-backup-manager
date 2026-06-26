@@ -18,43 +18,43 @@ O **Minecraft Bedrock Backup Manager** é uma ferramenta gratuita e open source 
 
     Baixe, requisitos, antivírus, primeiro uso.
 
-    [:octicons-arrow-right-24: Ver →](installation.md)
+    [:octicons-arrow-right-24: Ver →](./installation.md)
 
 -   :material-content-save:{ .lg .middle } **Primeiro Backup**
 
     Passo a passo: detectar mundos, selecionar, fazer backup.
 
-    [:octicons-arrow-right-24: Ver →](first-backup.md)
+    [:octicons-arrow-right-24: Ver →](./first-backup.md)
 
 -   :material-restore:{ .lg .middle } **Restaurar Mundo**
 
     Como restaurar, preview, cuidados, backup automático antes.
 
-    [:octicons-arrow-right-24: Ver →](restore.md)
+    [:octicons-arrow-right-24: Ver →](./restore.md)
 
 -   :material-folder:{ .lg .middle } **Onde Ficam os Backups**
 
     Localização, estrutura de pastas, como acessar.
 
-    [:octicons-arrow-right-24: Ver →](backup-location.md)
+    [:octicons-arrow-right-24: Ver →](./backup-location.md)
 
 -   :material-cog:{ .lg .middle } **Configurações**
 
     Feature flags, logs, caminhos personalizados (futuro).
 
-    [:octicons-arrow-right-24: Ver →](settings.md)
+    [:octicons-arrow-right-24: Ver →](./settings.md)
 
 -   :material-help-circle:{ .lg .middle } **FAQ**
 
     Perguntas frequentes sobre uso, mundos, backups.
 
-    [:octicons-arrow-right-24: Ver →](faq.md)
+    [:octicons-arrow-right-24: Ver →](./faq.md)
 
 -   :material-alert-circle:{ .lg .middle } **Troubleshooting**
 
     Erros comuns, logs, permissões, antivírus.
 
-    [:octicons-arrow-right-24: Ver →](troubleshooting.md)
+    [:octicons-arrow-right-24: Ver →](./troubleshooting.md)
 
 </div>
 
