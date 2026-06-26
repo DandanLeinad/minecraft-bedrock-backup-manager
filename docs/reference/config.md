@@ -12,17 +12,14 @@ Variáveis de ambiente, feature flags e settings do projeto.
 
 ### Feature Flags
 
-Ative features experimentais via environment variables:
+Ative/desative features via environment variables:
 
 ```bash title="Ativar feature flags"
-# Auto-backup em background
-FF_AUTO_BACKUP=true uv run task dev
+# Preview de ícone do mundo (padrão: true)
+FF_WORLD_ICON_PREVIEW=false uv run task dev
 
-# Preview antes de restaurar
-FF_RESTORE_PREVIEW=true uv run task dev
-
-# Sincronização com cloud (WIP)
-FF_CLOUD_SYNC=true uv run task dev
+# Preview antes de restaurar (padrão: true)
+FF_RESTORE_PREVIEW=false uv run task dev
 
 # Multi-threading para operações paralelas
 FF_MULTI_THREADING=true uv run task dev
@@ -31,34 +28,48 @@ FF_MULTI_THREADING=true uv run task dev
 FF_ADVANCED_LOGGING=true uv run task dev
 
 # Múltiplas flags
-FF_AUTO_BACKUP=true FF_RESTORE_PREVIEW=true FF_CLOUD_SYNC=true uv run task dev
+FF_MULTI_THREADING=true FF_ADVANCED_LOGGING=true uv run task dev
 ```
 
-| Flag | Status | Descrição |
-|------|--------|-----------|
-| `FF_AUTO_BACKUP` | 🧪 Em Desenvolvimento | Backup automático em background |
-| `FF_CLOUD_SYNC` | 🧪 Em Desenvolvimento | Sincronização com provedores cloud |
-| `FF_RESTORE_PREVIEW` | 🧪 Em Desenvolvimento | Preview do conteúdo antes de restaurar |
-| `FF_MULTI_THREADING` | ⚡ Experimental | Operações paralelas de copy/delete |
-| `FF_ADVANCED_LOGGING` | ⚡ Experimental | Logs detalhados para debugging |
+| Flag | Padrão | Status | Descrição |
+|------|--------|--------|-----------|
+| `FF_WORLD_ICON_PREVIEW` | `true` | ✅ Ativo | Preview de ícone do mundo na lista |
+| `FF_RESTORE_PREVIEW` | `true` | ✅ Ativo | Preview do conteúdo antes de restaurar |
+| `FF_MULTI_THREADING` | `false` | ⚡ Experimental | Operações paralelas de copy/delete |
+| `FF_ADVANCED_LOGGING` | `false` | ⚡ Experimental | Logs detalhados para debugging |
 
 ### Como Funcionam
 
 ```python title="src/backup_manager_mvp/config/feature_flags.py"
+import logging
 import os
 from dataclasses import dataclass
 
-@dataclass
+logger = logging.getLogger(__name__)
+
+def _parse_bool(value: str) -> bool:
+    """Parse string para booleano."""
+    return value.lower() in ("true", "1", "yes", "on")
+
+@dataclass(frozen=True)
 class FeatureFlags:
-    ENABLE_AUTO_BACKUP: bool = _parse_bool(os.getenv("FF_AUTO_BACKUP", "false"))
-    ENABLE_CLOUD_SYNC: bool = _parse_bool(os.getenv("FF_CLOUD_SYNC", "false"))
-    ENABLE_RESTORE_PREVIEW: bool = _parse_bool(os.getenv("FF_RESTORE_PREVIEW", "false"))
+    """Feature flags da aplicação (imutável)."""
+
+    # Features ativas por padrão
+    ENABLE_WORLD_ICON_PREVIEW: bool = _parse_bool(os.getenv("FF_WORLD_ICON_PREVIEW", "true"))
+    ENABLE_RESTORE_PREVIEW: bool = _parse_bool(os.getenv("FF_RESTORE_PREVIEW", "true"))
+
+    # Features experimentais
     ENABLE_MULTI_THREADING: bool = _parse_bool(os.getenv("FF_MULTI_THREADING", "false"))
     ENABLE_ADVANCED_LOGGING: bool = _parse_bool(os.getenv("FF_ADVANCED_LOGGING", "false"))
 
-def _parse_bool(value: str) -> bool:
-    return value.lower() in ("true", "1", "yes", "on")
+    def __post_init__(self):
+        """Log flags ativadas no init."""
+        enabled_flags = [name for name in self.__dataclass_fields__ if getattr(self, name) is True]
+        if enabled_flags:
+            logger.info(f"Feature flags ativadas: {', '.join(enabled_flags)}")
 
+# Instância global
 FEATURE_FLAGS = FeatureFlags()
 ```
 
@@ -84,7 +95,7 @@ graph LR
     DEV[Dev Branch] --> FLAG[Feature Flag = false]
     FLAG --> PR[Pull Request]
     PR --> CI[CI: Testes com flag=true]
-    CI --> MERGE[Merge na main Merge para main<br/>(flag continua false)]
+    CI --> MERGE["Merge na main Merge para main<br/>(flag continua false)"]
     MERGE --> RELEASE[Release: flag = true]
 ```
 

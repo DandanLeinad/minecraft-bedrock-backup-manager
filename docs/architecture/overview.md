@@ -4,51 +4,49 @@
 
 Aplicação desktop Windows para gerenciar backups de mundos Minecraft Bedrock Edition. Segue arquitetura **Ports & Adapters (Hexagonal)** com separação clara entre domínio, aplicação e infraestrutura.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        UI (CustomTkinter)                       │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌────────────────┐  │
-│  │ Worlds List     │  │ World Details   │  │ Restore Flow   │  │
-│  └────────┬────────┘  └────────┬────────┘  └───────┬────────┘  │
-└───────────┼────────────────────┼────────────────────┼───────────┘
-            │                    │                    │
-            ▼                    ▼                    ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      Application Layer                          │
-│  ┌──────────────────────┐  ┌────────────────────────────────┐  │
-│  │ WorldService         │  │ BackupService                  │  │
-│  │ - list_worlds()      │  │ - create_backup()              │  │
-│  │ - get_metadata()     │  │ - list_backups()               │  │
-│  │ - get_levelname()    │  │ - restore_backup()             │  │
-│  └──────────┬───────────┘  └──────────────┬────────────────┘  │
-└─────────────┼─────────────────────────────┼────────────────────┘
-              │                             │
-              ▼                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                        Domain Layer                             │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐  │
-│  │ WorldModel       │  │ BackupModel      │  │ ProgressModel│  │
-│  │ (Pydantic)       │  │ (Pydantic)       │  │ (Pydantic)   │  │
-│  └──────────────────┘  └──────────────────┘  └──────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-              │                             │
-              ▼                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      Ports (Interfaces)                         │
-│  ┌──────────────────────┐  ┌────────────────────────────────┐  │
-│  │ WorldRepositoryPort  │  │ BackupRepositoryPort           │  │
-│  │ (ABC)                │  │ (ABC)                          │  │
-│  └──────────┬───────────┘  └──────────────┬────────────────┘  │
-└─────────────┼─────────────────────────────┼────────────────────┘
-              │                             │
-              ▼                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    Infrastructure Layer                         │
-│  ┌──────────────────────┐  ┌────────────────────────────────┐  │
-│  │ FileSystemWorldRepo  │  │ FileSystemBackupRepo           │  │
-│  │ (impl)               │  │ (impl)                         │  │
-│  └──────────────────────┘  └────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph UI["UI (CustomTkinter)"]
+        WL["Worlds List"]
+        WD["World Details"]
+        RF["Restore Flow"]
+    end
+
+    subgraph APP["Application Layer"]
+        WS["WorldService\n- list_worlds()\n- get_metadata()\n- get_levelname()"]
+        BS["BackupService\n- create_backup()\n- list_backups()\n- restore_backup()"]
+    end
+
+    subgraph DOMAIN["Domain Layer"]
+        WM["WorldModel (Pydantic)"]
+        BM["BackupModel (Pydantic)"]
+        PM["ProgressModel (Pydantic)"]
+    end
+
+    subgraph PORTS["Ports (Interfaces)"]
+        WRP["WorldRepositoryPort (ABC)"]
+        BRP["BackupRepositoryPort (ABC)"]
+    end
+
+    subgraph INFRA["Infrastructure Layer"]
+        FWR["FileSystemWorldRepo (impl)"]
+        FBR["FileSystemBackupRepo (impl)"]
+    end
+
+    WL --> WS
+    WD --> WS
+    RF --> BS
+
+    WS --> WM
+    BS --> BM
+    BS --> PM
+
+    WM --> WRP
+    BM --> BRP
+    PM --> BRP
+
+    WRP --> FWR
+    BRP --> FBR
 ```
 
 ## Camadas

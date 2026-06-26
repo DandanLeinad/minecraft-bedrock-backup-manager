@@ -80,7 +80,7 @@ uv run task dev
 ## 📋 Pré-requisitos
 
 | Ferramenta | Versão | Instalação |
-|------------|------------|---|---|
+|------------|--------|------------|
 | **Python** | 3.14+ | [python.org](https://python.org) ou `winget install Python.Python.3.14` |
 | **uv** | 0.11+ | `irm https://astral.sh/uv/install.ps1 \| iex` |
 | **Git** | 2.40+ | [git-scm.com](https://git-scm.com) |
