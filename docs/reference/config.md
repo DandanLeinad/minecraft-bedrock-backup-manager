@@ -32,7 +32,7 @@ FF_MULTI_THREADING=true FF_ADVANCED_LOGGING=true uv run task dev
 ```
 
 | Flag | Padrão | Status | Descrição |
-|------|--------|--------|-----------|
+| ---- | ------ | ------ | --------- |
 | `FF_WORLD_ICON_PREVIEW` | `true` | ✅ Ativo | Preview de ícone do mundo na lista |
 | `FF_RESTORE_PREVIEW` | `true` | ✅ Ativo | Preview do conteúdo antes de restaurar |
 | `FF_MULTI_THREADING` | `false` | ⚡ Experimental | Operações paralelas de copy/delete |
@@ -115,7 +115,7 @@ BACKUP_MANAGER_LOG_LEVEL=WARNING uv run task dev
 ```
 
 | Nível | Uso |
-|-------|-----|
+| ----- | --- |
 | `DEBUG` | Desenvolvimento, troubleshooting |
 | `INFO` | Produção, operações normais |
 | `WARNING` | Avisos, degradação |
@@ -126,7 +126,7 @@ BACKUP_MANAGER_LOG_LEVEL=WARNING uv run task dev
 ## Caminhos Padrão (Hardcoded no MVP)
 
 | Item | Caminho |
-|------|---------|
+| ---- | ------- |
 | **Mundos (AppData)** | `%AppData%\Minecraft Bedrock\Users\{account_id}\games\com.mojang\minecraftWorlds\` |
 | **Mundos (UWP Store)** | `%LocalAppData%\Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\LocalState\games\com.mojang\minecraftWorlds\` |
 | **Mundos (Shared)** | `%AppData%\Minecraft Bedrock\Users\Shared\games\com.mojang\minecraftWorlds\` |
@@ -221,7 +221,7 @@ changelog_incremental = true
 ### Runtime (pyproject.toml)
 
 | Pacote | Versão | Uso |
-|--------|--------|-----|
+| ------ | ------ | --- |
 | `customtkinter` | ≥5.2.2 | UI Desktop |
 | `pillow` | ≥12.2.0 | Imagens (world_icon) |
 | `pydantic` | ≥2.13.4 | Models, validação |
@@ -229,7 +229,7 @@ changelog_incremental = true
 ### Development (pyproject.toml)
 
 | Pacote | Versão | Uso |
-|--------|--------|-----|
+| ------ | ------ | --- |
 | `pytest` | ≥9.1.0 | Testes |
 | `pytest-cov` | ≥7.1.0 | Coverage |
 | `ruff` | ≥0.15.16 | Lint + Format |
