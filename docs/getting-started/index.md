@@ -48,7 +48,7 @@ Este guia cobre o **workflow de desenvolvimento** completo:
 
     Desenvolver features incompletas sem quebrar produção.
 
-    [:octicons-arrow-right-24: Feature Flags](usage.md#feature-flags-features-inacabadas)
+    [:octicons-arrow-right-24: Feature Flags](usage.md#feature-flags)
 
 </div>
 
