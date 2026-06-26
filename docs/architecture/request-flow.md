@@ -162,7 +162,7 @@ sequenceDiagram
 ```mermaid
 flowchart TD
     RESTORE[Restaurar Clicado] --> FLAG{FF_RESTORE_PREVIEW?}
-    FLAG -->|true (padrão)| PREVIEW[show_screen_restore_preview]
+    FLAG -->|true padrão| PREVIEW[show_screen_restore_preview]
     FLAG -->|false| DIRECT[Direct Restore]
     PREVIEW --> CONFIRM{Usuário Confirma?}
     CONFIRM -->|Sim| DIRECT
@@ -258,8 +258,8 @@ flowchart TD
     PARSE --> MT[FF_MULTI_THREADING]
     PARSE --> LOG[FF_ADVANCED_LOGGING]
 
-    ICON -->|true (padrão)| ICON_ON[World Icon Preview ativo]
-    PREVIEW -->|true (padrão)| PREVIEW_ON[Restore com Preview]
+    ICON -->|true padrão| ICON_ON[World Icon Preview ativo]
+    PREVIEW -->|true padrão| PREVIEW_ON[Restore com Preview]
     MT -->|true| MT_ON[Threading experimental]
     LOG -->|true| LOG_ON[Debug verbose]
 
