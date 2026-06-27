@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    name: DCO Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check DCO
+        run: |
+          python scripts/dco_check.py
+      - name: Verify all commits have Signed-off-by
+        run: |
+          git log --oneline --all | while read hash msg; do
+            if ! git log -1 --format="%(trailers)" "$hash" | grep -qi "Signed-off-by:"; then
+              echo "❌ Commit $hash ($msg) missing Signed-off-by"
+              exit 1
+            fi
+          done
+
+  lint-and-type:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install uv
+        run: pip install uv
+      - name: Install dependencies
+        run: uv sync --all-groups
+      - name: Ruff check
+        run: uv run task lint
+      - name: Ruff format check
+        run: uv run task format
+      - name: Pyright type check
+        run: uv run task type-check
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install uv
+        run: pip install uv
+      - name: Install dependencies
+        run: uv sync --all-groups
+      - name: Run tests
+        run: uv run task test
