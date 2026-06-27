@@ -24,7 +24,7 @@ jobs:
         run: |
           git log --oneline --all | while read hash msg; do
             if ! git log -1 --format="%(trailers)" "$hash" | grep -qi "Signed-off-by:"; then
-              echo "❌ Commit $hash ($msg) missing Signed-off-by"
+              echo "Commit $hash ($msg) missing Signed-off-by"
               exit 1
             fi
           done
