@@ -11,8 +11,6 @@ repos:
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
-        args:
-          - --force-scope
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.18
@@ -52,11 +50,10 @@ repos:
 
   - repo: local
     hooks:
-      - id: dco-signed-off-by
-        name: DCO — Signed-off-by obrigatório
-        language: pygrep
-        entry: "^Signed-off-by: "
-        args: [--multiline, --negate]
-        stages: [commit-msg]
+      - id: dco-signed-off-by-push
+        name: DCO — Signed-off-by check (pre-push)
+        language: script
+        entry: scripts/dco-check.sh
+        stages: [pre-push]
         pass_filenames: false
         always_run: true
