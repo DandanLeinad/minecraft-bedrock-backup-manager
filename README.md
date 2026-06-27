@@ -1,37 +1,49 @@
 # 🎮 Minecraft Bedrock Backup Manager
 
-**Um gerenciador de backups simples para mundos Minecraft Bedrock no Windows 10/11.**
+**Gerenciador simples de backups de mundos Minecraft Bedrock no Windows 10/11.**
 
-> ⚠️ **NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.**
+> ⚠️ **NÃO É UM PRODUTO OFICIAL DO MINECRAFT. NÃO APROVADO OU ASSOCIADO À MOJANG OU MICROSOFT.**
 
-![Version](https://img.shields.io/badge/version-0.1.0--beta-blue)
-![License](https://img.shields.io/badge/license-AGPL--3.0-green)
+![Versão](https://img.shields.io/badge/versão-0.7.1b0-blue)
+![Licença](https://img.shields.io/badge/licença-AGPL--3.0-green)
 ![Python](https://img.shields.io/badge/python-3.14%2B-blue)
-![Tests](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/actions/workflows/tests.yml/badge.svg)
+![Testes](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/actions/workflows/tests.yml/badge.svg)
 
 ---
 
 ## 🚀 O que é?
 
-Um **MVP (Minimum Viable Product) - Hobby Project** que criei para resolver um problema real: backup simples de mundos de Minecraft Bedrock no Windows, sem complicações.
+Um **projeto pessoal hobby (MVP)** para resolver um problema real: backup simples de mundos Minecraft Bedrock no Windows.
 
-Basicamente: você clica em "Criar Backup" → o app copia a pasta do mundo inteira com timestamp → pronto. Se quer restaurar, seleciona um backup anterior. Simples assim.
+Abra o app → clique em "Fazer Backup" → app copia a pasta do mundo com timestamp → pronto. Quer restaurar? Selecione um backup anterior. É isso.
 
-**Status:** Funcional, testado (128 testes), pronto para uso beta.
+**Status:** Funcional, testado (149+ testes), pronto para uso beta.
 
-⚠️ **Importante:** Este é um **hobby project pessoal**. Não é suportado profissionalmente nem mantido por empresa. Use por sua conta e risco. Se for útil pra você, ótimo! 😄
+⚠️ **Importante:** Este é um **projeto pessoal hobby**. Não tem suporte profissional nem manutenção garantida por empresa. Use por sua conta e risco.
 
 ---
 
-## ⚡ Quick Start
+## 📖 Documentação
+
+**Documentação completa em:** https://dandanleinad.github.io/minecraft-bedrock-backup-manager/
+
+| Seção | Descrição |
+|-------|-----------|
+| [Guia do Usuário](https://dandanleinad.github.io/minecraft-bedrock-backup-manager/user-guide/) | Instalação, primeiro backup, restauração, localização, FAQ |
+| [Primeiros Passos (Dev)](https://dandanleinad.github.io/minecraft-bedrock-backup-manager/getting-started/) | Setup, comandos, build, workflow Git |
+| [Arquitetura](https://dandanleinad.github.io/minecraft-bedrock-backup-manager/architecture/) | Arquitetura hexagonal, ports & models, fluxo, DI |
+| [Referência Técnica](https://dandanleinad.github.io/minecraft-bedrock-backup-manager/reference/) | Models, ports, services, configuração |
+| [Desenvolvimento](https://dandanleinad.github.io/minecraft-bedrock-backup-manager/development/) | Contribuindo, DCO, licença, trunk-based, feature flags, testes |
+
+---
+
+## ⚡ Início Rápido
 
 ### Opção 1: Executável (quando disponível)
+- Baixe o `.exe` em [Releases](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/releases)
+- Dê dois cliques e execute
 
-- Download do `.exe` em [Releases](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/releases)
-- Duplo clique e pronto
-
-### Opção 2: Com Python (recomendado para testar)
-
+### Opção 2: Do Código Fonte (recomendado para testar)
 ```bash
 git clone https://github.com/DandanLeinad/minecraft-bedrock-backup-manager.git
 cd minecraft-bedrock-backup-manager
@@ -51,10 +63,10 @@ python -m backup_manager_mvp.main
 
 ## 🎯 Como funciona
 
-1. **Abre o app** → Lista seus mundos Bedrock automaticamente
-2. **Seleciona um mundo** → Mostra backups existentes + metadados
-3. **Cria backup** → Cópia completa do mundo com timestamp `YYYY-MM-DD_HH-MM-SS`
-4. **Restaura** (opcional) → Seleciona backup anterior com confirmação
+1. **Abra o app** → Detecta automaticamente seus mundos Bedrock
+2. **Selecione um mundo** → Mostra backups existentes + metadados
+3. **Faça backup** → Cópia completa com timestamp `YYYY-MM-DD_HH-MM-SS`
+4. **Restaure** (opcional) → Selecione backup anterior com confirmação
 
 **Backups salvos em:** `%UserProfile%\Documents\MinecraftBackups\`
 
@@ -62,43 +74,39 @@ python -m backup_manager_mvp.main
 
 ## ✨ Funcionalidades
 
-- ✅ Detecção automática de mundos (3 fontes: Normal, UWP Store, Shared)
-- ✅ Backup de um clique com timestamp preciso
-- ✅ Restauração com confirmação (evita acidentes)
-- ✅ Suporte multi-conta Microsoft
+- ✅ Detecção automática de mundos (3 fontes: Normal, UWP Store, Compartilhado)
+- ✅ Backup em um clique com timestamp preciso
+- ✅ Restauração segura com confirmação (evita acidentes)
+- ✅ Suporte a múltiplas contas Microsoft
 - ✅ Interface desktop profissional (CustomTkinter)
-- ✅ 128 testes automatizados
+- ✅ 149+ testes automatizados
 - ✅ Validação robusta com Pydantic
 
 ---
 
-## 📋 Pré-requisitos
+## 📋 Requisitos
 
-- **Windows 10/11**
-- **Python 3.14+** (se compilar local)
+- **Windows 10/11** (64-bit)
+- **Python 3.14+** (se compilar do fonte)
 - **Minecraft Bedrock Edition** instalado
 
 ---
 
-## 🏗️ Estrutura
+## 🏗️ Arquitetura
 
-``` text
+Arquitetura Hexagonal (Ports & Adapters) com separação clara:
+
+```
 src/backup_manager_mvp/
-├── main.py                  # Entry point
-├── application.py           # Orquestrador
-├── models/
-│   ├── world_model.py       # Modelo do mundo
-│   └── backup_model.py      # Modelo de backup
-├── services/
-│   ├── world_service.py     # Detecção de mundos
-│   └── backup_service.py    # Lógica de backup
-└── ui/
-    ├── customtkinter/       # Interface CustomTkinter
-    │   ├── components/      # Componentes reutilizáveis
-    │   ├── screens/         # Telas da aplicação
-    │   ├── handlers/        # Event handlers
-    │   └── customtkinter_ui.py
-    └── base.py              # Abstração de UI
+├── main.py                     # Entry point
+├── application.py              # Composition Root + App Controller
+├── config/feature_flags.py     # Feature flags
+├── core/
+│   ├── models/                 # Domain Models (Pydantic)
+│   ├── ports/                  # Interfaces (ABC)
+│   └── services/               # Lógica de negócio
+├── infra/repository/           # Implementações dos Ports (FS)
+└── ui/customtkinter/           # Implementação da UI
 ```
 
 ---
@@ -106,232 +114,110 @@ src/backup_manager_mvp/
 ## 🔧 Desenvolvimento
 
 ### Setup
-
 ```bash
-# Instalar dependências (incluindo dev)
 uv sync --all-groups
-
-# Instalar pre-commit hooks
 pre-commit install
-
-# Validar setup
 uv run task test
 ```
 
 ### Executar
-
 ```bash
-# Modo desenvolvimento
-uv run task dev
-
-# Modo debug (verbose logging)
-uv run task dev-debug
+uv run task dev          # modo dev
+uv run task dev-debug    # logs verbosos
 ```
 
-### Testes & Qualidade
-
+### Qualidade
 ```bash
-# Testes
-uv run task test
-
-# Testes com coverage
-uv run task test-cov
-
-# Lint (Ruff)
-uv run task lint
-
-# Format (Ruff)
-uv run task format
-
-# Type check (Pyright)
-uv run task type-check
-
-# Todos os hooks pre-commit
-pre-commit run --all-files
+uv run task test         # pytest -vv
+uv run task test-cov     # testes + coverage
+uv run task lint         # ruff check
+uv run task format       # ruff format
+uv run task type-check   # pyright
 ```
 
 ### Build
-
 ```bash
-# Build com PyInstaller
-python build.py
-
-# Build com debug console
-python build.py --debug
-
-# Clean + Build
-python build.py --clean
+python build.py          # release build
+python build.py --debug  # com console
+python build.py --clean  # limpa + build
 ```
 
-### Versionamento
-
+### Versionamento (Commitizen)
 ```bash
-# Ver o que vai mudar (sem executar)
-uv run task version-show
-
-# Bump de patch (0.1.0-beta → 0.1.1-beta)
 uv run task bump-patch
-
-# Bump de minor (0.1.0-beta → 0.2.0-beta)
 uv run task bump-minor
-
-# Bump de major (0.1.0-beta → 1.0.0-beta)
 uv run task bump-major
-
-# Remover pre-release (0.1.0-beta → 0.1.0)
-uv run task bump-beta
-
-# Ver versão atual
-uv run task version
 ```
 
 ---
 
 ## 🤝 Contribuindo
 
-### Workflow - Trunk-Based Development
+**Workflow:** Trunk-Based Development com branches curtas (máx 3-5 dias)
 
-Este projeto segue **Trunk-Based Development** com branches curtas (máx 3-5 dias):
+1. Branch de `main`: `feature/*`, `fix/*`, `chore/*`, `docs/*`
+2. Commits pequenos seguindo Conventional Commits
+3. PR para `main` → CI roda (testes, lint, type-check)
+4. Squash and merge após review
+5. Delete branch
 
-1. **Criar branch** - `feature/nome`, `fix/nome`, `chore/nome`
-2. **Commits pequenos** - Cada commit compila/testa
-3. **PR em main** - Testes automáticos rodam
-4. **Merge rápido** - Após review
-5. **Delete branch** - Cleanup
+**Obrigatório:**
+- `Signed-off-by` em TODOS os commits (`git commit -s`)
+- Feature flags para features incompletas (`FF_*`)
+- Docstrings/logs em inglês, docs em PT-BR
+- Sem `print()` — use `logging`
 
-**Workflow Completo:**
+Veja [Guia de Contribuição](https://dandanleinad.github.io/minecraft-bedrock-backup-manager/development/contributing/) para detalhes.
 
-```bash
-# 1. Atualizar main
-git checkout main
-git pull origin main
+---
 
-# 2. Criar feature
-git checkout -b feature/nome-descritivo
+## 🚩 Feature Flags
 
-# 3. Desenvolver (commits pequenos)
-git add .
-git commit -m "feat: descrição"
+Flags para features em desenvolvimento (desativadas por padrão, salvo indicado):
 
-# 4. Push
-git push origin feature/nome-descritivo
-
-# 5. Abrir PR no GitHub
-# → Testes rodam automaticamente
-# → Code review
-# → Merge quando aprovado
-
-# 6. Cleanup
-git branch -d feature/nome-descritivo
-git push origin --delete feature/nome-descritivo
-```
-
-**Commits:** Seguem [Conventional Commits](https://www.conventionalcommits.org/)
-
-```
-feat:  nova funcionalidade
-fix:   correção de bug
-docs:  documentação
-style: formatação
-test:  testes
-chore: dependências, build
-```
-
-### Feature Flags
-
-Para features inacabadas, use flags:
-
-```python
-from backup_manager_mvp.config import FEATURE_FLAGS
-
-if FEATURE_FLAGS.ENABLE_AUTO_BACKUP:
-    # Feature em desenvolvimento
-    pass
-```
-
-Ativar em desenvolvimento:
+| Flag | Padrão | Status | Descrição |
+|------|--------|--------|-----------|
+| `FF_WORLD_ICON_PREVIEW` | `true` | ✅ Ativo | Preview de ícone do mundo na lista |
+| `FF_RESTORE_PREVIEW` | `true` | ✅ Ativo | Preview antes de restaurar |
+| `FF_MULTI_THREADING` | `false` | ⚡ Experimental | Cópia/deleção paralela |
+| `FF_ADVANCED_LOGGING` | `false` | ⚡ Experimental | Logs verbosos de debug |
 
 ```bash
-FF_AUTO_BACKUP=true uv run python -m backup_manager_mvp.main
+# Ativar features experimentais
+FF_MULTI_THREADING=true FF_ADVANCED_LOGGING=true uv run task dev
 ```
-
-Veja [FEATURE_FLAGS.md](docs/FEATURE_FLAGS.md) para guia completo.
-
-### Documentação
-
-- [Trunk-Based Development Guide](docs/TRUNK_BASED_DEVELOPMENT.md)
-- [Feature Flags Guide](docs/FEATURE_FLAGS.md)
-- [Short Branches Best Practices](docs/SHORT_BRANCHES.md)
-- [TESTING.md](docs/TESTING.md)
-- [DEVELOPMENT.md](docs/DEVELOPMENT.md)
-
-### Issues e Feedback
-
-✅ **Issues** - Bugs, sugestões, discussões
-✅ **Discussions** - Ideias e feedback
 
 ---
 
 ## 📝 Versionamento
 
-Este projeto segue [Semantic Versioning](https://semver.org/):
+[Semantic Versioning](https://semver.org/) via Commitizen:
 
-``` text
-MAJOR.MINOR.PATCH[-PRERELEASE]
-0.1.0-beta
-```
-
-Versões:
-
-- **0.1.0-beta** — MVP inicial (current)
-- **0.1.0-rc.1** — Release candidate
-- **0.1.0** — Versão estável
-- **0.2.0+** — Features adicionais
-
-Veja [CHANGELOG.md](CHANGELOG.md) para histórico completo.
+- `0.7.1b0` — Beta atual
+- Bumps: `uv run task bump-patch|minor|major`
 
 ---
 
-## 📝 Limitações (MVP - Hobby Project)
+## ⚠️ Limitações (MVP - Hobby Project)
 
-- ⚠️ Backups são **cópias simples** de arquivo (copy-pasta)
-- ⚠️ Sem compressão ou deduplicação
-- ⚠️ Manutenção conforme tempo (hobby project)
-
-### Features Planejadas (Em Desenvolvimento)
-
-Essas features estão em desenvolvimento usando **Feature Flags** (desativadas por padrão):
-
-- 🚧 Auto-backup em background (`FF_AUTO_BACKUP`)
-- 🚧 Sincronização com cloud (`FF_CLOUD_SYNC`)
-- 🚧 Preview antes de restaurar (`FF_RESTORE_PREVIEW`)
-- 🚧 Operações paralelas (`FF_MULTI_THREADING`)
-- 🚧 Logs avançados para debug (`FF_ADVANCED_LOGGING`)
-
-Ative no desenvolvimento:
-
-```bash
-FF_AUTO_BACKUP=true uv run python -m backup_manager_mvp.main
-```
+- Backups são cópias simples de arquivos (sem compressão/deduplicação)
+- Manutenção em tempo pessoal (projeto hobby)
 
 ---
 
 ## 🐛 Encontrou um bug?
 
 [Abra uma issue](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/issues) com:
-
-- O que aconteceu (descrição clara)
-- Windows version
+- O que aconteceu
+- Versão do Windows
 - Passos para reproduzir
-- Log file (se aplicável)
-
-Resolvo conforme tempo permite. Sein hobby project, resposta pode demorar. 😊
+- Arquivo de log (se aplicável)
 
 ---
 
 ## 📜 Licença
 
-**AGPL-3.0-or-later** — Código aberto desde o MVP.
+**AGPL-3.0-or-later** — Open source desde o MVP.
 
 **Minecraft™** é marca registrada da Mojang/Microsoft. Este projeto é **não-oficial** e **independente**.
 
@@ -339,52 +225,35 @@ Resolvo conforme tempo permite. Sein hobby project, resposta pode demorar. 😊
 
 ## 🛠️ Tech Stack
 
-- **CustomTkinter** - UI desktop moderna
-- **Pydantic** - Validação e parsing de dados
-- **Pytest** - Framework de testes
-- **Ruff** - Lint/formatter
-- **PyInstaller** - Build para executável
+- **CustomTkinter** — UI desktop moderna
+- **Pydantic** — Validação e parsing de dados
+- **Pytest** — Framework de testes
+- **Ruff** — Linter/formatter
+- **PyInstaller** — Build de executável
+- **uv** — Gerenciador de pacotes ultra-rápido
+- **Zensical** — Documentação (baseado em MkDocs)
 
 ---
 
-## � Dependências e Créditos
+## 🙏 Créditos
 
-Este projeto é construído sobre bibliotecas open-source fantásticas:
+Construído sobre bibliotecas open-source fantásticas:
 
-### Produção
-
-- **[CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)** — MIT License © [Tom Schimansky](https://github.com/TomSchimansky)
-  - UI desktop moderna e totalmente customizável baseada em Tkinter
-  - Suporte a dark mode, temas customizados e scaling automático
-
-- **[Pydantic](https://github.com/pydantic/pydantic)** — MIT License © Pydantic Contributors
-  - Validação de dados com type hints
-  - Parsing robusto de modelos
-
-### Desenvolvimento
-
-- **[PyInstaller](https://www.pyinstaller.org/)** — GPL + PyInstaller Exceptions License
-  - Build de executáveis standalone para Windows/macOS/Linux
-
-- **[Pytest](https://pytest.org/)** — MIT License
-  - Framework completo de testes
-
-- **[Ruff](https://github.com/astral-sh/ruff)** — MIT License © Charlie Marsh
-  - Linter e formatter ultra-rápido
-
-- **[uv](https://github.com/astral-sh/uv)** — MIT License © Astral
-  - Package manager ultra-rápido para Python
-
-**Obrigado a todos os mantenedores e contribuidores dessas projects! 🙏**
+- [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) (MIT)
+- [Pydantic](https://github.com/pydantic/pydantic) (MIT)
+- [PyInstaller](https://www.pyinstaller.org/) (GPL + exceção)
+- [Pytest](https://pytest.org/) (MIT)
+- [Ruff](https://github.com/astral-sh/ruff) (MIT)
+- [uv](https://github.com/astral-sh/uv) (MIT)
 
 ---
 
-## �📬 Contato
+## 📬 Contato
 
 - **GitHub**: [@DandanLeinad](https://github.com/DandanLeinad)
-- **Issues**: [Report bug](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/issues)
+- **Issues**: [Reportar bug](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/issues)
 - **Discussions**: [Ideias e feedback](https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/discussions)
 
 ---
 
-## ⭐ Se foi útil pra você, deixa uma star! ⭐
+## ⭐ Se foi útil, deixa uma star! ⭐
