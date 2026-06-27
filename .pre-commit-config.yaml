@@ -55,4 +55,3 @@ repos:
         language: python
         entry: python scripts/dco_check.py
         stages: [commit-msg]
-        always_run: true
