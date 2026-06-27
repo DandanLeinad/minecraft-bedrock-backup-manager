@@ -1,60 +1,56 @@
-# Pull Request - Minecraft Bedrock Backup Manager
+## 📝 Description
 
-## 📝 Descrição
+Brief description of what was done. What problem does it solve? What feature does it add?
 
-Breve descrição do que foi feito. Qual problema resolve? Qual feature adiciona?
+## 🔗 Related Issue
 
-## 🔗 Issue Relacionada
+Closes #123 (if applicable)
 
-Closes #123 (se aplicável)
+## 🎯 Type of Change
 
-## 🎯 Tipo de Mudança
+- [ ] `feat:` New feature
+- [ ] `fix:` Bug fix
+- [ ] `refactor:` Refactoring without behavior change
+- [ ] `perf:` Performance optimization
+- [ ] `docs:` Documentation only
+- [ ] `test:` Tests only
+- [ ] `chore:` Maintenance, dependencies, build
+- [ ] `ci:` CI/CD changes
+- [ ] `revert:` Reverts a previous commit
 
-- [ ] Feature (nova funcionalidade)
-- [ ] Bug fix (corrige um problema)
-- [ ] Refactor (melhoria de código sem novo comportamento)
-- [ ] Documentation (apenas docs)
-- [ ] Tests (apenas testes)
+## 🧪 Tests
 
-## 🧪 Testes
+How did you test these changes?
 
-Como você testou essas mudanças?
+- [ ] Unit tests added/updated
+- [ ] Existing tests pass (`uv run task test`)
+- [ ] Manually tested (describe)
 
-- [ ] Testes unitários adicionados
-- [ ] Testes existentes passam
-- [ ] Testei manualmente (descreva)
+## 📋 Required Checklist
 
-```bash
-# Comando para rodar testes
-uv run pytest -v
-```
+- [ ] **Signed-off-by on ALL commits** (`git commit -s`)
+- [ ] Branch follows pattern: `feature/*`, `fix/*`, `chore/*`, `docs/*`
+- [ ] Commits follow Conventional Commits
+- [ ] Code formatted (`uv run task format`)
+- [ ] Lint passes (`uv run task lint`)
+- [ ] Type check passes (`uv run task type-check`)
+- [ ] Tests pass (`uv run task test`)
+- [ ] Feature flags used for incomplete features (`FF_*`)
+- [ ] Docstrings/logging in English (code) / PT-BR (docs)
+- [ ] No `print()` — use `logging`
+- [ ] Type hints present
+- [ ] No conflicts with `main`
 
-## 📋 Checklist
+## 📸 Screenshots (if UI changed)
 
-- [ ] Código formatado (`uv run task format`)
-- [ ] Sem issues de lint (`uv run task lint`)
-- [ ] Type checks passando (`uv run task type-check`)
-- [ ] Testes passando (`uv run pytest`)
-- [ ] Documentação atualizada (se necessário)
-- [ ] Commits seguem Conventional Commits
+Add before/after for visual changes.
 
-## 📸 Screenshots (se UI changed)
+## Dependencies
 
-Adicione antes/depois se mudanças visuais.
+This pull request has a dependency on the following others:
 
-## 📝 Notas Adicionais
+- link-to-depency PR or N/A
 
-Algo importante que o revisor deve saber?
+## 📝 Additional Notes
 
----
-
-**Lembrete:** Merge será feito com `squash` para manter histórico limpo.
-
-- [ ] Docstrings em português
-- [ ] Sem print() — use logging
-- [ ] Type hints presentes
-- [ ] Sem conflitos com main
-
-## Screenshots (se aplicável)
-
-(Se feature visual, inclua screenshot)
+Anything important for the reviewer?
