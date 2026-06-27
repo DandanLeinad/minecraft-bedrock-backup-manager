@@ -1,3 +1,7 @@
+---
+icon: lucide/timer
+---
+
 # ⏱️ Branches Curtas - Guia Prático
 
 ## Princípios Trunk-Based com Branches Curtas

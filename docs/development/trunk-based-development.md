@@ -1,3 +1,7 @@
+---
+icon: lucide/git-branch
+---
+
 # Trunk-Based Development (Hybrid GitHub Flow)
 
 > Metodologia de desenvolvimento ágil focada em integração contínua com branches curtas e testes automatizados.
@@ -189,16 +193,23 @@ Use para integrar código inacabado sem quebrar produção:
 from dataclasses import dataclass
 import os
 
-@dataclass
+def _parse_bool(value: str) -> bool:
+    return value.lower() in ("true", "1", "yes", "on")
+
+@dataclass(frozen=True)
 class FeatureFlags:
-    ENABLE_AUTO_BACKUP = os.getenv("FF_AUTO_BACKUP", "false").lower() == "true"
-    ENABLE_CLOUD_SYNC = os.getenv("FF_CLOUD_SYNC", "false").lower() == "true"
-    ENABLE_RESTORE_PREVIEW = os.getenv("FF_RESTORE_PREVIEW", "false").lower() == "true"
+    # Features ativas por padrão
+    ENABLE_WORLD_ICON_PREVIEW: bool = _parse_bool(os.getenv("FF_WORLD_ICON_PREVIEW", "true"))
+    ENABLE_RESTORE_PREVIEW: bool = _parse_bool(os.getenv("FF_RESTORE_PREVIEW", "true"))
+
+    # Features experimentais
+    ENABLE_MULTI_THREADING: bool = _parse_bool(os.getenv("FF_MULTI_THREADING", "false"))
+    ENABLE_ADVANCED_LOGGING: bool = _parse_bool(os.getenv("FF_ADVANCED_LOGGING", "false"))
 
 # Uso na UI
-from config.feature_flags import FeatureFlags
+from backup_manager_mvp.config import FEATURE_FLAGS
 
-if FeatureFlags.ENABLE_RESTORE_PREVIEW:
+if FEATURE_FLAGS.ENABLE_RESTORE_PREVIEW:
     # Mostrar botão de preview
     create_preview_button()
 ```
@@ -207,7 +218,7 @@ if FeatureFlags.ENABLE_RESTORE_PREVIEW:
 
 ```bash
 # Via variável de ambiente
-FF_AUTO_BACKUP=true uv run python -m backup_manager_mvp.main
+FF_MULTI_THREADING=true uv run python -m backup_manager_mvp.main
 ```
 
 ---

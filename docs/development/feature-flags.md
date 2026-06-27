@@ -1,3 +1,7 @@
+---
+icon: lucide/flag
+---
+
 # 🚀 Feature Flags Implementation Guide
 
 ## Exemplo Prático
