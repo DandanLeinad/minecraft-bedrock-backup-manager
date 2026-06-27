@@ -52,8 +52,8 @@ repos:
     hooks:
       - id: dco-signed-off-by-push
         name: DCO — Signed-off-by check (pre-push)
-        language: script
-        entry: scripts/dco-check.sh
+        language: python
+        entry: python scripts/dco_check.py
         stages: [pre-push]
         pass_filenames: false
         always_run: true
