@@ -35,7 +35,7 @@ def main() -> int:
         )
 
         if not signed_off:
-            print(f"❌ Commit {commit_hash} ({' '.join(message)}) is missing Signed-off-by")
+            print(f"Commit {commit_hash} ({' '.join(message)}) is missing Signed-off-by")
             return 1
 
     return 0
