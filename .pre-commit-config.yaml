@@ -50,10 +50,9 @@ repos:
 
   - repo: local
     hooks:
-      - id: dco-signed-off-by-push
-        name: DCO — Signed-off-by check (pre-push)
+      - id: dco-signed-off-by
+        name: DCO — Signed-off-by check (commit-msg)
         language: python
         entry: python scripts/dco_check.py
-        stages: [pre-push]
-        pass_filenames: false
+        stages: [commit-msg]
         always_run: true

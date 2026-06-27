@@ -1,45 +1,34 @@
 #!/usr/bin/env python3
-"""DCO check for pre-push hook."""
+"""DCO check for commit-msg hook - validates commit message has Signed-off-by."""
 
-from __future__ import annotations
+import os
+import sys
 
-import subprocess
 
-
-def git_log(*args: str) -> str:
-    result = subprocess.run(
-        ["git", "log", *args],
-        capture_output=True,
-        text=True,
-        check=False,
+def main():
+    # pre-commit passes commit message file as first arg for commit-msg hooks
+    # But sometimes it might not, so check env var too
+    msg_file = (
+        sys.argv[1] if len(sys.argv) > 1 else os.environ.get("PRE_COMMIT_COMMIT_MSG_FILENAME")
     )
-    return result.stdout.strip()
 
+    if not msg_file:
+        print("Error: missing commit message file argument", file=sys.stderr)
+        return 1
 
-def main() -> int:
-    commits = git_log("--oneline", "@{push}..HEAD")
+    try:
+        with open(msg_file, encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Error reading {msg_file}: {e}", file=sys.stderr)
+        return 1
 
-    if not commits:
-        commits = git_log("--oneline", "HEAD")
-
-    if not commits:
-        return 0
-
-    for line in commits.splitlines():
-        commit_hash, *message = line.split()
-
-        signed_off = git_log(
-            "-1",
-            "--format=%(trailers:key=Signed-off-by)",
-            commit_hash,
-        )
-
-        if not signed_off:
-            print(f"Commit {commit_hash} ({' '.join(message)}) is missing Signed-off-by")
-            return 1
-
+    if "Signed-off-by:" not in content:
+        print("Commit message missing Signed-off-by")
+        print("Use: git commit -s -m 'sua mensagem'")
+        return 1
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())
