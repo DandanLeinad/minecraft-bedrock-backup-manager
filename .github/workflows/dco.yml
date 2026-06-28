@@ -1,0 +1,32 @@
+name: DCO
+
+on:
+  pull_request:
+
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Check Signed-off-by trailers
+        shell: bash
+        run: |
+          RANGE="${{ github.event.pull_request.base.sha }}..${{ github.sha }}"
+
+          echo "Checking commits in $RANGE"
+
+          for commit in $(git rev-list "$RANGE"); do
+            trailer=$(git log -1 \
+              --format='%(trailers:key=Signed-off-by)' \
+              "$commit")
+
+            if [ -z "$trailer" ]; then
+              echo "::error::Commit $commit is missing Signed-off-by"
+              exit 1
+            fi
+          done
