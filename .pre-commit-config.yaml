@@ -55,3 +55,11 @@ repos:
         language: python
         entry: python scripts/dco_check.py
         stages: [commit-msg]
+
+      - id: validate-license-header
+        name: Validate SPDX license header (pre-commit)
+        language: python
+        entry: python scripts/validate_license_header.py
+        stages: [pre-commit]
+        pass_filenames: false
+        always_run: true
