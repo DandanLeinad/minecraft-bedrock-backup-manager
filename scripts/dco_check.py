@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 DandanLeinad
+
 #!/usr/bin/env python3
 """DCO check for commit-msg hook - validates commit message has Signed-off-by."""
 

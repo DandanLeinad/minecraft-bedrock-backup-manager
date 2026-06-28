@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 DandanLeinad
+
 """Factory for creating BackupModel instances in tests."""
 
 from datetime import datetime

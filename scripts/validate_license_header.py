@@ -1,21 +1,8 @@
-# minecraft-bedrock-backup-manager
-# Copyright (C) 2026  DandanLeinad
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>.
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 DandanLeinad
 
 #!/usr/bin/env python3
-"""Script para validar headers de licença em arquivos Python.
+"""Script para validar headers de licença SPDX em arquivos Python.
 
 Uso (manual):
     python scripts/validate_license_header.py
@@ -32,12 +19,12 @@ from pathlib import Path
 logging.basicConfig(level=logging.WARNING, format="%(message)s")
 logger = logging.getLogger(__name__)
 
-LICENSE_HEADER_START = "# minecraft-bedrock-backup-manager"
+SPDX_HEADER_START = "# SPDX-License-Identifier:"
 
 
-def has_license_header(content: str) -> bool:
-    """Verifica se arquivo tem header de licença."""
-    return content.strip().startswith(LICENSE_HEADER_START)
+def has_spdx_header(content: str) -> bool:
+    """Verifica se arquivo tem header SPDX."""
+    return content.lstrip().startswith(SPDX_HEADER_START)
 
 
 def get_staged_python_files() -> list[str]:
@@ -57,10 +44,10 @@ def get_staged_python_files() -> list[str]:
 
 
 def validate_files(file_paths: list[str]) -> bool:
-    """Valida headers de licença em arquivos.
+    """Valida headers de licença SPDX em arquivos.
 
     Returns:
-        True se todos têm header, False caso contrário
+        True se todos têm header SPDX, False caso contrário
     """
     missing_header = []
 
@@ -73,14 +60,14 @@ def validate_files(file_paths: list[str]) -> bool:
         try:
             content = path.read_text(encoding="utf-8")
 
-            if not has_license_header(content):
+            if not has_spdx_header(content):
                 missing_header.append(path)
 
         except Exception as e:
             logger.error(f"Erro ao verificar {file_path}: {e}")
 
     if missing_header:
-        print("[-] ERRO: Arquivos sem header de licença AGPL:")
+        print("[-] ERRO: Arquivos sem header de licença SPDX:")
         print()
         for path in missing_header:
             print(f"   • {path}")
@@ -106,4 +93,8 @@ def main():
     print(f"[*] Verificando {len(staged_files)} arquivo(s) .py...")
 
     if validate_files(staged_files):
-        print("[+] Todos os arquivos têm header de licença!")
+        print("[+] Todos os arquivos têm header de licença SPDX!")
+
+
+if __name__ == "__main__":
+    main()
