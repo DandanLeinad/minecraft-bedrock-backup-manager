@@ -43,12 +43,13 @@ dev = [
     "commitizen>=4.16.3",
     "pip-audit>=2.10.1",
     "pre-commit>=4.6.0",
-    "pyinstaller>=6.20.0",
+    "pyinstaller>=6.21.0",
     "pyright>=1.1.410",
-    "pytest>=9.0.3",
+    "pytest>=9.1.0",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.16",
     "taskipy>=1.14.1",
+    "zensical>=0.0.45",
 ]
 
 [project.scripts]
@@ -135,6 +136,9 @@ cz-bump-dry = "cz bump --dry-run"
 cz-changelog = "cz changelog"
 cz-version = "cz version"
 cz-check = "cz check"
+
+# Pre-commit hooks
+pre-commit = "pre-commit run --all-files"
 
 [tool.pyinstaller]
 compatibility_mode = true

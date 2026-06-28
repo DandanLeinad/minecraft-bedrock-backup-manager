@@ -1,21 +1,8 @@
-# minecraft-bedrock-backup-manager
-# Copyright (C) 2026  DandanLeinad
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>.
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 DandanLeinad
 
 #!/usr/bin/env python3
-"""Script para adicionar header de licença AGPL em arquivos Python.
+"""Script para adicionar header de licença SPDX em arquivos Python.
 
 Uso:
     python scripts/add_license_header.py                    # Encontra e atualiza todos .py
@@ -24,51 +11,63 @@ Uso:
 """
 
 import logging
+import re
 import sys
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-LICENSE_HEADER = """# minecraft-bedrock-backup-manager
-# Copyright (C) 2026  DandanLeinad
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>."""
+# Novo cabeçalho SPDX (formato moderno)
+SPDX_LICENSE_HEADER = """# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 DandanLeinad"""
+
+# Padrão para detectar o antigo header completo AGPL
+OLD_AGPL_HEADER_PATTERN = re.compile(
+    r"# minecraft-bedrock-backup-manager\s*\n"
+    r"# Copyright \(C\) 2026\s+DandanLeinad\s*\n"
+    r"(?:#.*\n)*?"
+    r"# You should have received a copy of the GNU Affero General Public License\s*\n"
+    r"# along with this program\. If not, see <https://www\.gnu\.org/licenses/>",
+    re.MULTILINE,
+)
 
 
-def has_license_header(content: str) -> bool:
-    """Verifica se arquivo já tem header de licença."""
-    return content.strip().startswith("# minecraft-bedrock-backup-manager")
+def has_spdx_header(content: str) -> bool:
+    """Verifica se arquivo já tem header SPDX."""
+    return content.lstrip().startswith("# SPDX-License-Identifier:")
+
+
+def has_old_agpl_header(content: str) -> bool:
+    """Verifica se arquivo tem o antigo header AGPL completo."""
+    return bool(OLD_AGPL_HEADER_PATTERN.search(content))
 
 
 def add_license_header(file_path: Path) -> bool:
-    """Adiciona header de licença em arquivo.
+    """Adiciona header de licença SPDX em arquivo.
 
     Returns:
-        True se foi adicionado, False se já tinha
+        True se foi adicionado/substituído, False se já tinha header SPDX
     """
     try:
         content = file_path.read_text(encoding="utf-8")
 
-        if has_license_header(content):
-            logger.info(f"[+] {file_path} - já tem header")
+        # Se já tem header SPDX, não faz nada
+        if has_spdx_header(content):
+            logger.info(f"[+] {file_path} - já tem header SPDX")
             return False
 
-        # Adicionar header + linha vazia + conteúdo original
-        new_content = f"{LICENSE_HEADER}\n\n{content}"
+        # Se tem o antigo header AGPL, substitui pelo novo SPDX
+        if has_old_agpl_header(content):
+            new_content = OLD_AGPL_HEADER_PATTERN.sub(SPDX_LICENSE_HEADER, content, count=1)
+            file_path.write_text(new_content, encoding="utf-8")
+            logger.info(f"[~] {file_path} - header AGPL antigo substituído por SPDX")
+            return True
+
+        # Adicionar novo header SPDX + linha vazia + conteúdo original
+        new_content = f"{SPDX_LICENSE_HEADER}\n\n{content}"
         file_path.write_text(new_content, encoding="utf-8")
-        logger.info(f"[+] {file_path} - header adicionado")
+        logger.info(f"[+] {file_path} - header SPDX adicionado")
         return True
 
     except Exception as e:
@@ -107,6 +106,7 @@ def find_python_files(path: Path | str) -> list[Path]:
 
 def main():
     """Função principal."""
+
     # Determinar caminho: argumento ou raiz do projeto
     target = sys.argv[1] if len(sys.argv) > 1 else "."
 
@@ -132,7 +132,7 @@ def main():
             added += 1
 
     logger.info(
-        f"\n[+] Resumo: {added} arquivo(s) atualizado(s), {len(python_files) - added} já tinham header"
+        f"\n[+] Resumo: {added} arquivo(s) atualizado(s), {len(python_files) - added} já tinham header SPDX"
     )
 
 

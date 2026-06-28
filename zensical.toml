@@ -1,0 +1,240 @@
+# ============================================================================
+# Zensical Configuration - Minecraft Bedrock Backup Manager
+# ============================================================================
+
+[project]
+
+# The site_name is shown in the page header and the browser window title
+site_name = "Minecraft Bedrock Backup Manager"
+
+# The site_description is included in the HTML head for SEO
+site_description = "Gerenciador de backups de mundos Minecraft Bedrock Edition para Windows 10/11. Interface gráfica nativa, backups versionados, restauração com preview."
+
+# The site_author attribute
+site_author = "DandanLeinad"
+
+# The site_url is the canonical URL for your site
+site_url = "https://dandanleinad.github.io/minecraft-bedrock-backup-manager/"
+
+# Copyright notice in footer
+copyright = """
+Copyright &copy; 2026 DandanLeinad
+"""
+
+# Explicit navigation structure
+nav = [
+  { "Início" = "index.md" },
+  { "Guia do Usuário" = [
+    { "Visão Geral" = "user-guide/index.md", icon = "lucide/book-user" },
+    { "Instalação" = "user-guide/installation.md", icon = "lucide/download" },
+    { "Primeiro Backup" = "user-guide/first-backup.md", icon = "lucide/save" },
+    { "Restaurar Mundo" = "user-guide/restore.md", icon = "lucide/rotate-ccw" },
+    { "Onde Ficam os Backups" = "user-guide/backup-location.md", icon = "lucide/folder" },
+    { "Configurações" = "user-guide/settings.md", icon = "lucide/settings" },
+    { "FAQ" = "user-guide/faq.md", icon = "lucide/help-circle" },
+    { "Troubleshooting" = "user-guide/troubleshooting.md", icon = "lucide/alert-triangle" },
+  ] },
+  { "Primeiros Passos (Dev)" = [
+    { "Visão Geral" = "getting-started/index.md", icon = "lucide/rocket" },
+    { "Uso" = "getting-started/usage.md", icon = "lucide/terminal" },
+    { "Setup" = "getting-started/installation.md", icon = "lucide/cpu" },
+  ] },
+  { "Arquitetura" = [
+    { "Visão Geral" = "architecture/index.md", icon = "lucide/layers" },
+    { "Camadas" = "architecture/overview.md", icon = "lucide/boxes" },
+    { "Ports & Models" = "architecture/ports-and-models.md", icon = "lucide/link" },
+    { "Fluxo de Requisição" = "architecture/request-flow.md", icon = "lucide/arrow-right-left" },
+    { "Injeção de Dependência" = "architecture/dependency-injection.md", icon = "lucide/puzzle" },
+  ] },
+  { "Referência Técnica" = [
+    { "Visão Geral" = "reference/index.md", icon = "lucide/book" },
+    { "Models" = "reference/models.md", icon = "lucide/database" },
+    { "Ports" = "reference/ports.md", icon = "lucide/link" },
+    { "Services" = "reference/services.md", icon = "lucide/cog" },
+    { "Configuração" = "reference/config.md", icon = "lucide/settings" },
+  ] },
+  { "Decisões (ADRs)" = [{ "ADRs" = "decisions/index.md", icon = "lucide/git-branch" }] },
+  { "Desenvolvimento" = [
+    { "Visão Geral" = "development/index.md", icon = "lucide/code" },
+    { "Contribuindo" = "development/contributing.md", icon = "lucide/git-commit" },
+    { "DCO" = "development/dco.md", icon = "lucide/signature" },
+    { "Licença" = "development/license.md", icon = "lucide/shield" },
+    { "Trunk-Based Development" = "development/trunk-based-development.md", icon = "lucide/git-branch" },
+    { "Feature Flags" = "development/feature-flags.md", icon = "lucide/flag" },
+    { "Short Branches" = "development/short-branches.md", icon = "lucide/timer" },
+    { "Testes" = "development/testing.md", icon = "lucide/flask-conical" },
+  ] },
+]
+
+# Repository - enables link, stars, forks in header
+repo_url = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager"
+repo_name = "Minecraft Bedrock Backup Manager"
+
+# Social links in header
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager"
+name = "GitHub"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/discord"
+link = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/discussions"
+name = "Discussões"
+
+[[project.extra.social]]
+icon = "fontawesome/solid/bug"
+link = "https://github.com/DandanLeinad/minecraft-bedrock-backup-manager/issues"
+name = "Issues"
+
+# Extra CSS for custom styling
+extra_css = ["stylesheets/extra.css"]
+
+# Extra JavaScript for Mermaid
+extra_javascript = ["javascripts/mermaid.min.js"]
+
+# ----------------------------------------------------------------------------
+# Theme Configuration
+# ----------------------------------------------------------------------------
+[project.theme]
+
+# Icon in header (Lucide icon set)
+[project.theme.icon]
+logo = "lucide/database-backup"
+
+# Favicon
+favicon = "assets/favicon.svg"
+
+# Language
+language = "pt-BR"
+
+# Color schemes - default (light) and slate (dark)
+[[project.theme.palette]]
+scheme = "default"
+primary = "indigo"
+accent = "indigo"
+toggle.icon = "lucide/sun"
+toggle.name = "Alternar para modo escuro"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "indigo"
+accent = "indigo"
+toggle.icon = "lucide/moon"
+toggle.name = "Alternar para modo claro"
+
+# Fonts
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
+
+# Feature flags - UI/UX enhancements
+features = [
+  # Announcement bar (dismissible)
+  "announce.dismiss",
+
+  # Repository actions
+  "content.action.edit",
+  "content.action.view",
+
+  # Code blocks
+  "content.code.annotate",
+  "content.code.copy",
+  "content.code.select",
+
+  # Content
+  "content.footnote.tooltips",
+  "content.tabs.link",
+  "content.tooltips",
+
+  # Header
+  "header.autohide",
+
+  # Navigation - TABS (top-level sections as tabs)
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.path",
+  "navigation.prune",
+  "navigation.top",
+  "navigation.tracking",
+
+  # Search
+  "search.highlight",
+
+  # Table of contents
+  "toc.follow",
+]
+
+# ----------------------------------------------------------------------------
+# Markdown Extensions
+# ----------------------------------------------------------------------------
+
+# Core extensions
+[project.markdown_extensions.abbr]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.def_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.toc]
+title = "Sumário"
+permalink = true
+
+# Arithmatex (math)
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+
+# Better emphasis, caret, details
+[project.markdown_extensions.pymdownx.betterem]
+[project.markdown_extensions.pymdownx.caret]
+[project.markdown_extensions.pymdownx.details]
+
+# Emoji (Twemoji)
+[project.markdown_extensions.pymdownx.emoji]
+emoji_generator = "zensical.extensions.emoji.to_svg"
+emoji_index = "zensical.extensions.emoji.twemoji"
+
+# Highlighting with line numbers and anchors
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+
+# Inline highlighting
+[project.markdown_extensions.pymdownx.inlinehilite]
+
+# Keys, magic links, mark, smart symbols
+[project.markdown_extensions.pymdownx.keys]
+[project.markdown_extensions.pymdownx.magiclink]
+[project.markdown_extensions.pymdownx.mark]
+[project.markdown_extensions.pymdownx.smartsymbols]
+
+# Superfences (mermaid, etc.)
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+
+# Tabbed content (content tabs)
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+combine_header_slug = true
+
+# Task lists with custom checkboxes
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
+
+# Tilde (subscript/superscript)
+[project.markdown_extensions.pymdownx.tilde]
+
+# Snippets - embed external files (source code)
+[project.markdown_extensions.pymdownx.snippets]
+base_path = ["../src"]
+auto_append = [".py"]
+
+# Instant previews for specific sections
+[project.markdown_extensions.zensical.extensions.preview]
+configurations = [
+  { targets.include = ["user-guide/*", "getting-started/*", "reference/*"] },
+]

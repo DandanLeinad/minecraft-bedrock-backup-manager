@@ -1,3 +1,7 @@
+---
+icon: lucide/flask-conical
+---
+
 # 🧪 Testes
 
 ## Executar

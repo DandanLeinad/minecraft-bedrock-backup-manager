@@ -63,7 +63,7 @@ jobs:
             **Full changelog:** https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.ref_name }}
 
           files: |
-            dist/${{ env.ARCHIVE_NAME }}
+            dist/minecraft-bedrock-backup-manager-${{ github.ref_name }}-windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
