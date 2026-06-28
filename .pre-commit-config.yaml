@@ -57,9 +57,16 @@ repos:
         stages: [commit-msg]
 
       - id: validate-license-header
-        name: Validate SPDX license header (pre-commit)
+        name: Validate SPDX license header
         language: python
         entry: python scripts/validate_license_header.py
         stages: [pre-commit]
+        pass_filenames: true
+        types: [python]
+
+      - id: validate-license-header-all
+        name: Validate SPDX license header (all files)
+        language: python
+        entry: python scripts/validate_license_header.py --all
+        stages: [pre-push]
         pass_filenames: false
-        always_run: true
