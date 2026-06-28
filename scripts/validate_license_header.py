@@ -2,14 +2,14 @@
 # Copyright (C) 2026 DandanLeinad
 
 #!/usr/bin/env python3
-"""Script para validar headers de licença SPDX em arquivos Python.
+"""Script to validate SPDX license headers in Python files.
 
-Uso (manual):
-    python scripts/validate_license_header.py arquivo1.py arquivo2.py
+Usage (manual):
+    python scripts/validate_license_header.py file1.py file2.py
     python scripts/validate_license_header.py --all
 
-Uso (pre-commit):
-    O pre-commit passa automaticamente os arquivos alterados.
+Usage (pre-commit):
+    pre-commit passes changed files automatically.
 """
 
 import argparse
@@ -38,13 +38,13 @@ IGNORE_DIRS = {
 
 
 def has_spdx_header(content: str) -> bool:
-    """Verifica se existe um header SPDX nas primeiras linhas do arquivo."""
+    """Check if SPDX header exists in the first lines of the file."""
     first_lines = content.splitlines()[:10]
     return any(line.startswith(SPDX_HEADER_START) for line in first_lines)
 
 
 def get_all_python_files() -> list[Path]:
-    """Retorna todos os arquivos .py do repositório."""
+    """Return all .py files in the repository."""
     python_files: list[Path] = []
 
     for py_file in Path(".").rglob("*.py"):
@@ -57,10 +57,10 @@ def get_all_python_files() -> list[Path]:
 
 
 def validate_files(file_paths: list[Path]) -> bool:
-    """Valida os arquivos informados.
+    """Validate the given files.
 
     Returns:
-        True se todos possuem header SPDX.
+        True if all files have SPDX header.
     """
     missing_header: list[Path] = []
 
@@ -75,22 +75,22 @@ def validate_files(file_paths: list[Path]) -> bool:
                 missing_header.append(path)
 
         except Exception as exc:
-            logger.error(f"Erro ao verificar {path}: {exc}")
+            logger.error(f"Error checking {path}: {exc}")
             missing_header.append(path)
 
     if not missing_header:
         return True
 
-    print("ERRO: Os seguintes arquivos não possuem header SPDX:\n")
+    print("ERROR: The following files are missing SPDX header:\n")
 
     for path in missing_header:
-        print(f"  • {path}")
+        print(f"  - {path}")
 
     print(
-        "\nExecute:\n"
+        "\nRun:\n"
         "    python scripts/add_license_header.py\n\n"
-        "Depois:\n"
-        "    git add <arquivos>\n"
+        "Then:\n"
+        "    git add <files>\n"
         "    git commit\n"
     )
 
@@ -98,19 +98,19 @@ def validate_files(file_paths: list[Path]) -> bool:
 
 
 def main() -> None:
-    """Função principal."""
-    parser = argparse.ArgumentParser(description="Valida headers SPDX em arquivos Python.")
+    """Main function."""
+    parser = argparse.ArgumentParser(description="Validate SPDX headers in Python files.")
 
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Verifica todos os arquivos Python do repositório.",
+        help="Check all Python files in the repository.",
     )
 
     parser.add_argument(
         "files",
         nargs="*",
-        help="Arquivos recebidos pelo pre-commit.",
+        help="Files passed by pre-commit.",
     )
 
     args = parser.parse_args()
@@ -126,7 +126,7 @@ def main() -> None:
     success = validate_files(python_files)
 
     if success:
-        print("Todos os arquivos possuem header SPDX.")
+        print("All files have SPDX header.")
 
     sys.exit(0 if success else 1)
 
